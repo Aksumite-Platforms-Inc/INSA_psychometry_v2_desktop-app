@@ -1,9 +1,0 @@
-{
-  "restfulapi_endpoint": "0.0.0.0:8080",
-  "environment": "DEV",
-  "db_name": "INSA_psychometry_v2",
-  "db_user": "tuktuk-auth",
-  "db_password": "tuktukauth1!",
-  "db_host": "localhost",
-  "db_port": "5433"
-}
