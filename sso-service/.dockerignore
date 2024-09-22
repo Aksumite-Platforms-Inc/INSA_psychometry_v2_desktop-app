@@ -1,0 +1,7 @@
+.git
+filebeat.docker.yaml
+.idea
+ignoreEnvs
+postgresql_master_data
+pgadmin_data
+pgadmin_raw
