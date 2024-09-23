@@ -1,4 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef } from 'react';
+import { FullScreen, useFullScreenHandle } from 'react-full-screen';
 
 const tests = [
   { name: 'OEJTS', url: 'https://openpsychometrics.org/tests/OEJTS/' },
@@ -13,81 +14,62 @@ const tests = [
   { name: 'RIASEC Test', url: 'https://personalitytests.com/riasec/' },
 ];
 
-function TestList() {
-  const iframeRef = useRef<HTMLIFrameElement>(null); // Reference to the iframe
-  const [screenshot, setScreenshot] = useState<string | null>(null);
-  const [selectedTest, setSelectedTest] = useState<string | null>(null);
-
-  // Set up IPC listener to receive screenshot path from main process
-  useEffect(() => {
-    if (window.electron && window.electron.ipcRenderer) {
-      const unsubscribe = window.electron.ipcRenderer.on(
-        'screenshot-taken',
-        (_event: unknown, screenshotPath: unknown) => {
-          const path = screenshotPath as string;
-          setScreenshot(path);
-        },
-      );
-
-      // Clean up the listener when the component unmounts
-      return () => {
-        if (unsubscribe) unsubscribe();
-      };
-    }
-    throw new Error('Electron IPC is not available');
-  }, []);
-
-  // Send IPC message to take a screenshot
-  const handleScreenshot = () => {
-    if (window.electron && window.electron.ipcRenderer) {
-      window.electron.ipcRenderer.sendMessage('take-screenshot');
-    } else {
-      throw new Error('Electron IPC is not available');
-    }
-  };
-
-  const [testUrl, setTestUrl] = useState<string | null>(null);
+const TestList: React.FC = function TestList() {
+  const handle = useFullScreenHandle();
 
   return (
-    <div>
-      <div className="test-list">
-        <h2>Select a Test</h2>
-        <ul>
-          {tests.map((test) => (
-            <li key={test.name}>
-              <button onClick={() => setTestUrl(test.url)}>{test.name}</button>
-            </li>
-          ))}
-        </ul>
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-4">Tests</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
+        {tests.map((test, index) => (
+          <div key={index} className="bg-white p-4 shadow rounded">
+            <h2 className="text-xl font-semibold">{test.name}</h2>
+            <a
+              href={test.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              Start Test
+            </a>
+          </div>
+        ))}
       </div>
-      {testUrl && (
-        <div>
-          <div className="iframe-container">
-            <iframe
-              ref={iframeRef}
-              src={testUrl}
-              width="700px"
-              height="500px"
-              title="Test Iframe"
-            />
-          </div>
-          <div>
-            <button type="button" onClick={handleScreenshot}>
-              <span role="img" aria-label="screenshot">
-                📸
-              </span>{' '}
-              Take Screenshot
-            </button>
-          </div>
-          {screenshot && (
-            <div>
-              <p>Screenshot saved at: {screenshot}</p>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="mt-6 flex space-x-4">
+        <button
+          type="button"
+          className="bg-blue-500 text-white py-2 px-4 rounded-lg"
+        >
+          Start Exam
+        </button>
+        <button
+          type="button"
+          className="bg-yellow-500 text-white py-2 px-4 rounded-lg"
+        >
+          Screenshot Exam
+        </button>
+        <button
+          type="button"
+          className="bg-green-500 text-white py-2 px-4 rounded-lg"
+        >
+          Finish Exam
+        </button>
+        <button
+          onClick={handle.enter}
+          type="button"
+          className="bg-gray-500 text-white py-2 px-4 rounded-lg"
+        >
+          Fullscreen
+        </button>
+      </div>
+      <FullScreen handle={handle}>
+        <iframe
+          src="https://openpsychometrics.org/tests/OEJTS/"
+          className="w-full h-[500px] mt-4 rounded-lg"
+        />
+      </FullScreen>
     </div>
   );
-}
+};
 
 export default TestList;

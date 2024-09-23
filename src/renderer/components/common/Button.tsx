@@ -1,24 +1,25 @@
 import React from 'react';
 
-interface ButtonProps {
-  onClick: () => void;
+type ButtonProps = {
   label: string;
-  disabled?: boolean;
-  className?: string;
-}
+  onClick: () => void;
+  variant?: 'primary' | 'secondary';
+};
 
 const Button: React.FC<ButtonProps> = ({
-  onClick,
   label,
-  disabled = false,
-  className = '',
+  onClick,
+  variant = 'primary',
 }) => {
+  const baseStyles =
+    'px-4 py-2 rounded-md font-semibold transition duration-300';
+  const variantStyles =
+    variant === 'primary'
+      ? 'bg-blue-500 text-white hover:bg-blue-600'
+      : 'bg-gray-200 text-gray-800 hover:bg-gray-300';
+
   return (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={`btn ${className}`}
-    >
+    <button onClick={onClick} className={`${baseStyles} ${variantStyles}`}>
       {label}
     </button>
   );

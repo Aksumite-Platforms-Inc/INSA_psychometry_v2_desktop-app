@@ -1,28 +1,36 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './Home';
+import {
+  MemoryRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import Sidebar from './components/layout/Sidebar';
 import Dashboard from './pages/Dashboard/AdminDashboard';
-// import Profile from './pages/Profile';
-import Tests from './pages/Tests/TestList';
+import TestList from './pages/Tests/TestList';
+import TestTabs from './pages/Tests/TestTabs';
 import Report from './pages/Reports/ReportList';
+import Header from './components/layout/Header';
+import './index.css';
+// import './App.css';
 
-import './App.css';
-const App = () => {
-  return (
-    <Router>
-      <div className="flex h-screen">
-        <Sidebar />
-        <div className="flex-1 p-4 overflow-y-auto">
+const App: React.FC = () => (
+  <Router>
+    <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+      <Sidebar />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <div className="flex-1 p-6 overflow-y-auto">
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
-            {/* <Route path="/profile" element={<Profile />} /> */}
-            <Route path="/tests" element={<Tests />} />
+            <Route path="/tests" element={<TestList />} />
+            <Route path="/testTabs" element={<TestTabs />} />
             <Route path="/report" element={<Report />} />
+            <Route path="*" element={<Navigate to="/dashboard" />} />
           </Routes>
         </div>
       </div>
-    </Router>
-  );
-};
+    </div>
+  </Router>
+);
 
 export default App;
