@@ -142,7 +142,8 @@ ipcMain.on('take-screenshot', async (event) => {
     }
   } catch (error) {
     console.error('Error taking screenshot:', error);
-    const errorMessage = (error instanceof Error) ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
     event.reply('screenshot-taken', `Error: ${errorMessage}`);
   }
 });
