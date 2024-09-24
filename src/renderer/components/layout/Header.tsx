@@ -1,36 +1,27 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 
-function Header(): React.ReactElement {
+function Header({ title }: { title: string }) {
   return (
-    <header className="bg-blue-600 text-white p-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-xl font-bold">My Electron App</h1>
-        <nav>
-          <ul className="flex space-x-4">
-            <li>
-              <a href="/dashboard" className="hover:underline">
-                Dashboard
-              </a>
-            </li>
-            <li>
-              <a href="/tests" className="hover:underline">
-                Tests
-              </a>
-            </li>
-            <li>
-              <a href="/users" className="hover:underline">
-                Users
-              </a>
-            </li>
-            <li>
-              <a href="/reports" className="hover:underline">
-                Reports
-              </a>
-            </li>
-          </ul>
-        </nav>
+    <div className="flex justify-between items-center p-4 bg-gray-100 shadow-lg">
+      <nav className="text-gray-600 text-sm font-medium flex items-center space-x-2">
+        <a
+          href="/home"
+          className="text-blue-600 flex items-center space-x-1 hover:text-blue-800 transition duration-150 ease-in-out"
+        >
+          <FontAwesomeIcon icon={faHome} />{' '}
+          {/* Home icon for better navigation */}
+          <span>Home</span>
+        </a>
+        <span>{'>'}</span>
+        <span className="text-gray-500">{title}</span>{' '}
+        {/* Current page title */}
+      </nav>
+      <div className="text-blue-800 font-extrabold text-lg">
+        Abyssinia Bank SC
       </div>
-    </header>
+    </div>
   );
 }
 

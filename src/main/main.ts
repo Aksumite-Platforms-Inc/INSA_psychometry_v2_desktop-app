@@ -84,7 +84,7 @@ const createWindow = async () => {
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('/'));
+  mainWindow.loadURL(resolveHtmlPath('/Login'));
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
