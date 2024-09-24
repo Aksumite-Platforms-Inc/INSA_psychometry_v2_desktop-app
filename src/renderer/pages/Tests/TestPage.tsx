@@ -124,7 +124,7 @@ function TestPage() {
               }`}
               disabled={!testStarted}
             >
-              End Test & Take Screenshot
+              End Test
             </button>
           </div>
         </div>
