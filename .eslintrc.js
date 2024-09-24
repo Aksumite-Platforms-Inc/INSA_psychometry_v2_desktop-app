@@ -13,6 +13,16 @@ module.exports = {
     '@typescript-eslint/no-shadow': 'error',
     'no-unused-vars': 'off',
     '@typescript-eslint/no-unused-vars': 'error',
+    'jsx-a11y/label-has-associated-control': [
+      'error',
+      {
+        labelComponents: ['CustomLabel'],
+        labelAttributes: ['label'],
+        controlComponents: ['CustomInput'],
+        assert: 'both',
+        depth: 3,
+      },
+    ],
   },
   parserOptions: {
     ecmaVersion: 2022,

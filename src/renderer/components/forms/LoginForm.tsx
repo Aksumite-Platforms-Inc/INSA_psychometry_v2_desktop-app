@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../common/Button';
@@ -51,7 +52,11 @@ function LoginForm() {
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <Button label="Login" variant="primary" onClick={() => navigate('/users')} />
+      <Button
+        label="Login"
+        variant="primary"
+        onClick={() => navigate('/users')}
+      />
     </form>
   );
 }

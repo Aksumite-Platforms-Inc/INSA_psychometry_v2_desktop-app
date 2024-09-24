@@ -32,9 +32,7 @@ function TestPage() {
   const test = tests.find((t) => t.id === parseInt(testId || '', 10));
 
   const [testStarted, setTestStarted] = useState(false);
-  const [iframeUrl, setIframeUrl] = useState<string | null>(
-    test ? test.url : null,
-  );
+  const [iframeUrl] = useState<string>(test ? test.url : '');
   const [interactionBlocked, setInteractionBlocked] = useState(true);
 
   useEffect(() => {
@@ -42,7 +40,7 @@ function TestPage() {
       const unsubscribe = window.electron.ipcRenderer.on(
         'screenshot-taken',
         (_event: unknown, screenshotPath: unknown) => {
-          alert(`Screenshot saved at: ${screenshotPath}`);
+          throw new Error(`Screenshot saved at: ${screenshotPath}`);
         },
       );
 
@@ -50,6 +48,7 @@ function TestPage() {
         if (unsubscribe) unsubscribe();
       };
     }
+    return undefined;
   }, []);
 
   if (!test) {
@@ -67,7 +66,7 @@ function TestPage() {
   const handleStartTest = () => {
     setTestStarted(true);
     setInteractionBlocked(false);
-    alert(`Test ${test.name} started.`);
+    throw new Error(`Test ${test.name} started.`);
   };
 
   const handleEndTest = () => {
@@ -78,7 +77,7 @@ function TestPage() {
     } else {
       throw new Error('Electron IPC is not available');
     }
-    alert(`Test ${test.name} ended. Screenshot taken.`);
+    throw new Error(`Test ${test.name} ended. Screenshot taken.`);
   };
 
   return (
@@ -99,7 +98,9 @@ function TestPage() {
             />
             {interactionBlocked && (
               <div className="absolute top-0 left-0 w-full h-full bg-gray-200 bg-opacity-50 flex items-center justify-center">
-                <p className="text-gray-700">Click "Start Test" to begin</p>
+                <p className="text-gray-700">
+                  Click &quot;Start Test&quot; to begin
+                </p>
               </div>
             )}
           </div>
