@@ -13,11 +13,9 @@ export interface ElectronHandler {
 const electronHandler: ElectronHandler = {
   ipcRenderer: {
     sendMessage(channel, ...args) {
-      console.log(`Sending IPC message to channel: ${channel}`);
       ipcRenderer.send(channel, ...args);
     },
     on(channel, func) {
-      console.log(`Listening on IPC channel: ${channel}`);
       const subscription = (_event: IpcRendererEvent, ...args: unknown[]) => {
         func(...args);
       };
@@ -28,7 +26,6 @@ const electronHandler: ElectronHandler = {
       };
     },
     once(channel, func) {
-      console.log(`Listening once on IPC channel: ${channel}`);
       ipcRenderer.once(channel, (_event, ...args) => {
         func(...args);
       });

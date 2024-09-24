@@ -1,13 +1,15 @@
-import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './Home';
+import React from 'react';
+import { AuthProvider } from './context/AuthContext';
+import AppRoutes from './routes/Routes';
+import '../../assets/styles/tailwind.css';
 import './App.css';
 
-export default function App() {
+function App(): React.JSX.Element {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   );
 }
+
+export default App;

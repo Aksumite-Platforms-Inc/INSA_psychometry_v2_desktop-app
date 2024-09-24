@@ -84,7 +84,7 @@ const createWindow = async () => {
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+  mainWindow.loadURL(resolveHtmlPath('/Login'));
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -142,7 +142,9 @@ ipcMain.on('take-screenshot', async (event) => {
     }
   } catch (error) {
     console.error('Error taking screenshot:', error);
-    event.reply('screenshot-taken', `Error: ${error.message}`);
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+    event.reply('screenshot-taken', `Error: ${errorMessage}`);
   }
 });
 

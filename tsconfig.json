@@ -14,5 +14,23 @@
     "allowJs": true,
     "outDir": ".erb/dll"
   },
+
+  "rules": {
+    "jsx-a11y/label-has-associated-control": [
+      2,
+      {
+        "labelComponents": [
+          "CustomInputLabel"
+        ],
+        "labelAttributes": [
+          "label"
+        ],
+        "controlComponents": [
+          "CustomInput"
+        ],
+        "depth": 3,
+      }
+    ],
+  },
   "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
 }
