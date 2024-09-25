@@ -7,7 +7,7 @@ function Header({ title }: { title: string }) {
     <div className="flex justify-between items-center p-4 bg-gray-100 shadow-lg">
       <nav className="text-gray-600 text-sm font-medium flex items-center space-x-2">
         <a
-          href="/home"
+          href="/users"
           className="text-blue-600 flex items-center space-x-1 hover:text-blue-800 transition duration-150 ease-in-out"
         >
           <FontAwesomeIcon icon={faHome} />{' '}
