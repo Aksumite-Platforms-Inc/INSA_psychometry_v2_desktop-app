@@ -40,7 +40,7 @@ function TestPage() {
       const unsubscribe = window.electron.ipcRenderer.on(
         'screenshot-taken',
         (_event: unknown, screenshotPath: unknown) => {
-          throw new Error(`Screenshot saved at: ${screenshotPath}`);
+          console.log(`Screenshot saved at: ${screenshotPath}`);
         },
       );
 
@@ -66,7 +66,7 @@ function TestPage() {
   const handleStartTest = () => {
     setTestStarted(true);
     setInteractionBlocked(false);
-    throw new Error(`Test ${test.name} started.`);
+    console.log(`Test ${test.name} started.`);
   };
 
   const handleEndTest = () => {
@@ -75,9 +75,9 @@ function TestPage() {
     if (window.electron && window.electron.ipcRenderer) {
       window.electron.ipcRenderer.sendMessage('take-screenshot');
     } else {
-      throw new Error('Electron IPC is not available');
+      console.log('Electron IPC is not available');
     }
-    throw new Error(`Test ${test.name} ended. Screenshot taken.`);
+    console.log(`Test ${test.name} ended. Screenshot taken.`);
   };
 
   return (
