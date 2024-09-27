@@ -3,7 +3,9 @@ import { useState } from 'react';
 import JsPDF from 'jspdf'; // For generating PDFs
 import Sidebar from '../../components/layout/Sidebar';
 import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
 import UserTable from '../../components/layout/UserTable';
+// import DefaultLayout from '../../components/layout/defaultlayout';
 
 function Users() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -47,10 +49,10 @@ function Users() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative ">
       <div className={`flex ${isModalOpen ? 'backdrop-blur-sm' : ''}`}>
         <Sidebar />
-        <div className="flex-1 p-5">
+        <div className="flex-1 p-5 h-screen overflow-y-auto ">
           <Header title="Users" />
           <div className="flex justify-between items-center mt-5">
             <input
@@ -90,6 +92,7 @@ function Users() {
           </div>
         </div>
       </div>
+      {/* <Footer /> */}
 
       {/* Modal for adding users */}
       {isModalOpen && (

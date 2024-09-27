@@ -10,7 +10,7 @@ function Reports() {
       <div className="flex-1 p-6 bg-gray-50">
         <Header title="Reports" />
 
-        <div className="mt-5 bg-white p-6 rounded-lg shadow-lg">
+        <div className="mt-5 bg-white p-6 rounded-lg shadow-lg overflow-y-auto">
           <h2 className="text-2xl font-bold mb-4 text-gray-800">
             Organization Reports
           </h2>

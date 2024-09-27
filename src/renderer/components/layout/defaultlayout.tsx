@@ -1,15 +1,28 @@
-// /* eslint-disable react/function-component-definition */
-// import React from 'react';
+// import React, { ReactNode } from 'react';
+// import Sidebar from './Sidebar';
+// import Header from './Header';
+// import Footer from './Footer';
 
-// const DefaultLayout: React.FC = ({ children }) => {
+// interface DefaultLayoutProps {
+//   children: ReactNode;
+// }
+
+// function DefaultLayout({ children }: DefaultLayoutProps) {
 //   return (
-//     <div className="flex h-screen">
-//       <aside className="w-64 h-screen sticky top-0 overflow-y-auto bg-gray-200 p-4">
-//         {/* Sidebar content goes here */}
+//     <div className="">
+//       {/* Fixed Sidebar */}
+//       <header className="sticky top-0 bg-white shadow-md z-10">
+//         <Header title="Dashboard" />
+//       </header>
+//       <aside className="w-64 h-full bg-gray-900 text-white">
+//         <Sidebar />
 //       </aside>
-//       <main className="flex-grow p-4 overflow-y-auto">{children}</main>
+
+//       <footer className="bg-gray-800 text-white p-4">
+//         <Footer />
+//       </footer>
 //     </div>
 //   );
-// };
+// }
 
 // export default DefaultLayout;

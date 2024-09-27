@@ -12,7 +12,7 @@ function Sidebar() {
   const navigate = useNavigate();
 
   return (
-    <div className="w-64 bg-gray-900 text-white h-screen p-5 shadow-lg flex flex-col justify-between">
+    <div className="w-64 p-5 flex flex-col bg-gray-900 text-white h-screen overflow-hidden justify-between">
       {/* Profile Section */}
       <div>
         <div className="text-center mb-12">
@@ -28,6 +28,8 @@ function Sidebar() {
         {/* Navigation Menu */}
         <nav>
           <ul>
+            <hr />
+            <br />
             <li className="py-3 hover:bg-gray-700 rounded-md transition duration-150 ease-in-out">
               <a href="/users" className="flex items-center space-x-3 px-3">
                 <FontAwesomeIcon
