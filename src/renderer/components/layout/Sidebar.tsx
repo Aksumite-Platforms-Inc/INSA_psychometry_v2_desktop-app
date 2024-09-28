@@ -7,12 +7,13 @@ import {
   faUserCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+// import Header from './Header';
 
 function Sidebar() {
   const navigate = useNavigate();
 
   return (
-    <div className="w-64 p-5 flex flex-col bg-gray-900 text-white h-screen overflow-hidden justify-between">
+    <div className="w-64 p-5 flex flex-col bg-gray-800 text-white h-screen overflow-hidden justify-between">
       {/* Profile Section */}
       <div>
         <div className="text-center mb-12">
@@ -31,7 +32,16 @@ function Sidebar() {
             <hr />
             <br />
             <li className="py-3 hover:bg-gray-700 rounded-md transition duration-150 ease-in-out">
-              <a href="/users" className="flex items-center space-x-3 px-3">
+              <a href="/dashboard" className="flex items-center space-x-3 px-3">
+                <FontAwesomeIcon
+                  icon={faChartBar}
+                  className="h-5 w-5 text-gray-400"
+                />
+                <span className="text-base ">Dashboard</span>
+              </a>
+            </li>
+            <li className="py-3 hover:bg-gray-700 rounded-md transition duration-150 ease-in-out">
+              <a href="/users" className="flex items-center space-x-3 px-3 ">
                 <FontAwesomeIcon
                   icon={faUsers}
                   className="h-5 w-5 text-gray-400"

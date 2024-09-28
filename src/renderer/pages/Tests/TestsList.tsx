@@ -55,9 +55,12 @@ function Tests() {
     <div className="flex h-screen">
       <Sidebar />
       <div className="flex-1 p-6 bg-gray-50">
-        <Header title="Tests" />
+        <Header />
 
         {/* Grid for test cards */}
+        <br />
+        <hr />
+        <br />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
           {tests.map((test) => (
             <div

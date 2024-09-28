@@ -3,7 +3,7 @@ import { useState } from 'react';
 import JsPDF from 'jspdf'; // For generating PDFs
 import Sidebar from '../../components/layout/Sidebar';
 import Header from '../../components/layout/Header';
-import Footer from '../../components/layout/Footer';
+// import Footer from '../../components/layout/Footer';
 import UserTable from '../../components/layout/UserTable';
 // import DefaultLayout from '../../components/layout/defaultlayout';
 
@@ -53,7 +53,7 @@ function Users() {
       <div className={`flex ${isModalOpen ? 'backdrop-blur-sm' : ''}`}>
         <Sidebar />
         <div className="flex-1 p-5 h-screen overflow-y-auto ">
-          <Header title="Users" />
+          <Header />
           <div className="flex justify-between items-center mt-5">
             <input
               type="text"
@@ -74,10 +74,10 @@ function Users() {
           <div className="mt-5">
             <h3 className="text-lg font-bold mb-3">Invited Users:</h3>
             <table className="w-full text-left border-collapse">
-              <thead className="bg-blue-100">
+              <thead className="bg-gray-200 text-gray-700 uppercase text-sm">
                 <tr>
-                  <th className="py-2 px-4">Email</th>
-                  <th className="py-2 px-4">Password</th>
+                  <th className="py-3 px-4">Email</th>
+                  <th className="py-3 px-4">Password</th>
                 </tr>
               </thead>
               <tbody>
