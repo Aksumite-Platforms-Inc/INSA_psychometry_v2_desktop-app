@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/layout/Sidebar';
-import Header from '../../components/layout/Header';
+import DefaultLayout from '../../components/layout/defaultlayout';
 
 // List of tests with descriptions
 const tests = [
@@ -52,40 +51,41 @@ function Tests() {
   };
 
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div className="flex-1 p-6 bg-gray-50">
-        <Header />
-
-        {/* Grid for test cards */}
-        <br />
-        <hr />
-        <br />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-          {tests.map((test) => (
-            <div
-              key={test.id}
-              className={`p-6 rounded-lg shadow-lg flex flex-col items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-200 ${getBackgroundColor(test.id)}`}
-              role="button"
-              tabIndex={0}
-              onClick={() => handleTestClick(test.id)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleTestClick(test.id);
-                }
-              }}
-            >
-              <div className="text-center">
-                <span className="text-xl font-bold text-gray-700">
-                  {test.name}
-                </span>
-                <p className="text-sm mt-2 text-gray-600">{test.description}</p>
+    <DefaultLayout>
+      <div className="flex h-screen">
+        <div className="flex-1 p-6 bg-gray-50">
+          {/* Grid for test cards */}
+          <br />
+          <hr />
+          <br />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+            {tests.map((test) => (
+              <div
+                key={test.id}
+                className={`p-6 rounded-lg shadow-lg flex flex-col items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-200 ${getBackgroundColor(test.id)}`}
+                role="button"
+                tabIndex={0}
+                onClick={() => handleTestClick(test.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleTestClick(test.id);
+                  }
+                }}
+              >
+                <div className="text-center">
+                  <span className="text-xl font-bold text-gray-700">
+                    {test.name}
+                  </span>
+                  <p className="text-sm mt-2 text-gray-600">
+                    {test.description}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </DefaultLayout>
   );
 }
 

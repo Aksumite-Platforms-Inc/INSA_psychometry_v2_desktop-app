@@ -15,7 +15,7 @@ function Sidebar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="w-64 p-5 flex flex-col bg-gray-800 text-white h-screen overflow-hidden justify-between">
+    <div className="">
       {/* Profile Section */}
       <div>
         <div className="text-center mb-12">

@@ -1,14 +1,11 @@
 import React from 'react';
-import Sidebar from '../../components/layout/Sidebar';
-import Header from '../../components/layout/Header';
-// import Footer from '../../components/layout/Footer';
+import DefaultLayout from '../../components/layout/defaultlayout';
 
 function Dashboard() {
   return (
-    <div className="flex bg-gray-100">
-      <Sidebar />
-      <main className="p-5 sm:p-5 space-y-6 h-screen overflow-y-auto ">
-        <Header />
+    <DefaultLayout>
+      <main className="p-5 sm:p-5 space-y-6">
+        {/* <Header /> */}
         <br />
         <div className="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
           <div className="mr-6">
@@ -278,7 +275,7 @@ function Dashboard() {
           </div>
         </section>
       </main>
-    </div>
+    </DefaultLayout>
   );
 }
 

@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
+import profielPicture from '../../../../assets/Images/habesha.jpg';
 
 interface HeaderProps {
   toggleSidebar: () => void;
 }
-function Header({ toggleSidebar }: HeaderProps) {
-  const [menu, setMenu] = useState(false);
-  const [panel, setPanel] = useState(false);
 
+function Header({ toggleSidebar }: HeaderProps) {
+  const [panel, setPanel] = useState(false);
   return (
     <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
-      {/* Menu Button for Small Screens */}
       <div
         className="mr-8 cursor-pointer"
         role="button"
@@ -18,7 +17,7 @@ function Header({ toggleSidebar }: HeaderProps) {
         onClick={toggleSidebar}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
-            setMenu(!menu);
+            toggleSidebar();
           }
         }}
       >
@@ -37,7 +36,6 @@ function Header({ toggleSidebar }: HeaderProps) {
           />
         </svg>
       </div>
-
       {/* Search Bar */}
       <div className="relative w-full max-w-md sm:-ml-2">
         <svg
@@ -55,7 +53,7 @@ function Header({ toggleSidebar }: HeaderProps) {
         <input
           type="text"
           placeholder="Search..."
-          className="py-2 pl-10 pr-4 w-full border-4 border-transparent placeholder-gray-400 focus:bg-gray-50 rounded-lg"
+          className="py-2 pl-10 pr-4 w-full border-4 border-transparent placeholder-gray-400 focus:bg-gray-70 bg-gray-50 rounded-lg"
         />
       </div>
 
@@ -74,7 +72,7 @@ function Header({ toggleSidebar }: HeaderProps) {
           </div>
           <span className="h-12 w-12 ml-2 sm:ml-3 mr-2 bg-gray-100 rounded-full overflow-hidden">
             <img
-              src="https://randomuser.me/api/portraits/men/68.jpg"
+              src={profielPicture}
               alt="profile_picture"
               className="h-full w-full object-cover"
             />
@@ -151,6 +149,7 @@ function Header({ toggleSidebar }: HeaderProps) {
           </button>
         </div>
       </div>
+      {/* Other header content */}
     </header>
   );
 }
