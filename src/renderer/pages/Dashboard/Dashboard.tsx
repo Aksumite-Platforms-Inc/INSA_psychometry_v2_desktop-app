@@ -7,8 +7,9 @@ function Dashboard() {
   return (
     <div className="flex bg-gray-100">
       <Sidebar />
-      <main className="p-6 sm:p-1 space-y-6 h-screen overflow-y-auto ">
+      <main className="p-5 sm:p-5 space-y-6 h-screen overflow-y-auto ">
         <Header />
+        <br />
         <div className="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
           <div className="mr-6">
             <h1 className="text-4xl font-semibold mb-2">Dashboard</h1>
@@ -61,7 +62,7 @@ function Dashboard() {
         </div>
 
         <section className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
-          <div className="flex items-center p-8 bg-white shadow rounded-lg">
+          <div className="flex items-center p-8 bg-white shadow-lg rounded-lg">
             <div className="inline-flex flex-shrink-0 items-center justify-center h-16 w-16 text-blue-600 bg-blue-100 rounded-full mr-6">
               <svg
                 aria-hidden="true"
@@ -83,7 +84,7 @@ function Dashboard() {
               <span className="block text-gray-500">Users</span>
             </div>
           </div>
-          <div className="flex items-center p-8 bg-white shadow rounded-lg">
+          <div className="flex items-center p-8 bg-white shadow-lg rounded-lg">
             <div className="inline-flex flex-shrink-0 items-center justify-center h-16 w-16 text-green-600 bg-green-100 rounded-full mr-6">
               <svg
                 aria-hidden="true"
@@ -105,7 +106,7 @@ function Dashboard() {
               <span className="block text-gray-500">Average Performance</span>
             </div>
           </div>
-          <div className="flex items-center p-8 bg-white shadow rounded-lg">
+          <div className="flex items-center p-8 bg-white shadow-lg rounded-lg">
             <div className="inline-flex flex-shrink-0 items-center justify-center h-16 w-16 text-red-600 bg-red-100 rounded-full mr-6">
               <svg
                 aria-hidden="true"
@@ -130,7 +131,7 @@ function Dashboard() {
               <span className="block text-gray-500">Underperforming Users</span>
             </div>
           </div>
-          <div className="flex items-center p-8 bg-white shadow rounded-lg">
+          <div className="flex items-center p-8 bg-white shadow-lg rounded-lg">
             <div className="inline-flex flex-shrink-0 items-center justify-center h-16 w-16 text-blue-600 bg-blue-100 rounded-full mr-6">
               <svg
                 aria-hidden="true"
@@ -156,7 +157,7 @@ function Dashboard() {
 
         {/* Statistics Section */}
         <section className="grid md:grid-cols-2 xl:grid-cols-4 xl:grid-rows-3 xl:grid-flow-col gap-6 ">
-          <div className="flex flex-col md:col-span-3 md:row-span-2 bg-white shadow rounded-lg">
+          <div className="flex flex-col md:col-span-3 md:row-span-2 bg-white shadow-md rounded-lg">
             <div className="px-6 py-5 font-semibold border-b border-gray-100">
               Number of Active Users Per Month
             </div>
@@ -167,7 +168,7 @@ function Dashboard() {
             </div>
           </div>
 
-          <div className="flex items-center p-8 bg-white shadow rounded-lg">
+          <div className="flex items-center p-8 bg-white shadow-md rounded-lg">
             <div className="inline-flex flex-shrink-0 items-center justify-center h-16 w-16 text-yellow-600 bg-yellow-100 rounded-full mr-6">
               <svg
                 aria-hidden="true"
@@ -194,7 +195,7 @@ function Dashboard() {
               <span className="block text-gray-500">Reports Generated</span>
             </div>
           </div>
-          <div className="flex items-center p-8 bg-white shadow rounded-lg">
+          <div className="flex items-center p-8 bg-white shadow-md rounded-lg">
             <div className="inline-flex flex-shrink-0 items-center justify-center h-16 w-16 text-teal-600 bg-teal-100 rounded-full mr-6">
               <svg
                 aria-hidden="true"
@@ -218,7 +219,7 @@ function Dashboard() {
           </div>
 
           {/* Students by Average Mark */}
-          <div className="row-span-3 bg-white shadow rounded-lg">
+          <div className="row-span-3 bg-white shadow-md rounded-lg">
             <div className="flex items-center justify-between px-6 py-5 font-semibold border-b border-gray-100">
               <span>Top Scorers</span>
               <button
