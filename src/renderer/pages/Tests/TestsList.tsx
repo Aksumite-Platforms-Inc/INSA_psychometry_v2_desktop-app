@@ -38,15 +38,15 @@ function Tests() {
   const getBackgroundColor = (id: number) => {
     switch (id) {
       case 1:
-        return 'bg-blue-100';
+        return 'bg-blue-500';
       case 2:
-        return 'bg-yellow-100';
+        return 'bg-yellow-500';
       case 3:
-        return 'bg-red-100';
+        return 'bg-red-500';
       case 4:
-        return 'bg-green-100';
+        return 'bg-green-500';
       default:
-        return 'bg-gray-100';
+        return 'bg-gray-500';
     }
   };
 
@@ -62,7 +62,7 @@ function Tests() {
             {tests.map((test) => (
               <div
                 key={test.id}
-                className={`p-6 rounded-lg shadow-lg flex flex-col items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-200 ${getBackgroundColor(test.id)}`}
+                className={`p-6 rounded-lg shadow-lg text-white flex flex-col items-center justify-center cursor-pointer hover:shadow-xl transition-shadow duration-200 ${getBackgroundColor(test.id)}`}
                 role="button"
                 tabIndex={0}
                 onClick={() => handleTestClick(test.id)}
@@ -73,12 +73,10 @@ function Tests() {
                 }}
               >
                 <div className="text-center">
-                  <span className="text-xl font-bold text-gray-700">
+                  <span className="text-xl font-bold text-white">
                     {test.name}
                   </span>
-                  <p className="text-sm mt-2 text-gray-600">
-                    {test.description}
-                  </p>
+                  <p className="text-sm mt-2 text-white">{test.description}</p>
                 </div>
               </div>
             ))}

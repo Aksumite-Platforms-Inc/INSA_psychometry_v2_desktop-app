@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import profielPicture from '../../../../assets/Images/habesha.jpg';
 
 interface HeaderProps {
@@ -7,6 +8,8 @@ interface HeaderProps {
 
 function Header({ toggleSidebar }: HeaderProps) {
   const [panel, setPanel] = useState(false);
+  const navigate = useNavigate();
+
   return (
     <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
       <div
@@ -37,7 +40,7 @@ function Header({ toggleSidebar }: HeaderProps) {
         </svg>
       </div>
       {/* Search Bar */}
-      <div className="relative w-full max-w-md sm:-ml-2">
+      {/* <div className="relative w-full max-w-md sm:-ml-2">
         <svg
           aria-hidden="true"
           viewBox="0 0 20 20"
@@ -55,7 +58,7 @@ function Header({ toggleSidebar }: HeaderProps) {
           placeholder="Search..."
           className="py-2 pl-10 pr-4 w-full border-4 border-transparent placeholder-gray-400 focus:bg-gray-70 bg-gray-50 rounded-lg"
         />
-      </div>
+      </div> */}
 
       {/* User Menu */}
       <div className="flex flex-shrink-0 items-center ml-auto">
@@ -130,6 +133,7 @@ function Header({ toggleSidebar }: HeaderProps) {
           <button
             type="button"
             className="relative p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:bg-gray-100 focus:text-gray-600 rounded-full"
+            onClick={() => navigate('/login')}
           >
             <span className="sr-only">Log out</span>
             <svg

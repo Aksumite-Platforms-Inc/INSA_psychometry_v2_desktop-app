@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState } from 'react';
 import JsPDF from 'jspdf'; // For generating PDFs
-import UserTable from '../../components/layout/UserTable';
+import UserTable from '../../components/Tables/UserTable';
 import DefaultLayout from '../../components/layout/defaultlayout';
 
 function Users() {
