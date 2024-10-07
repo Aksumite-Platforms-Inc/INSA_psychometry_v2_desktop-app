@@ -11,7 +11,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useLocation } from 'react-router-dom';
 import { useUserRole } from '../../context/UserRoleContext';
-import { ROLES, PERMISSIONS } from '../../context/roles';
+import { PERMISSIONS } from '../../context/roles';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
 

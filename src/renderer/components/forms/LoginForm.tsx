@@ -1,16 +1,29 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../common/Button';
+// import Button from '../common/Button';
+import { useAuth } from '../../context/AuthContext';
 
 function LoginForm() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  // const navigate = useNavigate();
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { login } = useAuth();
+  const [identifier, setIdentifier] = useState(''); // Can be username or email
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); // To display error messages
+  const navigate = useNavigate(); // For redirection after successful login
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
+    try {
+      await login(identifier, password);
+      // Redirect user to dashboard
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Login failed. Please check your credentials.');
+    }
   };
 
   return (
@@ -23,15 +36,15 @@ function LoginForm() {
           htmlFor="email"
           className="block text-gray-700 font-semibold mb-2"
         >
-          Email
+          Email or Username
         </label>
         <input
           id="email"
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
           title="Email"
-          placeholder="Enter your email"
+          placeholder="Enter your email or username"
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -52,11 +65,13 @@ function LoginForm() {
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <Button
-        label="Login"
-        variant="primary"
-        onClick={() => navigate('/users')}
-      />
+      <button
+        type="submit"
+        className="bg-blue-500 w-full py-2 mt-5 rounded-lg text-white"
+      >
+        Login
+      </button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
   );
 }

@@ -19,8 +19,8 @@ var db *sql.DB
 var jwtKey = []byte("your_secret_key")
 
 type Credentials struct {
-    Identifier string `json:"identifier"` // Can be username or email
-    Password   string `json:"password"`
+    Username string `json:"username"`
+    Password string `json:"password"`
 }
 
 type Claims struct {
@@ -55,32 +55,44 @@ func main() {
 }
 
 func createTable() {
-    createUserTableSQL := `CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        username TEXT UNIQUE,
-        email TEXT UNIQUE,
-        password TEXT,
-        role TEXT
-    );`
+  // Truncate the table before recreating it (for development/testing)
+  _, err := db.Exec("TRUNCATE TABLE users RESTART IDENTITY CASCADE")
+  if err != nil {
+      log.Fatal("Error truncating table:", err)
+  }
 
-    _, err := db.Exec(createUserTableSQL)
-    if err != nil {
-        log.Fatal(err)
-    }
+  createUserTableSQL := `CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username TEXT UNIQUE,
+      password TEXT,
+      role TEXT
+  );`
 
-    // Insert demo users
-    insertUser("oadmin", "admin@example.com", "password", "organization_admin")
-    insertUser("badmin", "branch@example.com", "password", "branch_admin")
-    insertUser("user", "user@example.com", "password", "user")
+  _, err = db.Exec(createUserTableSQL)
+  if err != nil {
+      log.Fatal(err)
+  }
+
+  // Insert demo users
+  insertUser("organization_admin", "password", "organization_admin")
+  insertUser("branch_admin", "password", "branch_admin")
+  insertUser("user", "password", "user")
 }
 
-func insertUser(username, email, password, role string) {
-    hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-    _, err := db.Exec("INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4)", username, email, hashedPassword, role)
-    if err != nil {
-        log.Println(err)
-    }
+func insertUser(username, password, role string) {
+  hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+  _, err := db.Exec("INSERT INTO users (username, password, role) VALUES ($1, $2, $3)", username, hashedPassword, role)
+  if err != nil {
+      if err.Error() == `pq: duplicate key value violates unique constraint "users_username_key"` {
+          log.Println("User already exists:", username)
+      } else {
+          log.Println("Error inserting user:", err)
+      }
+  } else {
+      log.Println("User inserted successfully:", username)
+  }
 }
+
 
 func Login(w http.ResponseWriter, r *http.Request) {
     var creds Credentials
@@ -92,7 +104,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
     var storedCreds Credentials
     var role string
-    err = db.QueryRow("SELECT username, password, role FROM users WHERE username=$1 OR email=$1", creds.Identifier).Scan(&storedCreds.Identifier, &storedCreds.Password, &role)
+    err = db.QueryRow("SELECT username, password, role FROM users WHERE username=$1", creds.Username).Scan(&storedCreds.Username, &storedCreds.Password, &role)
     if err != nil {
         w.WriteHeader(http.StatusUnauthorized)
         return
@@ -105,7 +117,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
     expirationTime := time.Now().Add(5 * time.Minute)
     claims := &Claims{
-        Username: storedCreds.Identifier,
+        Username: creds.Username,
         Role:     role,
         StandardClaims: jwt.StandardClaims{
             ExpiresAt: expirationTime.Unix(),
