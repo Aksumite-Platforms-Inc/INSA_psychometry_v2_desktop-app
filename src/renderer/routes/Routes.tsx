@@ -1,26 +1,38 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from '../pages/Auth/Login';
-// import AdminDashboard from '../pages/Dashboard/AdminDashboard';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Users from '../pages/Users/users';
 import Tests from '../pages/Tests/TestsList';
 import Reports from '../pages/Reports/Reports';
 import Profile from '../pages/Users/profile';
-import TestPage from '../pages/Tests/TestPage';
+import ProtectedRoute from './ProtectedRoute';
 
 function AppRoutes(): React.ReactElement {
   return (
     <Router>
       <Routes>
-        <Route path="/Login" element={<Login />} />
-        {/* <Route path="/admin" element={<AdminDashboard />} /> */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/users" element={<Users />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute
+              element={<Dashboard />}
+              roles={['organization_admin', 'branch_admin']}
+            />
+          }
+        />
         <Route path="/tests" element={<Tests />} />
         <Route path="/reports" element={<Reports />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/test/:testId" element={<TestPage />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute
+              element={<Profile />}
+              roles={['organization_admin', 'branch_admin', 'user']}
+            />
+          }
+        />
       </Routes>
     </Router>
   );

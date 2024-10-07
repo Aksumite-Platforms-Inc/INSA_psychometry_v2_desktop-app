@@ -7,14 +7,17 @@ import {
   faChartBar,
   faUserCircle,
   faQuestionCircle,
+  faTachometerAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { useLocation } from 'react-router-dom';
+import { useUserRole } from '../../context/UserRoleContext';
+import { ROLES, PERMISSIONS } from '../../context/roles';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
 
 function Sidebar() {
-  // const navigate = useNavigate();
   const location = useLocation();
+  const { role } = useUserRole();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -60,76 +63,102 @@ function Sidebar() {
           <ul>
             <hr />
             <br />
-            <li
-              className={`rounded-md transition duration-150 ease-in-out ${isActive('/dashboard') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
-            >
-              <a
-                href="/dashboard"
-                className="py-3 flex items-center space-x-3 px-3"
+            {PERMISSIONS[role].includes('dashboard') && (
+              <li
+                className={`rounded-md transition duration-150 ease-in-out ${isActive('/dashboard') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
-                <FontAwesomeIcon
-                  icon={faChartBar}
-                  className={`h-5 w-5 ${isActive('/dashboard') ? 'text-gray-800' : 'text-gray-400'}`}
-                />
-                <span className="text-base">Dashboard</span>
-              </a>
-            </li>
-            <li
-              className={`rounded-md transition duration-150 ease-in-out ${isActive('/users') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
-            >
-              <a
-                href="/users"
-                className="py-3 flex items-center space-x-3 px-3"
+                <a
+                  href="/dashboard"
+                  className="py-3 flex items-center space-x-3 px-3"
+                >
+                  <FontAwesomeIcon
+                    icon={faTachometerAlt}
+                    className={`h-5 w-5 ${isActive('/dashboard') ? 'text-gray-800' : 'text-gray-400'}`}
+                  />
+                  <span className="text-base">Dashboard</span>
+                </a>
+              </li>
+            )}
+            {PERMISSIONS[role].includes('users') && (
+              <li
+                className={`rounded-md transition duration-150 ease-in-out ${isActive('/users') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
-                <FontAwesomeIcon
-                  icon={faUsers}
-                  className={`h-5 w-5 ${isActive('/users') ? 'text-gray-800' : 'text-gray-400'}`}
-                />
-                <span className="text-base">Users</span>
-              </a>
-            </li>
-            <li
-              className={`rounded-md transition duration-150 ease-in-out ${isActive('/tests') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
-            >
-              <a
-                href="/tests"
-                className="py-3 flex items-center space-x-3 px-3"
+                <a
+                  href="/users"
+                  className="py-3 flex items-center space-x-3 px-3"
+                >
+                  <FontAwesomeIcon
+                    icon={faUsers}
+                    className={`h-5 w-5 ${isActive('/users') ? 'text-gray-800' : 'text-gray-400'}`}
+                  />
+                  <span className="text-base">Users</span>
+                </a>
+              </li>
+            )}
+            {PERMISSIONS[role].includes('tests') && (
+              <li
+                className={`rounded-md transition duration-150 ease-in-out ${isActive('/tests') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
-                <FontAwesomeIcon
-                  icon={faFileAlt}
-                  className={`h-5 w-5 ${isActive('/tests') ? 'text-gray-800' : 'text-gray-400'}`}
-                />
-                <span className="text-base">Tests</span>
-              </a>
-            </li>
-            <li
-              className={`rounded-md transition duration-150 ease-in-out ${isActive('/reports') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
-            >
-              <a
-                href="/reports"
-                className="py-3 flex items-center space-x-3 px-3"
+                <a
+                  href="/tests"
+                  className="py-3 flex items-center space-x-3 px-3"
+                >
+                  <FontAwesomeIcon
+                    icon={faFileAlt}
+                    className={`h-5 w-5 ${isActive('/tests') ? 'text-gray-800' : 'text-gray-400'}`}
+                  />
+                  <span className="text-base">Tests</span>
+                </a>
+              </li>
+            )}
+            {PERMISSIONS[role].includes('reports') && (
+              <li
+                className={`rounded-md transition duration-150 ease-in-out ${isActive('/reports') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
-                <FontAwesomeIcon
-                  icon={faChartBar}
-                  className={`h-5 w-5 ${isActive('/reports') ? 'text-gray-800' : 'text-gray-400'}`}
-                />
-                <span className="text-base">Reports</span>
-              </a>
-            </li>
-            <li
-              className={`rounded-md transition duration-150 ease-in-out ${isActive('/profile') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
-            >
-              <a
-                href="/profile"
-                className="py-3 flex items-center space-x-3 px-3"
+                <a
+                  href="/reports"
+                  className="py-3 flex items-center space-x-3 px-3"
+                >
+                  <FontAwesomeIcon
+                    icon={faChartBar}
+                    className={`h-5 w-5 ${isActive('/reports') ? 'text-gray-800' : 'text-gray-400'}`}
+                  />
+                  <span className="text-base">Reports</span>
+                </a>
+              </li>
+            )}
+            {PERMISSIONS[role].includes('profile') && (
+              <li
+                className={`rounded-md transition duration-150 ease-in-out ${isActive('/profile') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
-                <FontAwesomeIcon
-                  icon={faUserCircle}
-                  className={`h-5 w-5 ${isActive('/profile') ? 'text-gray-800' : 'text-gray-400'}`}
-                />
-                <span className="text-base">Profile</span>
-              </a>
-            </li>
+                <a
+                  href="/profile"
+                  className="py-3 flex items-center space-x-3 px-3"
+                >
+                  <FontAwesomeIcon
+                    icon={faUserCircle}
+                    className={`h-5 w-5 ${isActive('/profile') ? 'text-gray-800' : 'text-gray-400'}`}
+                  />
+                  <span className="text-base">Profile</span>
+                </a>
+              </li>
+            )}
+            {PERMISSIONS[role].includes('branches') && (
+              <li
+                className={`rounded-md transition duration-150 ease-in-out ${isActive('/branches') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
+              >
+                <a
+                  href="/branches"
+                  className="py-3 flex items-center space-x-3 px-3"
+                >
+                  <FontAwesomeIcon
+                    icon={faUsers}
+                    className={`h-5 w-5 ${isActive('/branches') ? 'text-gray-800' : 'text-gray-400'}`}
+                  />
+                  <span className="text-base">Branches</span>
+                </a>
+              </li>
+            )}
           </ul>
         </nav>
       </div>
