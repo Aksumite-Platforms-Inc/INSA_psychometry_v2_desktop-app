@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState } from 'react';
+// AuthContext.tsx
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 interface AuthContextType {
   auth: any;
@@ -10,10 +12,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [auth, setAuth] = useState<any>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decodedToken: any = jwtDecode(token);
+      setAuth({ token, role: decodedToken.role });
+    }
+  }, []);
 
   const login = async (username: string, password: string) => {
     try {
@@ -21,8 +29,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         username,
         password,
       });
-      setAuth(response.data);
-      localStorage.setItem('token', response.data.token);
+      const { token } = response.data as { token: string };
+      const decodedToken: any = jwtDecode(token);
+      setAuth({ token, role: decodedToken.role });
+      localStorage.setItem('token', token);
     } catch (error) {
       console.error('Login failed', error);
     }
@@ -39,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+}
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

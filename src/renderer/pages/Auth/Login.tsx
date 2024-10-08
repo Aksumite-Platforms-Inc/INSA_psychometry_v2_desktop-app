@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode'; // Correct import statement
 import { useAuth } from '../../context/AuthContext';
-// import LoginForm from '../../components/forms/LoginForm';
 
 function Login() {
-  const { setAuth } = useAuth(); // Add setAuth to update auth context
+  const { setAuth } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // To display error messages
-  const navigate = useNavigate(); // For redirection after successful login
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,24 +17,15 @@ function Login() {
     try {
       const response = await axios.post<{ token: string }>(
         'http://localhost:3001/login',
-        {
-          username,
-          password,
-        },
+        { username, password },
       );
 
       const { token } = response.data;
-
-      // Store token in localStorage
       localStorage.setItem('token', token);
-
-      // Update auth context
-      setAuth({ username, role: 'organization_admin' }); // Update based on user role
-
-      // Redirect user to dashboard
+      const decodedToken: any = jwtDecode(token);
+      setAuth({ token, role: decodedToken.role });
       navigate('/dashboard');
     } catch (err) {
-      // Display error if login fails
       setError('Login failed. Please check your credentials.');
       console.error('Login error:', err);
     }
@@ -67,6 +58,9 @@ function Login() {
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               onChange={(e) => setPassword(e.target.value)}
             />
+          </div>
+          <div>
+            <a href="/forgot-password">Forgot Password?</a>
           </div>
           <button
             type="submit"

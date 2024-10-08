@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUsers,
@@ -10,14 +9,27 @@ import {
   faTachometerAlt,
 } from '@fortawesome/free-solid-svg-icons';
 import { useLocation } from 'react-router-dom';
-import { useUserRole } from '../../context/UserRoleContext';
-import { PERMISSIONS } from '../../context/roles';
+import Modal from 'react-modal';
+import { useAuth } from '../../context/AuthContext';
+
+const PERMISSIONS = {
+  organization_admin: [
+    'dashboard',
+    'users',
+    'tests',
+    'reports',
+    'profile',
+    'branches',
+  ],
+  branch_admin: ['dashboard', 'tests', 'reports', 'profile'],
+  user: ['tests', 'reports', 'profile'],
+};
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
 
 function Sidebar() {
   const location = useLocation();
-  const { role } = useUserRole();
+  const { auth }: { auth: { role: keyof typeof PERMISSIONS } } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -63,7 +75,7 @@ function Sidebar() {
           <ul>
             <hr />
             <br />
-            {PERMISSIONS[role].includes('dashboard') && (
+            {auth && PERMISSIONS[auth.role].includes('dashboard') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${isActive('/dashboard') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
@@ -79,7 +91,7 @@ function Sidebar() {
                 </a>
               </li>
             )}
-            {PERMISSIONS[role].includes('users') && (
+            {auth && PERMISSIONS[auth.role].includes('users') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${isActive('/users') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
@@ -95,7 +107,7 @@ function Sidebar() {
                 </a>
               </li>
             )}
-            {PERMISSIONS[role].includes('tests') && (
+            {auth && PERMISSIONS[auth.role].includes('tests') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${isActive('/tests') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
@@ -111,7 +123,7 @@ function Sidebar() {
                 </a>
               </li>
             )}
-            {PERMISSIONS[role].includes('reports') && (
+            {auth && PERMISSIONS[auth.role].includes('reports') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${isActive('/reports') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
@@ -127,7 +139,7 @@ function Sidebar() {
                 </a>
               </li>
             )}
-            {PERMISSIONS[role].includes('profile') && (
+            {auth && PERMISSIONS[auth.role].includes('profile') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${isActive('/profile') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
@@ -143,7 +155,7 @@ function Sidebar() {
                 </a>
               </li>
             )}
-            {PERMISSIONS[role].includes('branches') && (
+            {auth && PERMISSIONS[auth.role].includes('branches') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${isActive('/branches') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
               >
