@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
   roles: string[];
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, roles }) => {
+function ProtectedRoute({ element, roles }: ProtectedRouteProps) {
   const { auth } = useAuth();
 
   if (!auth) {
@@ -19,6 +19,5 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, roles }) => {
   }
 
   return element;
-};
-
+}
 export default ProtectedRoute;
