@@ -17,16 +17,18 @@ function ProtectedRoute({
 }: ProtectedRouteProps) {
   const { auth } = useAuth();
 
-  if (!auth || !allowedRoles.includes(auth.role)) {
+  if (!auth || !auth.token) {
+    // If not logged in, redirect to login
+    return <Navigate to="/login" />;
+  }
+
+  if (!allowedRoles.includes(auth.role)) {
+    // If logged in but role is unauthorized, redirect to unauthorized
     return <Navigate to="/unauthorized" />;
   }
 
+  // If logged in and authorized, render the component
   return <Component exact={exact} path={path} />;
 }
-
-ProtectedRoute.defaultProps = {
-  exact: false,
-  path: '',
-};
 
 export default ProtectedRoute;

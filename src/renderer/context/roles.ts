@@ -14,6 +14,6 @@ export const PERMISSIONS = {
     'profile',
     'branches',
   ],
-  [ROLES.BRANCH_ADMIN]: ['dashboard', 'users', 'tests', 'profile'],
-  [ROLES.USER]: ['tests', 'profile'],
+  [ROLES.BRANCH_ADMIN]: ['dashboard', 'tests', 'reports', 'profile'],
+  [ROLES.USER]: ['tests', 'reports', 'profile'],
 };
