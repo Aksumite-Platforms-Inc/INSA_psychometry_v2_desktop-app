@@ -12,7 +12,11 @@ import { useLocation, Link } from 'react-router-dom';
 import Modal from 'react-modal';
 import { useAuth } from '../../context/AuthContext';
 
-const PERMISSIONS = {
+// Define PERMISSIONS with keys based on specific roles
+const PERMISSIONS: Record<
+  'organization_admin' | 'branch_admin' | 'user',
+  string[]
+> = {
   organization_admin: [
     'dashboard',
     'users',
@@ -29,7 +33,7 @@ Modal.setAppElement('#root'); // Set the root element for accessibility
 
 function Sidebar() {
   const location = useLocation();
-  const { auth }: { auth: { role: keyof typeof PERMISSIONS } } = useAuth();
+  const { auth, loading } = useAuth(); // Directly access auth without type assertion
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -55,6 +59,18 @@ function Sidebar() {
       setCurrentStep(currentStep - 1);
     }
   };
+  // Wait for auth to load before rendering sidebar
+  if (loading) {
+    return <div>Loading...</div>; // Optional: You can render a loading spinner
+  }
+
+  // Check if auth and role exist before rendering the navigation
+  if (!auth || !auth.role) {
+    return null; // You can return a loading spinner or nothing if auth is not available
+  }
+
+  // Ensure auth.role is one of the valid keys for PERMISSIONS
+  const role = auth.role as keyof typeof PERMISSIONS;
 
   return (
     <div className="flex flex-col justify-between h-full">
@@ -75,7 +91,7 @@ function Sidebar() {
           <ul>
             <hr />
             <br />
-            {auth && PERMISSIONS[auth.role].includes('dashboard') && (
+            {PERMISSIONS[role]?.includes('dashboard') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${
                   isActive('/dashboard')
@@ -84,7 +100,7 @@ function Sidebar() {
                 }`}
               >
                 <Link
-                  to="/dashboard" // Changed from <a> to <Link>
+                  to="/dashboard"
                   className="py-3 flex items-center space-x-3 px-3"
                 >
                   <FontAwesomeIcon
@@ -97,7 +113,7 @@ function Sidebar() {
                 </Link>
               </li>
             )}
-            {auth && PERMISSIONS[auth.role].includes('users') && (
+            {PERMISSIONS[role]?.includes('users') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${
                   isActive('/users')
@@ -106,7 +122,7 @@ function Sidebar() {
                 }`}
               >
                 <Link
-                  to="/users" // Changed from <a> to <Link>
+                  to="/users"
                   className="py-3 flex items-center space-x-3 px-3"
                 >
                   <FontAwesomeIcon
@@ -119,7 +135,7 @@ function Sidebar() {
                 </Link>
               </li>
             )}
-            {auth && PERMISSIONS[auth.role].includes('tests') && (
+            {PERMISSIONS[role]?.includes('tests') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${
                   isActive('/tests')
@@ -128,7 +144,7 @@ function Sidebar() {
                 }`}
               >
                 <Link
-                  to="/tests" // Changed from <a> to <Link>
+                  to="/tests"
                   className="py-3 flex items-center space-x-3 px-3"
                 >
                   <FontAwesomeIcon
@@ -141,7 +157,7 @@ function Sidebar() {
                 </Link>
               </li>
             )}
-            {auth && PERMISSIONS[auth.role].includes('reports') && (
+            {PERMISSIONS[role]?.includes('reports') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${
                   isActive('/reports')
@@ -150,7 +166,7 @@ function Sidebar() {
                 }`}
               >
                 <Link
-                  to="/reports" // Changed from <a> to <Link>
+                  to="/reports"
                   className="py-3 flex items-center space-x-3 px-3"
                 >
                   <FontAwesomeIcon
@@ -163,7 +179,7 @@ function Sidebar() {
                 </Link>
               </li>
             )}
-            {auth && PERMISSIONS[auth.role].includes('profile') && (
+            {PERMISSIONS[role]?.includes('profile') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${
                   isActive('/profile')
@@ -172,7 +188,7 @@ function Sidebar() {
                 }`}
               >
                 <Link
-                  to="/profile" // Changed from <a> to <Link>
+                  to="/profile"
                   className="py-3 flex items-center space-x-3 px-3"
                 >
                   <FontAwesomeIcon
@@ -185,7 +201,7 @@ function Sidebar() {
                 </Link>
               </li>
             )}
-            {auth && PERMISSIONS[auth.role].includes('branches') && (
+            {PERMISSIONS[role]?.includes('branches') && (
               <li
                 className={`rounded-md transition duration-150 ease-in-out ${
                   isActive('/branches')
@@ -194,7 +210,7 @@ function Sidebar() {
                 }`}
               >
                 <Link
-                  to="/branches" // Changed from <a> to <Link>
+                  to="/branches"
                   className="py-3 flex items-center space-x-3 px-3"
                 >
                   <FontAwesomeIcon
@@ -224,7 +240,6 @@ function Sidebar() {
               isActive('/profile') ? 'text-gray-800' : 'text-white'
             }`}
           />
-          {/* <span>Help</span> */}
         </button>
       </div>
 

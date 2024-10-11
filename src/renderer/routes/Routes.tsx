@@ -1,7 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
-import Unauthorized from '../pages/Auth/Unauthorized';
+// import Unauthorized from '../pages/Auth/Unauthorized';
 
 // Lazy load components
 const Login = lazy(() => import('../pages/Auth/Login'));
@@ -59,7 +59,7 @@ function AppRoutes(): React.ReactElement {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Login />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/unauthorized" element={<Login />} />
         <Route path="*" element={<Login />} />
       </Routes>
     </Suspense>

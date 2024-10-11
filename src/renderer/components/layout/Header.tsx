@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import profielPicture from '../../../../assets/Images/habesha.jpg';
+import { useAuth } from '../../context/AuthContext';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -8,7 +8,7 @@ interface HeaderProps {
 
 function Header({ toggleSidebar }: HeaderProps) {
   const [panel, setPanel] = useState(false);
-  const navigate = useNavigate();
+  const { logout } = useAuth();
 
   return (
     <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
@@ -133,7 +133,7 @@ function Header({ toggleSidebar }: HeaderProps) {
           <button
             type="button"
             className="relative p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:bg-gray-100 focus:text-gray-600 rounded-full"
-            onClick={() => navigate('/login')}
+            onClick={logout}
           >
             <span className="sr-only">Log out</span>
             <svg

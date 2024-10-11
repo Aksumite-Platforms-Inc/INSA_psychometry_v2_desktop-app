@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // Function to manually decode a JWT
 function decodeJWT(token: string): any {
@@ -8,9 +9,7 @@ function decodeJWT(token: string): any {
   const jsonPayload = decodeURIComponent(
     atob(base64)
       .split('')
-      .map((c) => {
-        return `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`;
-      })
+      .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
       .join(''),
   );
   return JSON.parse(jsonPayload);
@@ -21,6 +20,7 @@ interface AuthContextType {
   setAuth: React.Dispatch<React.SetStateAction<any>>;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+  loading: boolean; // Added loading state to indicate when auth is being initialized
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -30,18 +30,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     token: string | null;
     role: string | null;
   } | null>(null);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true); // Added loading state
 
   useEffect(() => {
+    // On page load, retrieve the token from localStorage and set the auth state
     const token = localStorage.getItem('token');
     if (token) {
-      const decodedToken: any = decodeJWT(token); // Manually decode the token
+      const decodedToken = decodeJWT(token);
+      // Check if the token is valid and not expired
       if (decodedToken.exp * 1000 > Date.now()) {
         setAuth({ token, role: decodedToken.role });
       } else {
+        // Remove the token if it's expired
         localStorage.removeItem('token');
-        setAuth(null);
       }
     }
+    setLoading(false); // Set loading to false after checking auth
   }, []);
 
   const login = async (username: string, password: string) => {
@@ -50,22 +55,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         username,
         password,
       });
-      const { token } = response.data as { token: string };
-      const decodedToken: any = decodeJWT(token); // Manually decode the token
+      const { token } = response.data;
+      const decodedToken = decodeJWT(token);
 
+      // Set auth state and store token in localStorage
       setAuth({ token, role: decodedToken.role });
       localStorage.setItem('token', token);
     } catch (error) {
       console.error('Login failed', error);
     }
   };
-
+  // Logout function
   const logout = () => {
     setAuth(null);
     localStorage.removeItem('token');
+    navigate('/login'); // Redirect to login page after logout
   };
 
-  const value = React.useMemo(() => ({ auth, setAuth, login, logout }), [auth]);
+  const value = React.useMemo(
+    () => ({ auth, setAuth, login, logout, loading }),
+    [auth, loading],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -5,30 +5,24 @@ import { useAuth } from '../context/AuthContext';
 interface ProtectedRouteProps {
   component: ComponentType<any>;
   allowedRoles: string[];
-  exact?: boolean;
-  path?: string;
 }
 
 function ProtectedRoute({
   component: Component,
   allowedRoles,
-  exact,
-  path,
 }: ProtectedRouteProps) {
-  const { auth } = useAuth();
+  const { auth, loading } = useAuth(); // Access the loading state from context
 
-  if (!auth || !auth.token) {
-    // If not logged in, redirect to login
-    return <Navigate to="/login" />;
+  // Show a loading indicator while auth is being initialized
+  if (loading) {
+    return <div>Loading...</div>; // You can replace this with your own loading spinner
   }
 
-  if (!allowedRoles.includes(auth.role)) {
-    // If logged in but role is unauthorized, redirect to unauthorized
+  if (!auth || !allowedRoles.includes(auth.role!)) {
     return <Navigate to="/unauthorized" />;
   }
 
-  // If logged in and authorized, render the component
-  return <Component exact={exact} path={path} />;
+  return <Component />;
 }
 
 export default ProtectedRoute;
