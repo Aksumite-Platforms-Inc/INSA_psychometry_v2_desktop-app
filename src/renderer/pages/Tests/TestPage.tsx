@@ -89,8 +89,8 @@ function TestPage() {
               <iframe
                 src={iframeUrl}
                 title={test.name}
-                width="700"
-                height="500"
+                width="1000"
+                height="750"
                 className="border rounded-md"
                 sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
               />

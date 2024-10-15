@@ -119,6 +119,7 @@ const createWindow = async () => {
  * Add event listeners...
  */
 
+// screeen shot taker
 ipcMain.on('take-screenshot', async (event) => {
   console.log('Received "take-screenshot" event from renderer process');
   const screenshotPath = path.join(__dirname, '../upload/screenshot.png');
@@ -130,9 +131,10 @@ ipcMain.on('take-screenshot', async (event) => {
   }
 
   try {
+    const iframeRect = { x: 600, y: 80, width: 1000, height: 750 };
     // Capture the screenshot
     if (mainWindow) {
-      const image = await mainWindow.webContents.capturePage();
+      const image = await mainWindow.webContents.capturePage(iframeRect);
       fs.writeFileSync(screenshotPath, image.toPNG());
       console.log(`Screenshot saved at: ${screenshotPath}`);
       event.reply('screenshot-taken', screenshotPath);
