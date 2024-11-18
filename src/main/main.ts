@@ -11,10 +11,10 @@
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import fs from 'fs';
 import path from 'path';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import takeScreenshotAndUpload from './services/testService';
 
 class AppUpdater {
   constructor() {
@@ -119,32 +119,13 @@ const createWindow = async () => {
  * Add event listeners...
  */
 
-ipcMain.on('take-screenshot', async (event) => {
-  console.log('Received "take-screenshot" event from renderer process');
-  const screenshotPath = path.join(__dirname, '../upload/screenshot.png');
-  const uploadDir = path.dirname(screenshotPath);
-
-  // Ensure the upload directory exists
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-
-  try {
-    // Capture the screenshot
-    if (mainWindow) {
-      const image = await mainWindow.webContents.capturePage();
-      fs.writeFileSync(screenshotPath, image.toPNG());
-      console.log(`Screenshot saved at: ${screenshotPath}`);
-      event.reply('screenshot-taken', screenshotPath);
-    } else {
-      console.error('Error: mainWindow is not available');
-      event.reply('screenshot-taken', 'Error: mainWindow is not available');
-    }
-  } catch (error) {
-    console.error('Error taking screenshot:', error);
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error';
-    event.reply('screenshot-taken', `Error: ${errorMessage}`);
+// screeen shot taker
+ipcMain.on('take-screenshot', async (event, testId) => {
+  if (mainWindow) {
+    await takeScreenshotAndUpload(mainWindow, testId, event);
+  } else {
+    console.error('Error: mainWindow is not available');
+    event.reply('screenshot-taken', 'Error: mainWindow is not available');
   }
 });
 

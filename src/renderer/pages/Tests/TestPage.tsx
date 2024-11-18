@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import DefaultLayout from '../../components/layout/defaultlayout';
 
 // List of tests with their IDs and URLs
@@ -28,6 +28,7 @@ const tests = [
 
 function TestPage() {
   const { testId } = useParams<{ testId: string }>();
+  const navigate = useNavigate();
   const test = tests.find((t) => t.id === parseInt(testId || '', 10));
 
   const [testStarted, setTestStarted] = useState(false);
@@ -65,18 +66,22 @@ function TestPage() {
   const handleStartTest = () => {
     setTestStarted(true);
     setInteractionBlocked(false);
-    console.log(`Test ${test.name} started.`);
   };
 
   const handleEndTest = () => {
     setTestStarted(false);
     setInteractionBlocked(true);
     if (window.electron && window.electron.ipcRenderer) {
-      window.electron.ipcRenderer.sendMessage('take-screenshot');
+      const confirmed = window.confirm(
+        'Are you sure you want to submit the test?',
+      );
+      if (confirmed) {
+        window.electron.ipcRenderer.sendMessage('take-screenshot', test.id);
+        navigate('/tests');
+      }
     } else {
       console.log('Electron IPC is not available');
     }
-    console.log(`Test ${test.name} ended. Screenshot taken.`);
   };
 
   return (
@@ -89,8 +94,8 @@ function TestPage() {
               <iframe
                 src={iframeUrl}
                 title={test.name}
-                width="700"
-                height="500"
+                width="1000"
+                height="750"
                 className="border rounded-md"
                 sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
               />
@@ -118,12 +123,12 @@ function TestPage() {
               <button
                 type="button"
                 onClick={handleEndTest}
-                className={`bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition duration-200 ease-in-out ${
+                className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-200 transition duration-200 ease-in-out ${
                   !testStarted ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
                 disabled={!testStarted}
               >
-                End Test
+                Submit Test
               </button>
             </div>
           </div>
