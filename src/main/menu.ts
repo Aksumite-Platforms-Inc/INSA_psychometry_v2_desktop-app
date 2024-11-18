@@ -157,27 +157,15 @@ export default class MenuBuilder {
         {
           label: 'Learn More',
           click() {
-            shell.openExternal('https://electronjs.org');
+            shell.openExternal('https://personalitytestpro.insa.gov.et');
           },
         },
         {
-          label: 'Documentation',
+          label: 'Privacy Policy',
           click() {
             shell.openExternal(
-              'https://github.com/electron/electron/tree/main/docs#readme',
+              'https://personalitytestpro.insa.gov.et/privacy-policy',
             );
-          },
-        },
-        {
-          label: 'Community Discussions',
-          click() {
-            shell.openExternal('https://www.electronjs.org/community');
-          },
-        },
-        {
-          label: 'Search Issues',
-          click() {
-            shell.openExternal('https://github.com/electron/electron/issues');
           },
         },
       ],

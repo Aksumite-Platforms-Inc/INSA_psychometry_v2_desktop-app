@@ -72,16 +72,15 @@ function TestPage() {
     setTestStarted(false);
     setInteractionBlocked(true);
     if (window.electron && window.electron.ipcRenderer) {
-      window.electron.ipcRenderer.sendMessage('take-screenshot', test.id);
+      const confirmed = window.confirm(
+        'Are you sure you want to submit the test?',
+      );
+      if (confirmed) {
+        window.electron.ipcRenderer.sendMessage('take-screenshot', test.id);
+        navigate('/tests');
+      }
     } else {
       console.log('Electron IPC is not available');
-    }
-    // Custom confirmation modal
-    const confirmed = window.confirm(
-      'Are you sure you want to submit the test?',
-    );
-    if (confirmed) {
-      navigate('/tests');
     }
   };
 
