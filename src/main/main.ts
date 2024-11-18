@@ -120,9 +120,8 @@ const createWindow = async () => {
  */
 
 // screeen shot taker
-ipcMain.on('take-screenshot', async (event) => {
-  console.log('Received "take-screenshot" event from renderer process');
-  const screenshotPath = path.join(__dirname, '../upload/screenshot.png');
+ipcMain.on('take-screenshot', async (event, testId) => {
+  const screenshotPath = path.join(__dirname, `../upload/${testId}.png`);
   const uploadDir = path.dirname(screenshotPath);
 
   // Ensure the upload directory exists
