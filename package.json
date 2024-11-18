@@ -1,36 +1,34 @@
 {
-  "name": "electron-react-boilerplate",
-  "description": "A foundation for scalable desktop apps",
+  "name": "insa-personality-test-pro",
+  "description": "personality test taking app",
   "keywords": [
-    "electron",
-    "boilerplate",
-    "react",
-    "typescript",
-    "ts",
-    "sass",
-    "webpack",
-    "hot",
-    "reload"
+    "personality",
+    "test",
+    "INSA"
   ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "homepage": "https://insapersonalitytestpro.insa.gov.et",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/Aksumite-Platforms-Inc/INSA-Personality-Test_Desktop-app/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/Aksumite-Platforms-Inc/INSA-Personality-Test_Desktop-app.git"
   },
-  "license": "MIT",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "unity-link solutions",
+    "email": "contact@unitylinksolutions.com",
+    "url": "https://unitylinksolutions.com"
   },
   "contributors": [
     {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
+      "name": "henok samson",
+      "email": "henoksamson57@gmail.com",
+      "url": "https://github.com/enochCodes"
+    },
+    {
+      "name": "zemicael tefera",
+      "email": "themichaeltefera@gmail.com",
+      "url": "https://github.com/zemuumez"
     }
   ],
   "main": "./.erb/dll/main.bundle.dev.js",
@@ -49,7 +47,10 @@
     "start:main": "concurrently -k \"cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --watch --config ./.erb/configs/webpack.config.main.dev.ts\" \"electronmon .\"",
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
-    "test": "jest"
+    "test": "jest",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
   },
   "browserslist": [
     "extends browserslist-config-erb"
@@ -106,6 +107,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@heroicons/react": "^2.1.5",
+    "axios": "^1.7.7",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-react-boilerplate": "file:",
@@ -148,7 +150,7 @@
     "css-minimizer-webpack-plugin": "^5.0.1",
     "detect-port": "^1.5.1",
     "electron": "^31.3.0",
-    "electron-builder": "^24.13.3",
+    "electron-builder": "^25.1.8",
     "electron-devtools-installer": "^3.2.0",
     "electronmon": "^2.0.2",
     "eslint": "^8.49.0",
@@ -192,8 +194,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "INSA-personality-test-Pro",
+    "appId": "et.gov.insa.personalitytestpro",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -252,12 +254,9 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "Aksumite-Platforms-Inc",
+      "repo": "INSA-Personality-Test_Desktop-app"
     }
-  },
-  "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
   "devEngines": {
     "node": ">=14.x",

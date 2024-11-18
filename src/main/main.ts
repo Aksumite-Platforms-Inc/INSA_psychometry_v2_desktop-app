@@ -13,6 +13,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import fs from 'fs';
 import path from 'path';
+import axios from 'axios';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
@@ -135,11 +136,40 @@ ipcMain.on('take-screenshot', async (event, testId) => {
     if (mainWindow) {
       const image = await mainWindow.webContents.capturePage(iframeRect);
       fs.writeFileSync(screenshotPath, image.toPNG());
-      console.log(`Screenshot saved at: ${screenshotPath}`);
-      event.reply('screenshot-taken', screenshotPath);
+      // upload the screenshot image to the back-end server
+      const formData = new FormData();
+      const imageBuffer = fs.readFileSync(screenshotPath);
+      const blob = new Blob([imageBuffer]);
+      formData.append('image', blob, `${testId}.png`);
+      formData.append('test_id', testId);
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post(
+          'http://localhost:8080/api/v1/organization/submit',
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (response.status === 200) {
+          const Success = true;
+          event.reply('screenshot-taken', Success);
+          fs.unlinkSync(screenshotPath);
+        } else {
+          event.reply('screenshot-taken', 'Error: Failed to upload screenshot');
+        }
+      } catch (uploadError) {
+        console.error('Error uploading screenshot:', uploadError);
+        event.reply('screenshot-taken', 'try again');
+      }
     } else {
       console.error('Error: mainWindow is not available');
-      event.reply('screenshot-taken', 'Error: mainWindow is not available');
+      event.reply('screenshot-taken');
     }
   } catch (error) {
     console.error('Error taking screenshot:', error);
