@@ -1,16 +1,35 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../common/Button';
 
 function LoginForm() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const navigate = useNavigate(); // React Router's navigation hook
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
+
+    try {
+      const response = await window.electron.ipcRenderer.invoke('auth:login', {
+        email,
+        password,
+      });
+
+      if (response.success) {
+        localStorage.setItem('authToken', response.token);
+        setError(null);
+        console.log('Login successful');
+        navigate('/dashboard'); // Redirect to dashboard
+      } else {
+        setError(response.message || 'Invalid email or password.');
+      }
+    } catch (err) {
+      console.error('Error during login:', err);
+      setError('An unexpected error occurred.');
+    }
   };
 
   return (
@@ -52,11 +71,13 @@ function LoginForm() {
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <Button
-        label="Login"
-        variant="primary"
-        onClick={() => navigate('/users')}
-      />
+      {error && <div className="mb-4 text-red-500">{error}</div>}
+      <button
+        type="submit"
+        className="bg-blue-500 w-full py-2 mt-5 rounded-lg text-white"
+      >
+        Login
+      </button>
     </form>
   );
 }

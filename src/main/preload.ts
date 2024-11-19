@@ -4,6 +4,7 @@ export type Channels = 'take-screenshot' | 'screenshot-taken';
 
 export interface ElectronHandler {
   ipcRenderer: {
+    invoke(channel: string, ...args: any[]): Promise<any>;
     sendMessage(channel: Channels, ...args: unknown[]): void;
     on(channel: Channels, func: (...args: unknown[]) => void): () => void;
     once(channel: Channels, func: (...args: unknown[]) => void): void;
@@ -12,6 +13,9 @@ export interface ElectronHandler {
 
 const electronHandler: ElectronHandler = {
   ipcRenderer: {
+    invoke: (channel: string, ...args: any[]) =>
+      ipcRenderer.invoke(channel, ...args),
+
     sendMessage(channel, ...args) {
       ipcRenderer.send(channel, ...args);
     },
@@ -33,4 +37,5 @@ const electronHandler: ElectronHandler = {
   },
 };
 
+console.log('Preload script loaded!');
 contextBridge.exposeInMainWorld('electron', electronHandler);

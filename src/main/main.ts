@@ -15,6 +15,7 @@ import path from 'path';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import takeScreenshotAndUpload from './services/testService';
+import AuthService from './services/authService';
 
 class AppUpdater {
   constructor() {
@@ -118,6 +119,23 @@ const createWindow = async () => {
 /**
  * Add event listeners...
  */
+
+// IPC handler for login
+ipcMain.handle('auth:login', async (event, { email, password }) => {
+  try {
+    const user = await AuthService.authenticate(email, password);
+
+    if (!user) {
+      return { success: false, message: 'Invalid email or password' };
+    }
+
+    const token = AuthService.generateToken(user);
+    return { success: true, token };
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return { success: false, message: 'An unexpected error occurred.' };
+  }
+});
 
 // screeen shot taker
 ipcMain.on('take-screenshot', async (event, testId) => {
