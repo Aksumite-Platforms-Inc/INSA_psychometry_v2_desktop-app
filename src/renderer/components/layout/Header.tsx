@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import profielPicture from '../../assets/Images/habesha.jpg';
 
 interface HeaderProps {
@@ -8,7 +7,6 @@ interface HeaderProps {
 
 function Header({ toggleSidebar }: HeaderProps) {
   const [panel, setPanel] = useState(false);
-  const navigate = useNavigate();
 
   return (
     <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
@@ -115,7 +113,7 @@ function Header({ toggleSidebar }: HeaderProps) {
             // onclick delete locally stored token
             onClick={() => {
               localStorage.removeItem('authToken');
-              navigate('/login');
+              window.location.href = '/login';
             }}
           >
             <span className="sr-only">Log out</span>

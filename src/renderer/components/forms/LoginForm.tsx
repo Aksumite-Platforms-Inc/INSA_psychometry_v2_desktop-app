@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import Logo from '../../assets/Images/logo/logo-dark.svg';
-// import { login } from "../../services/AuthService";
+import 'react-toastify/dist/ReactToastify.css';
 
 interface LoginResponse {
   success: boolean;
@@ -32,6 +33,8 @@ function LoginForm() {
             // Save token in localStorage
             if (typedResponse.token) {
               localStorage.setItem('authToken', typedResponse.token);
+              toast.success('Login successful!');
+
               // console.log('Token saved to localStorage:', typedResponse.token);
             }
 
