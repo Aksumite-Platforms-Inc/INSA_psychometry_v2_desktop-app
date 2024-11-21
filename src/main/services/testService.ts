@@ -1,7 +1,7 @@
 import { BrowserWindow, IpcMainEvent } from 'electron';
 import fs from 'fs';
 import path from 'path';
-import uploadScreenshot from './api';
+import { uploadScreenshot } from './api';
 
 const takeScreenshotAndUpload = async (
   mainWindow: BrowserWindow,
