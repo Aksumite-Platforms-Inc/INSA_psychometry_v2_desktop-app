@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import profielPicture from '../../assets/Images/habesha.jpg';
+import { getUserName, getUserRole } from '../../utils/validationUtils';
 
 interface HeaderProps {
   toggleSidebar: () => void;
@@ -8,6 +9,8 @@ interface HeaderProps {
 function Header({ toggleSidebar }: HeaderProps) {
   const [panel, setPanel] = useState(false);
 
+  const userName = getUserName();
+  const userRole = getUserRole();
   return (
     <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
       <div
@@ -47,8 +50,8 @@ function Header({ toggleSidebar }: HeaderProps) {
         >
           <span className="sr-only">User Menu</span>
           <div className="hidden md:flex md:flex-col md:items-end md:leading-tight">
-            <span className="font-semibold">Ato. Abebe Kebede</span>
-            <span className="text-sm text-gray-600">Organization Admin</span>
+            <span className="font-semibold">{userName}</span>
+            <span className="text-sm text-gray-600">{userRole}</span>
           </div>
           <span className="h-12 w-12 ml-2 sm:ml-3 mr-2 bg-gray-100 rounded-full overflow-hidden">
             <img
@@ -134,7 +137,6 @@ function Header({ toggleSidebar }: HeaderProps) {
           </button>
         </div>
       </div>
-      {/* Other header content */}
     </header>
   );
 }

@@ -8,6 +8,7 @@ import Reports from '../pages/Reports/Reports';
 import Profile from '../pages/Users/profile';
 import TestPage from '../pages/Tests/TestPage';
 import ProtectedRoute from './ProtectedRoute';
+import Unauthorized from '../pages/Unauthorized';
 
 function AppRoutes(): React.ReactElement {
   return (
@@ -15,10 +16,12 @@ function AppRoutes(): React.ReactElement {
       <Routes>
         <Route path="/Login" element={<Login />} />
         <Route path="/" element={<Login />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
+
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['org_admin', 'branch_admin']}>
               <Dashboard />
             </ProtectedRoute>
           }
@@ -26,7 +29,7 @@ function AppRoutes(): React.ReactElement {
         <Route
           path="/users"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['org_admin', 'branch_admin']}>
               <Users />
             </ProtectedRoute>
           }
@@ -34,7 +37,9 @@ function AppRoutes(): React.ReactElement {
         <Route
           path="/tests"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute
+              allowedRoles={['org_admin', 'branch_admin', 'org_member']}
+            >
               <Tests />
             </ProtectedRoute>
           }
@@ -42,7 +47,7 @@ function AppRoutes(): React.ReactElement {
         <Route
           path="/reports"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['org_admin', 'branch_admin']}>
               <Reports />
             </ProtectedRoute>
           }
@@ -50,15 +55,19 @@ function AppRoutes(): React.ReactElement {
         <Route
           path="/profile"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute
+              allowedRoles={['org_admin', 'branch_admin', 'org_member']}
+            >
               <Profile />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/tests/:id"
+          path="/test/:testId"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute
+              allowedRoles={['org_admin', 'branch_admin', 'org_member']}
+            >
               <TestPage />
             </ProtectedRoute>
           }

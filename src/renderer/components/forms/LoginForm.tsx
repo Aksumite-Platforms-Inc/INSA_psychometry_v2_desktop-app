@@ -38,7 +38,7 @@ function LoginForm() {
               // console.log('Token saved to localStorage:', typedResponse.token);
             }
 
-            navigate('/dashboard');
+            navigate('/tests');
           } else {
             console.error('Login failed:', typedResponse.message);
             setError(typedResponse.message || 'An unexpected error occurred.');
