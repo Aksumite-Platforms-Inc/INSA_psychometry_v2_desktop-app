@@ -1,7 +1,19 @@
-import React from 'react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LoginForm from '../../components/forms/LoginForm';
 
 function Login() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      // colsole log the token saved inside localstorage
+      console.log('LocalToken:', localStorage.getItem('token'));
+
+      navigate('/dashboard');
+    }
+  }, [navigate]);
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md">

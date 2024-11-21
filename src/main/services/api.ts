@@ -17,7 +17,7 @@ const uploadScreenshot = async (screenshotPath: string, testId: string) => {
   }
 
   const response = await axios.post(
-    'http://172.30.19.24/api/v1/organization/submit',
+    'http://localhost:8080/api/v1/organization/submit',
     formData,
     {
       headers: {
@@ -36,7 +36,7 @@ const performLogin = async (
 ): Promise<string> => {
   try {
     const response = await axios.post(
-      'http://172.30.19.24/api/v1/sso/login',
+      'http://localhost:8080/api/v1/sso/login',
       { email, password },
       {
         withCredentials: true,
