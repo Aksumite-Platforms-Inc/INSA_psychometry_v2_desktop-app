@@ -82,19 +82,22 @@ function Sidebar() {
     <div className="flex flex-col justify-between h-full">
       <div>
         {/* Profile Section */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-5">
           <div className="rounded-full bg-gray-700 w-20 h-20 mx-auto flex justify-center items-center">
             <FontAwesomeIcon
               icon={faUserCircle}
               className="text-white text-3xl"
             />
           </div>
-          <p className="mt-4 font-semibold text-lg">{userName}</p>
+          <h1 className="mt-4 font-semibold text-lg">Welcome </h1>
+          <p className="font-semibold text-lg">
+            {userRole} | {userName}
+          </p>
         </div>
 
         {/* Navigation Menu */}
         <nav>
-          <ul>
+          <ul className="flex flex-col justify-center items">
             <hr />
             <br />
             {links

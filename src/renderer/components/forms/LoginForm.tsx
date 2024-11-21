@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import Logo from '../../assets/Images/logo/logo-dark.svg';
+import Logo from '../../assets/Images/logo/logo.png';
 import 'react-toastify/dist/ReactToastify.css';
+import { getUserRole } from '../../utils/validationUtils';
 
 interface LoginResponse {
   success: boolean;
@@ -17,6 +18,7 @@ function LoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const userRole = getUserRole();
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -37,8 +39,14 @@ function LoginForm() {
 
               // console.log('Token saved to localStorage:', typedResponse.token);
             }
-
-            navigate('/tests');
+            if (
+              userRole === 'Organization Admin' ||
+              userRole === 'Branch Admin'
+            ) {
+              navigate('/dashboard');
+            } else {
+              navigate('/tests');
+            }
           } else {
             console.error('Login failed:', typedResponse.message);
             setError(typedResponse.message || 'An unexpected error occurred.');
@@ -51,7 +59,7 @@ function LoginForm() {
       };
     }
     return undefined;
-  }, [navigate]);
+  }, [navigate, userRole]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,23 +72,23 @@ function LoginForm() {
   };
 
   return (
-    <div className="rounded-sm border border-stroke bg-white shadow-lg dark:border-strokedark dark:bg-boxdark">
-      <div className="flex flex-wrap items-center p-5">
-        <div className="hidden w-full xl:block xl:w-1/2">
+    <div className="w-full rounded-sm border border-stroke bg-white shadow-lg dark:border-strokedark dark:bg-boxdark">
+      <div className="w-full flex flex-wrap items-center p-5">
+        <div className="w-full  xl:block xl:w-1/2">
           <div className="py-17.5 px-26 text-center">
             <Link className="mb-5.5 inline-block" to="/">
               <img className="hidden dark:block" src={Logo} alt="Logo" />
             </Link>
-            <p className="2xl:px-20">INSA Personality Test</p>
+            {/* <p className="">INSA Personality Test</p> */}
+            <h2 className="mb-9  font-bold  ">
+              INSA | Personality Test Platform
+            </h2>
           </div>
         </div>
 
         <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
           <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-            <span className="mb-1.5 block font-medium">Welcome Back</span>
-            <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-              Sign In to INSA | Audit Dashboard
-            </h2>
+            {/* <span className="mb-1.5 block font-medium">Welcome Back</span> */}
 
             <form onSubmit={handleSubmit}>
               <div className="mb-4">

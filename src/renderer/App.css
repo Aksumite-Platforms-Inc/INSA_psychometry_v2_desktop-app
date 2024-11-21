@@ -955,16 +955,28 @@ video {
   width: 24rem;
 }
 
+.w-\[90vw\] {
+  width: 90vw;
+}
+
+.w-auto {
+  width: auto;
+}
+
 .w-full {
   width: 100%;
+}
+
+.w-\[80vw\] {
+  width: 80vw;
 }
 
 .max-w-lg {
   max-width: 32rem;
 }
 
-.max-w-md {
-  max-width: 28rem;
+.max-w-xl {
+  max-width: 36rem;
 }
 
 .flex-1 {
@@ -1885,13 +1897,6 @@ video {
 
   .xl\:border-l-2 {
     border-left-width: 2px;
-  }
-}
-
-@media (min-width: 1536px) {
-  .\32xl\:px-20 {
-    padding-left: 5rem;
-    padding-right: 5rem;
   }
 }
 
