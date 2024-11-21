@@ -6,6 +6,9 @@ import fs from 'fs';
 
 // const store = new Store<{ token: string }>(); // Define the structure of stored data
 
+// base url
+axios.defaults.baseURL = 'http://localhost:8080/api/v1';
+
 const uploadScreenshot = async (screenshotPath: string, testId: string) => {
   const formData = new FormData();
   formData.append('image', fs.createReadStream(screenshotPath));
@@ -16,16 +19,12 @@ const uploadScreenshot = async (screenshotPath: string, testId: string) => {
     throw new Error('Authorization token is missing.');
   }
 
-  const response = await axios.post(
-    'http://localhost:8080/api/v1/organization/submit',
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token}`,
-      },
+  const response = await axios.post('/organization/submit', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   return response;
 };
@@ -36,7 +35,7 @@ const performLogin = async (
 ): Promise<string> => {
   try {
     const response = await axios.post(
-      'http://localhost:8080/api/v1/sso/login',
+      '/api/v1/sso/login',
       { email, password },
       {
         withCredentials: true,
