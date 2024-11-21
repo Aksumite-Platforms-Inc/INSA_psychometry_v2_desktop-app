@@ -8,6 +8,7 @@ interface LoginResponse {
   message?: string;
   user?: {
     email: string;
+    token?: string;
   };
 }
 
@@ -22,11 +23,18 @@ function LoginForm() {
       const unsubscribe = window.electron.ipcRenderer.on(
         'user-login-success',
         (_event, response) => {
-          console.log('Received response from main process:', response);
+          // console.log('Received response from main process:', response);
 
-          const typedResponse = response as LoginResponse;
+          const typedResponse = response as LoginResponse & { token: string };
           if (typedResponse.success) {
-            console.log('Login successful:', typedResponse.user);
+            // console.log('Login successful:', typedResponse.user);
+
+            // Save token in localStorage
+            if (typedResponse.token) {
+              localStorage.setItem('authToken', typedResponse.token);
+              // console.log('Token saved to localStorage:', typedResponse.token);
+            }
+
             navigate('/dashboard');
           } else {
             console.error('Login failed:', typedResponse.message);

@@ -47,7 +47,7 @@ const performLogin = async (
 
     console.log('API response:', response.data);
 
-    // Extract the token from the nested data field
+    // Extract the token from the response
     const token = response.data?.data?.token;
 
     if (!token) {
@@ -55,16 +55,7 @@ const performLogin = async (
       throw new Error('Token not returned from API.');
     }
 
-    // Check if localStorage is available before using it
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem('token', token); // Store the token in localStorage
-    } else {
-      console.warn(
-        'localStorage is not available. Token will not be persisted.',
-      );
-    }
-
-    return token; // Return the token for further use
+    return token; // Return the token to the caller
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       console.error('Login failed:', error.response.data);

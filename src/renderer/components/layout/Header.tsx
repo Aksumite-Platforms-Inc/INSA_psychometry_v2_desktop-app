@@ -112,7 +112,11 @@ function Header({ toggleSidebar }: HeaderProps) {
           <button
             type="button"
             className="relative p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:bg-gray-100 focus:text-gray-600 rounded-full"
-            onClick={() => navigate('/login')}
+            // onclick delete locally stored token
+            onClick={() => {
+              localStorage.removeItem('authToken');
+              navigate('/login');
+            }}
           >
             <span className="sr-only">Log out</span>
             <svg

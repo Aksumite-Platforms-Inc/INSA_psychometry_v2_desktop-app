@@ -6,9 +6,9 @@ function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
+    if (localStorage.getItem('authToken')) {
       // colsole log the token saved inside localstorage
-      console.log('LocalToken:', localStorage.getItem('token'));
+      // console.log('LocalToken:', localStorage.getItem('authToken'));
 
       navigate('/dashboard');
     }
