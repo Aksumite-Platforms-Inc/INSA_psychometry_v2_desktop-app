@@ -1,14 +1,69 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUserCircle,
   faEnvelope,
   faLock,
 } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 import DefaultLayout from '../../components/layout/defaultlayout';
 
+interface UpdateResponse {
+  success: boolean;
+  message?: string;
+}
 function Profile() {
+  const navigate = useNavigate();
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [fullName, setFullName] = React.useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (window.electron && window.electron.ipcRenderer) {
+      const unsubscribe = window.electron.ipcRenderer.on(
+        'profile-updated',
+        (_event, response) => {
+          const typedResponse = response as UpdateResponse;
+          if (typedResponse.success) {
+            console.log('Profile updated successfully:');
+            // INFO: This is a temporary navigation
+            // need to updated
+            // if user is org admin navigate to the org dashboard
+            // if user is a normal user navigate to the user test page
+            navigate('/dashboard');
+          } else {
+            console.error('Profile update failed:', typedResponse.message);
+            setError(typedResponse.message || 'An unexpected error occurred.');
+          }
+        },
+      );
+
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
+    }
+    return undefined;
+  }, [navigate]);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (window.electron && window.electron.ipcRenderer) {
+      window.electron.ipcRenderer.sendMessage(
+        'update-profile',
+        fullName,
+        email,
+        password,
+      );
+    } else {
+      setError('Electron IPC is not available');
+    }
+    // INFO: This is a temporary navigation
+    // need to updated
+    // if user is org admin navigate to the org dashboard
+    // if user is a normal user navigate to the user test page
+  };
   return (
     <DefaultLayout>
       <div className="flex h-screen">
@@ -53,6 +108,8 @@ function Profile() {
                   <input
                     id="fullName"
                     type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
                     className="w-full outline-none text-gray-800"
                     defaultValue="Admin Admin"
                   />
@@ -71,6 +128,8 @@ function Profile() {
                   <input
                     id="email"
                     type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full outline-none text-gray-800"
                     defaultValue="adminadmin@gmail.com"
                   />
@@ -92,16 +151,21 @@ function Profile() {
                   <input
                     id="password"
                     type="password"
+                    value={password}
+                    hidden
+                    onChange={(e) => setPassword(e.target.value)}
                     className="w-full outline-none text-gray-800"
                     defaultValue="*********"
                   />
                 </div>
               </div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
 
               <div className="flex justify-end">
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-150"
+                  onClick={handleSubmit}
                 >
                   Update Profile
                 </button>
