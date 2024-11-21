@@ -15,6 +15,7 @@ import path from 'path';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import takeScreenshotAndUpload from './services/testService';
+import login from './services/authService';
 
 class AppUpdater {
   constructor() {
@@ -126,6 +127,20 @@ ipcMain.on('take-screenshot', async (event, testId) => {
   } else {
     console.error('Error: mainWindow is not available');
     event.reply('screenshot-taken', 'Error: mainWindow is not available');
+  }
+});
+ipcMain.on('user-login', async (event, email, password) => {
+  console.log('Received login attempt:', { email, password });
+
+  try {
+    await login(email, password, event);
+  } catch (error) {
+    console.error('Error in login handler:', error);
+
+    event.reply('user-login-success', {
+      success: false,
+      message: 'An internal error occurred.',
+    });
   }
 });
 

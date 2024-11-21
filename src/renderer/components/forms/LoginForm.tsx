@@ -1,16 +1,53 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '../common/Button';
+
+interface LoginResponse {
+  success: boolean;
+  message?: string;
+  user?: {
+    email: string;
+  };
+}
 
 function LoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (window.electron && window.electron.ipcRenderer) {
+      const unsubscribe = window.electron.ipcRenderer.on(
+        'user-login-success',
+        (_event, response) => {
+          console.log('Received response from main process:', response);
+
+          const typedResponse = response as LoginResponse;
+          if (typedResponse.success) {
+            console.log('Login successful:', typedResponse.user);
+            navigate('/dashboard');
+          } else {
+            console.error('Login failed:', typedResponse.message);
+            setError(typedResponse.message || 'An unexpected error occurred.');
+          }
+        },
+      );
+
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
+    }
+    return undefined;
+  }, [navigate]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
+    setError(null); // Clear any previous errors
+    if (window.electron && window.electron.ipcRenderer) {
+      window.electron.ipcRenderer.sendMessage('user-login', email, password);
+    } else {
+      setError('Electron IPC is not available');
+    }
   };
 
   return (
@@ -18,6 +55,7 @@ function LoginForm() {
       onSubmit={handleSubmit}
       className="bg-white shadow-md rounded-lg p-6 max-w-sm mx-auto"
     >
+      {error && <div className="mb-4 text-red-600 font-semibold">{error}</div>}
       <div className="mb-4">
         <label
           htmlFor="email"
@@ -52,11 +90,12 @@ function LoginForm() {
           className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
-      <Button
-        label="Login"
-        variant="primary"
-        onClick={() => navigate('/users')}
-      />
+      <button
+        type="submit"
+        className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-150"
+      >
+        Login
+      </button>
     </form>
   );
 }

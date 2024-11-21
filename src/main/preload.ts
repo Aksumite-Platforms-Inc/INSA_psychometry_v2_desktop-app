@@ -1,6 +1,10 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'take-screenshot' | 'screenshot-taken';
+export type Channels =
+  | 'take-screenshot'
+  | 'screenshot-taken'
+  | 'user-login'
+  | 'user-login-success';
 
 export interface ElectronHandler {
   ipcRenderer: {
@@ -15,9 +19,12 @@ const electronHandler: ElectronHandler = {
     sendMessage(channel, ...args) {
       ipcRenderer.send(channel, ...args);
     },
-    on(channel, func) {
-      const subscription = (_event: IpcRendererEvent, ...args: unknown[]) => {
-        func(...args);
+    on<T>(
+      channel: Channels,
+      func: (event: IpcRendererEvent, data: T) => void,
+    ): () => void {
+      const subscription = (event: IpcRendererEvent, data: T) => {
+        func(event, data);
       };
       ipcRenderer.on(channel, subscription);
 
