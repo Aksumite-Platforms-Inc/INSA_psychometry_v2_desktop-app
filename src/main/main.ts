@@ -16,6 +16,7 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import takeScreenshotAndUpload from './services/testService';
 import login from './services/authService';
+import PerformUpdateProfile from './services/userService';
 
 class AppUpdater {
   constructor() {
@@ -138,6 +139,26 @@ ipcMain.on('user-login', async (event, email, password) => {
     console.error('Error in login handler:', error);
 
     event.reply('user-login-success', {
+      success: false,
+      message: 'An internal error occurred.',
+    });
+  }
+});
+
+ipcMain.on('update-profile', async (event, fullName, email, password) => {
+  console.log('Received profile update:', { fullName, email, password });
+  try {
+    // Perform profile update here
+    await PerformUpdateProfile(fullName, email, password, event);
+
+    event.reply('profile-updated', {
+      success: true,
+      user: { email },
+    });
+  } catch (error) {
+    console.error('Error in profile update:', error);
+
+    event.reply('profile-updated', {
       success: false,
       message: 'An internal error occurred.',
     });

@@ -4,7 +4,9 @@ export type Channels =
   | 'take-screenshot'
   | 'screenshot-taken'
   | 'user-login'
-  | 'user-login-success';
+  | 'user-login-success'
+  | 'profile-updated'
+  | 'update-profile';
 
 export interface ElectronHandler {
   ipcRenderer: {
