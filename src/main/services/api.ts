@@ -102,4 +102,36 @@ const updateProfile = async (
   }
 };
 
-export { uploadScreenshot, performLogin, updateProfile };
+const GetAllOrgMembers = async (orgId: number): Promise<any> => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    throw new Error('Authorization token is missing.');
+  }
+
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/organization/${orgId}/members`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.data?.success) {
+      return response.data.data; // Return the members array
+    }
+    throw new Error('Failed to fetch members from the API.');
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(
+        error.response?.data?.message || 'Failed to fetch members.',
+      );
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+};
+
+export { uploadScreenshot, performLogin, updateProfile, GetAllOrgMembers };

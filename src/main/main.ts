@@ -8,7 +8,7 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, IpcMainEvent } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import path from 'path';
@@ -16,7 +16,10 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import takeScreenshotAndUpload from './services/testService';
 import login from './services/authService';
-import PerformUpdateProfile from './services/userService';
+import {
+  PerformUpdateProfile,
+  performGetAllMembers,
+} from './services/userService';
 
 class AppUpdater {
   constructor() {
@@ -86,7 +89,7 @@ const createWindow = async () => {
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('/Login'));
+  mainWindow.loadURL(resolveHtmlPath('Login'));
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -163,6 +166,9 @@ ipcMain.on('update-profile', async (event, fullName, email, password) => {
       message: 'An internal error occurred.',
     });
   }
+});
+ipcMain.on('get-members', async (event: IpcMainEvent, orgId: number) => {
+  await performGetAllMembers(orgId, event);
 });
 
 app.on('window-all-closed', () => {

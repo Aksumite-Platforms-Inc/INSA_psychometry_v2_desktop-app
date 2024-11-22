@@ -16,9 +16,9 @@
     "url": "git+https://github.com/Aksumite-Platforms-Inc/INSA-Personality-Test_Desktop-app.git"
   },
   "author": {
-    "name": "unity-link solutions",
-    "email": "contact@unitylinksolutions.com",
-    "url": "https://unitylinksolutions.com"
+    "name": "Aksumite Platforms",
+    "email": "henoksamson57@gmail.com",
+    "url": "https://github.com/Aksumite-Platforms-Inc/INSA-Personality-Test_Desktop-app"
   },
   "contributors": [
     {
@@ -48,10 +48,7 @@
     "start:main": "concurrently -k \"cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --watch --config ./.erb/configs/webpack.config.main.dev.ts\" \"electronmon .\"",
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
-    "test": "jest",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
-    "build:linux": "electron-builder --linux"
+    "test": "jest"
   },
   "browserslist": [
     "extends browserslist-config-erb"
