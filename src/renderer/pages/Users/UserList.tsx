@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useState } from 'react';
-import JsPDF from 'jspdf'; // For generating PDFs
 import UserTable from '../../components/Tables/UserTable';
 import DefaultLayout from '../../components/layout/defaultlayout';
 
@@ -19,20 +18,6 @@ function Users() {
     return Math.random().toString(36).slice(-8); // Simple 8-character password
   };
 
-  // Function to generate PDF with users' credentials
-  const GeneratePDF = (userList: { email: string; password: string }[]) => {
-    const doc = new JsPDF();
-    doc.text('User Login Details', 10, 10);
-    userList.forEach((user, index) => {
-      doc.text(
-        `${index + 1}. Email: ${user.email}, Password: ${user.password}`,
-        10,
-        20 + index * 10,
-      );
-    });
-    doc.save('user_credentials.pdf');
-  };
-
   // Function to handle bulk or individual user addition
   const handleAddUsers = () => {
     const emails = emailList.split(',').map((email) => email.trim());
@@ -42,7 +27,6 @@ function Users() {
     }));
     setUsers([...users, ...newUsers]);
     toggleModal();
-    GeneratePDF(newUsers);
   };
 
   return (
@@ -73,7 +57,6 @@ function Users() {
                 <thead className="bg-gray-200 text-gray-700 uppercase text-sm">
                   <tr>
                     <th className="py-3 px-4">Email</th>
-                    <th className="py-3 px-4">Password</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -6,7 +6,11 @@ export type Channels =
   | 'user-login'
   | 'user-login-success'
   | 'profile-updated'
-  | 'update-profile';
+  | 'update-profile'
+  | 'delete-member'
+  | 'member-deleted'
+  | 'members-listed'
+  | 'get-members';
 
 export interface ElectronHandler {
   ipcRenderer: {
