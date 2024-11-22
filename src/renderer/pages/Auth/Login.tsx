@@ -15,9 +15,9 @@ function Login() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md">
-        <h2 className="text-center text-2xl font-semibold mb-6">Login</h2>
+    <div className="w-auto min-h-screen flex items-center justify-center bg-gray-100">
+      <div className=" w-[80vw] max-w-xl">
+        {/* <h2 className="w-full text-center text-2xl font-bold mb-9">Welcome</h2> */}
         <LoginForm />
       </div>
     </div>

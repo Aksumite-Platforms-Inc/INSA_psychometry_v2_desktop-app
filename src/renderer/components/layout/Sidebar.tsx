@@ -9,16 +9,53 @@ import {
   faQuestionCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { useLocation } from 'react-router-dom';
+import { getUserName, getUserRole } from '../../utils/validationUtils';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
 
 function Sidebar() {
-  // const navigate = useNavigate();
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
+  const userName = getUserName();
+  const userRole = getUserRole();
+
   const isActive = (path: string) => location.pathname === path;
+
+  // Define the navigation links with role-based access
+  const links = [
+    {
+      path: '/dashboard',
+      label: 'Dashboard',
+      icon: faChartBar,
+      roles: ['Organization Admin', 'Branch Admin'],
+    },
+    {
+      path: '/users',
+      label: 'Users',
+      icon: faUsers,
+      roles: ['Branch Admin', 'Organization Admin'],
+    },
+    {
+      path: '/tests',
+      label: 'Tests',
+      icon: faFileAlt,
+      roles: ['Employee'],
+    },
+    {
+      path: '/reports',
+      label: 'Reports',
+      icon: faChartBar,
+      roles: ['Organization Admin', 'Branch Admin'],
+    },
+    {
+      path: '/profile',
+      label: 'Profile',
+      icon: faUserCircle,
+      roles: ['Organization Admin', 'Branch Admin', 'Employee'],
+    },
+  ];
 
   const steps = [
     'Step 1: Introduction',
@@ -45,107 +82,60 @@ function Sidebar() {
     <div className="flex flex-col justify-between h-full">
       <div>
         {/* Profile Section */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-5">
           <div className="rounded-full bg-gray-700 w-20 h-20 mx-auto flex justify-center items-center">
             <FontAwesomeIcon
               icon={faUserCircle}
               className="text-white text-3xl"
             />
           </div>
-          <p className="mt-4 font-semibold text-lg">Admin Admin</p>
+          <h1 className="mt-4 font-semibold text-lg">Welcome </h1>
+          <p className="font-semibold text-lg">
+            {userRole} | {userName}
+          </p>
         </div>
 
         {/* Navigation Menu */}
         <nav>
-          <ul>
+          <ul className="flex flex-col justify-center items">
             <hr />
             <br />
-            <li
-              className={`rounded-md transition duration-150 ease-in-out ${isActive('/dashboard') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
-            >
-              <a
-                href="/dashboard"
-                className="py-3 flex items-center space-x-3 px-3"
-              >
-                <FontAwesomeIcon
-                  icon={faChartBar}
-                  className={`h-5 w-5 ${isActive('/dashboard') ? 'text-gray-800' : 'text-gray-400'}`}
-                />
-                <span className="text-base">Dashboard</span>
-              </a>
-            </li>
-            <li
-              className={`rounded-md transition duration-150 ease-in-out ${isActive('/users') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
-            >
-              <a
-                href="/users"
-                className="py-3 flex items-center space-x-3 px-3"
-              >
-                <FontAwesomeIcon
-                  icon={faUsers}
-                  className={`h-5 w-5 ${isActive('/users') ? 'text-gray-800' : 'text-gray-400'}`}
-                />
-                <span className="text-base">Users</span>
-              </a>
-            </li>
-            <li
-              className={`rounded-md transition duration-150 ease-in-out ${isActive('/tests') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
-            >
-              <a
-                href="/tests"
-                className="py-3 flex items-center space-x-3 px-3"
-              >
-                <FontAwesomeIcon
-                  icon={faFileAlt}
-                  className={`h-5 w-5 ${isActive('/tests') ? 'text-gray-800' : 'text-gray-400'}`}
-                />
-                <span className="text-base">Tests</span>
-              </a>
-            </li>
-            <li
-              className={`rounded-md transition duration-150 ease-in-out ${isActive('/reports') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
-            >
-              <a
-                href="/reports"
-                className="py-3 flex items-center space-x-3 px-3"
-              >
-                <FontAwesomeIcon
-                  icon={faChartBar}
-                  className={`h-5 w-5 ${isActive('/reports') ? 'text-gray-800' : 'text-gray-400'}`}
-                />
-                <span className="text-base">Reports</span>
-              </a>
-            </li>
-            <li
-              className={`rounded-md transition duration-150 ease-in-out ${isActive('/profile') ? 'bg-white text-gray-800' : 'hover:bg-gray-700'}`}
-            >
-              <a
-                href="/profile"
-                className="py-3 flex items-center space-x-3 px-3"
-              >
-                <FontAwesomeIcon
-                  icon={faUserCircle}
-                  className={`h-5 w-5 ${isActive('/profile') ? 'text-gray-800' : 'text-gray-400'}`}
-                />
-                <span className="text-base">Profile</span>
-              </a>
-            </li>
+            {links
+              .filter((link) => userRole && link.roles.includes(userRole)) // Filter links based on role
+              .map((link) => (
+                <li
+                  key={link.path}
+                  className={`rounded-md transition duration-150 ease-in-out ${
+                    isActive(link.path)
+                      ? 'bg-white text-gray-800'
+                      : 'hover:bg-gray-700'
+                  }`}
+                >
+                  <a
+                    href={link.path}
+                    className="py-3 flex items-center space-x-3 px-3"
+                  >
+                    <FontAwesomeIcon
+                      icon={link.icon}
+                      className={`h-5 w-5 ${
+                        isActive(link.path) ? 'text-gray-800' : 'text-gray-400'
+                      }`}
+                    />
+                    <span className="text-base">{link.label}</span>
+                  </a>
+                </li>
+              ))}
           </ul>
         </nav>
       </div>
 
-      {/* Logout Button */}
       <div className="mt-10">
         <button
           type="button"
-          className=" hover:bg-gray-800 bg-gray-700 text-white py-2 rounded-md transition duration-150 ease-in-out flex items-center space-x-3 px-3"
+          className="hover:bg-gray-800 bg-gray-700 text-white py-2 rounded-md transition duration-150 ease-in-out flex items-center space-x-3 px-3"
           onClick={() => setIsModalOpen(true)}
         >
-          <FontAwesomeIcon
-            icon={faQuestionCircle}
-            className={`h-5 w-5 ${isActive('/profile') ? 'text-gray-800' : 'text-white'}`}
-          />
-          {/* <span>Help</span> */}
+          <FontAwesomeIcon icon={faQuestionCircle} />
         </button>
       </div>
 
