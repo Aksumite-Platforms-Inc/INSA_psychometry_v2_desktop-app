@@ -7,6 +7,7 @@ const takeScreenshotAndUpload = async (
   mainWindow: BrowserWindow,
   testId: string,
   event: IpcMainEvent,
+  token: string,
 ) => {
   const screenshotPath = path.join(__dirname, `../upload/${testId}.png`);
   const uploadDir = path.dirname(screenshotPath);
@@ -38,7 +39,7 @@ const takeScreenshotAndUpload = async (
 
   const uploadFile = async (filePath: string) => {
     try {
-      const response = await uploadScreenshot(filePath, testId);
+      const response = await uploadScreenshot(filePath, testId, token);
 
       if (response.status === 200) {
         fs.unlinkSync(filePath); // Remove the image file after successful upload

@@ -14,6 +14,10 @@ export type Channels =
 
 export interface ElectronHandler {
   ipcRenderer: {
+    removeListener(
+      channel: Channels,
+      listener: (...args: unknown[]) => void,
+    ): void;
     sendMessage(channel: Channels, ...args: unknown[]): void;
     on(channel: Channels, func: (...args: unknown[]) => void): () => void;
     once(channel: Channels, func: (...args: unknown[]) => void): void;
@@ -42,6 +46,12 @@ const electronHandler: ElectronHandler = {
       ipcRenderer.once(channel, (_event, ...args) => {
         func(...args);
       });
+    },
+    removeListener(
+      channel: Channels,
+      listener: (...args: unknown[]) => void,
+    ): void {
+      ipcRenderer.removeListener(channel, listener);
     },
   },
 };
