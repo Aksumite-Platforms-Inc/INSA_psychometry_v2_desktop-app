@@ -6,8 +6,8 @@ import DefaultLayout from '../../components/layout/defaultlayout';
 function Users() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [emailList, setEmailList] = useState('');
-  const [setNewUsers] = useState<{ email: string }[]>([]);
-
+  const [newUsers, setNewUsers] = useState<{ email: string }[]>([]);
+  // INFO: user add will be added in the future
   // Toggle modal visibility
   const toggleModal = () => setIsModalOpen((prev) => !prev);
 
