@@ -1,9 +1,16 @@
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode'; // Correct import
 
 interface DecodedToken {
-  name: string;
-  role: string;
+  branch_id: number | null;
+  email: string;
   exp: number;
+  iat: number;
+  name: string;
+  nbf: number;
+  org_id: number;
+  role: string;
+  sub: string;
+  user_id: number;
 }
 
 export const getToken = (): string | null => {
@@ -16,11 +23,27 @@ export const decodeToken = (): DecodedToken | null => {
 
   try {
     const decoded: DecodedToken = jwtDecode(token);
+    console.log('decoding token:', decoded);
     return decoded;
   } catch (error) {
     console.error('Error decoding token:', error);
     return null;
   }
+};
+
+export const getOrgId = (): number | null => {
+  const decoded = decodeToken();
+  return decoded?.org_id || null; // Update to match the decoded token property
+};
+
+export const getUserId = (): number | null => {
+  const decoded = decodeToken();
+  return decoded?.user_id || null;
+};
+
+export const getEmail = (): string => {
+  const decoded = decodeToken();
+  return decoded?.email || 'Unknown Email';
 };
 
 export const getUserName = (): string => {

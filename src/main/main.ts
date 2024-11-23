@@ -19,6 +19,7 @@ import login from './services/authService';
 import {
   PerformUpdateProfile,
   performGetAllMembers,
+  performDeleteMember,
 } from './services/userService';
 
 class AppUpdater {
@@ -125,9 +126,9 @@ const createWindow = async () => {
  */
 
 // screeen shot taker
-ipcMain.on('take-screenshot', async (event, testId) => {
+ipcMain.on('take-screenshot', async (event, testId, token) => {
   if (mainWindow) {
-    await takeScreenshotAndUpload(mainWindow, testId, event);
+    await takeScreenshotAndUpload(mainWindow, testId, event, token);
   } else {
     console.error('Error: mainWindow is not available');
     event.reply('screenshot-taken', 'Error: mainWindow is not available');
@@ -148,28 +149,44 @@ ipcMain.on('user-login', async (event, email, password) => {
   }
 });
 
-ipcMain.on('update-profile', async (event, fullName, email, password) => {
-  console.log('Received profile update:', { fullName, email, password });
-  try {
-    // Perform profile update here
-    await PerformUpdateProfile(fullName, email, password, event);
+ipcMain.on(
+  'update-profile',
+  async (
+    event,
+    fullName: string,
+    email: string,
+    password: string,
+    token: string,
+  ) => {
+    console.log('Received profile update:', { fullName, email, password });
+    try {
+      // Perform profile update here
+      await PerformUpdateProfile(fullName, email, password, event, token);
 
-    event.reply('profile-updated', {
-      success: true,
-      user: { email },
-    });
-  } catch (error) {
-    console.error('Error in profile update:', error);
+      event.reply('profile-updated', {
+        success: true,
+        user: { email },
+      });
+    } catch (error) {
+      console.error('Error in profile update:', error);
 
-    event.reply('profile-updated', {
-      success: false,
-      message: 'An internal error occurred.',
-    });
-  }
+      event.reply('profile-updated', {
+        success: false,
+        message: 'An internal error occurred.',
+      });
+    }
+  },
+);
+ipcMain.on('get-members', async (event: IpcMainEvent, { orgId, token }) => {
+  await performGetAllMembers(orgId, token, event);
 });
-ipcMain.on('get-members', async (event: IpcMainEvent, orgId: number) => {
-  await performGetAllMembers(orgId, event);
-});
+
+ipcMain.on(
+  'delete-member',
+  async (event: IpcMainEvent, { orgId, userId, token }) => {
+    await performDeleteMember(event, orgId, userId, token);
+  },
+);
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even

@@ -1,11 +1,12 @@
 import { IpcMainEvent } from 'electron';
-import { updateProfile, GetAllOrgMembers } from './api';
+import { updateProfile, GetAllOrgMembers, DeleteOrgMember } from './api';
 
 const PerformUpdateProfile = async (
   fullName: string,
   email: string,
   password: string,
   event: IpcMainEvent,
+  token: string,
 ) => {
   if (!email || !fullName || password) {
     const response = {
@@ -18,7 +19,7 @@ const PerformUpdateProfile = async (
   }
 
   try {
-    const response = await updateProfile(fullName, email, password);
+    const response = await updateProfile(fullName, email, password, token);
     console.log('Profile updated successfully:', response);
 
     event.reply('user-login-success', {
@@ -40,9 +41,13 @@ const PerformUpdateProfile = async (
   }
 };
 
-const performGetAllMembers = async (orgId: number, event: IpcMainEvent) => {
+const performGetAllMembers = async (
+  orgId: number,
+  token: string,
+  event: IpcMainEvent,
+) => {
   try {
-    const members = await GetAllOrgMembers(orgId);
+    const members = await GetAllOrgMembers(orgId, token);
 
     // Transform or filter data if necessary
     const transformedMembers = members.map((member: any) => ({
@@ -53,6 +58,7 @@ const performGetAllMembers = async (orgId: number, event: IpcMainEvent) => {
       organizationId: member.org_id,
       branchId: member.branch_id,
       createdAt: member.created_at,
+      activationCode: member.activation_code,
     }));
 
     // Reply to the renderer process with the success response
@@ -72,4 +78,21 @@ const performGetAllMembers = async (orgId: number, event: IpcMainEvent) => {
     });
   }
 };
-export { PerformUpdateProfile, performGetAllMembers };
+
+const performDeleteMember = async (
+  event: IpcMainEvent,
+  orgId: number,
+  userId: number,
+  token: string,
+) => {
+  try {
+    const response = await DeleteOrgMember(orgId, userId, token);
+    event.reply('member-deleted', response);
+  } catch (error: any) {
+    event.reply('member-deleted', {
+      success: false,
+      message: error.message,
+    });
+  }
+};
+export { PerformUpdateProfile, performGetAllMembers, performDeleteMember };

@@ -8,12 +8,14 @@ const API_BASE_URL = 'http://localhost:8080/api/v1';
 // Set the default base URL for Axios
 axios.defaults.baseURL = API_BASE_URL;
 
-const uploadScreenshot = async (screenshotPath: string, testId: string) => {
+const uploadScreenshot = async (
+  screenshotPath: string,
+  testId: string,
+  token: string,
+) => {
   const formData = new FormData();
   formData.append('image', fs.createReadStream(screenshotPath));
   formData.append('test_id', testId);
-
-  const token = localStorage.getItem('token');
 
   if (!token) {
     throw new Error('Authorization token is missing.');
@@ -71,9 +73,8 @@ const updateProfile = async (
   fullName: string,
   email: string,
   password: string,
+  token: string,
 ) => {
-  const token = localStorage.getItem('token');
-
   try {
     const response = await axios.put(
       'organization/members/profile',
@@ -102,8 +103,7 @@ const updateProfile = async (
   }
 };
 
-const GetAllOrgMembers = async (orgId: number): Promise<any> => {
-  const token = localStorage.getItem('token');
+const GetAllOrgMembers = async (orgId: number, token: string): Promise<any> => {
   if (!token) {
     throw new Error('Authorization token is missing.');
   }
@@ -134,4 +134,42 @@ const GetAllOrgMembers = async (orgId: number): Promise<any> => {
   }
 };
 
-export { uploadScreenshot, performLogin, updateProfile, GetAllOrgMembers };
+const DeleteOrgMember = async (
+  orgId: number,
+  memberId: number,
+  token: string,
+) => {
+  if (!token) {
+    throw new Error('Authorization token is missing.');
+  }
+
+  try {
+    const response = await axios.delete(
+      `${API_BASE_URL}/organization/${orgId}/members/${memberId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(
+        error.response?.data?.message || 'Failed to delete member.',
+      );
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+};
+
+export {
+  uploadScreenshot,
+  performLogin,
+  updateProfile,
+  GetAllOrgMembers,
+  DeleteOrgMember,
+};

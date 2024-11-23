@@ -7,6 +7,7 @@ import {
   faLock,
 } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
+import { getUserName, getEmail, getToken } from '../../utils/validationUtils';
 import DefaultLayout from '../../components/layout/defaultlayout';
 
 interface UpdateResponse {
@@ -14,6 +15,9 @@ interface UpdateResponse {
   message?: string;
 }
 function Profile() {
+  const FullName = getUserName();
+  const Email = getEmail();
+  const token = getToken();
   const navigate = useNavigate();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -55,6 +59,7 @@ function Profile() {
         fullName,
         email,
         password,
+        token,
       );
     } else {
       setError('Electron IPC is not available');
@@ -72,25 +77,6 @@ function Profile() {
             <h2 className="text-3xl font-bold mb-6 text-gray-800">
               Profile Settings
             </h2>
-
-            {/* Profile Picture Section */}
-            <div className="flex items-center space-x-5 mb-10">
-              <div className="rounded-full bg-gray-300 w-24 h-24 flex justify-center items-center">
-                <FontAwesomeIcon
-                  icon={faUserCircle}
-                  className="text-gray-600 h-16 w-16"
-                />
-              </div>
-              <div>
-                <button
-                  type="button"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-150"
-                >
-                  Change Profile Picture
-                </button>
-              </div>
-            </div>
-
             {/* User Info Form */}
             <form className="space-y-6">
               <div className="flex flex-col">
@@ -108,10 +94,11 @@ function Profile() {
                   <input
                     id="fullName"
                     type="text"
+                    placeholder={FullName}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     className="w-full outline-none text-gray-800"
-                    defaultValue="Admin Admin"
+                    defaultValue={FullName}
                   />
                 </div>
               </div>
@@ -128,10 +115,11 @@ function Profile() {
                   <input
                     id="email"
                     type="email"
+                    placeholder={Email}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full outline-none text-gray-800"
-                    defaultValue="adminadmin@gmail.com"
+                    defaultValue={Email}
                   />
                 </div>
               </div>
@@ -152,10 +140,8 @@ function Profile() {
                     id="password"
                     type="password"
                     value={password}
-                    hidden
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full outline-none text-gray-800"
-                    defaultValue="*********"
                   />
                 </div>
               </div>

@@ -6,74 +6,54 @@ import DefaultLayout from '../../components/layout/defaultlayout';
 function Users() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [emailList, setEmailList] = useState('');
-  const [users, setUsers] = useState<{ email: string; password: string }[]>([]);
-
+  const [newUsers, setNewUsers] = useState<{ email: string }[]>([]);
+  // INFO: user add will be added in the future
   // Toggle modal visibility
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-  };
+  const toggleModal = () => setIsModalOpen((prev) => !prev);
 
-  // Function to generate random password
-  const generateRandomPassword = () => {
-    return Math.random().toString(36).slice(-8); // Simple 8-character password
-  };
-
-  // Function to handle bulk or individual user addition
+  // Handle user addition (bulk or individual)
   const handleAddUsers = () => {
-    const emails = emailList.split(',').map((email) => email.trim());
-    const newUsers = emails.map((email) => ({
-      email,
-      password: generateRandomPassword(),
-    }));
-    setUsers([...users, ...newUsers]);
+    const emails = emailList
+      .split(',')
+      .map((email) => email.trim())
+      .filter((email) => email); // Remove empty entries
+    const usersToAdd = emails.map((email) => ({ email }));
+
+    setNewUsers((prev) => [...prev, ...usersToAdd]);
+    setEmailList('');
     toggleModal();
   };
 
   return (
     <DefaultLayout>
-      <div className="relative ">
+      <div className="relative">
+        {/* Main Content */}
         <div className={`flex ${isModalOpen ? 'backdrop-blur-sm' : ''}`}>
-          <div className="flex-1 p-5 h-screen overflow-y-auto ">
+          <div className="flex-1 p-5 h-screen overflow-y-auto">
             <div className="flex justify-between items-center mt-5">
+              {/* Search Input */}
               <input
                 type="text"
                 placeholder="Search..."
                 className="p-2 border border-gray-300 rounded-md"
               />
+
+              {/* Add Users Button */}
               <button
                 type="button"
-                className="bg-blue-500 text-white p-2 rounded-md"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md"
                 onClick={toggleModal}
               >
                 Add Users
               </button>
             </div>
-            <UserTable />
 
-            {/* Displaying added users */}
-            <div className="mt-5">
-              <h3 className="text-lg font-bold mb-3">Invited Users:</h3>
-              <table className="w-full text-left border-collapse">
-                <thead className="bg-gray-200 text-gray-700 uppercase text-sm">
-                  <tr>
-                    <th className="py-3 px-4">Email</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => (
-                    <tr key={user.email} className="border-t">
-                      <td className="py-2 px-4">{user.email}</td>
-                      <td className="py-2 px-4">{user.password}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {/* User Table */}
+            <UserTable />
           </div>
         </div>
-        {/* <Footer /> */}
 
-        {/* Modal for adding users */}
+        {/* Add Users Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
@@ -85,6 +65,7 @@ function Users() {
                   handleAddUsers();
                 }}
               >
+                {/* Email Input */}
                 <div className="flex flex-col">
                   <label
                     htmlFor="emails"
@@ -101,6 +82,8 @@ function Users() {
                     onChange={(e) => setEmailList(e.target.value)}
                   />
                 </div>
+
+                {/* Modal Actions */}
                 <div className="flex justify-end space-x-4 mt-6">
                   <button
                     type="button"
