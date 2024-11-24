@@ -13,6 +13,8 @@ export type Channels =
   | 'get-members'
   | 'get-branches'
   | 'branches-listed'
+  | 'delete-branch'
+  | 'branch-deleted'
   | 'create-branch';
 
 export interface ElectronHandler {

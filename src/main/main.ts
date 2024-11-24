@@ -203,20 +203,20 @@ ipcMain.on(
 //   });
 // });
 
-ipcMain.on('get-branches', async (event: IpcMainEvent, { orgId, token }) => {
-  console.log('Received get-branches request:', { orgId, token });
-  await performGetAllBranches(orgId, token, event);
+ipcMain.on('get-branches', async (event: IpcMainEvent, { token }) => {
+  await performGetAllBranches(token, event);
 });
 
 ipcMain.on('create-branch', async (event, { orgId, token, name, location }) => {
-  console.log('Received create-branch request:', {
-    orgId,
-    token,
-    name,
-    location,
-  });
   await performCreateBranch(event, name, orgId, location, token);
 });
+
+ipcMain.on(
+  'delete-branch',
+  async (event: IpcMainEvent, { branchId, token }) => {
+    await performDeleteBranch(branchId, token, event);
+  },
+);
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even

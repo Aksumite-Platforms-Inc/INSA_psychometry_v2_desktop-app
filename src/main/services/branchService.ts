@@ -30,20 +30,16 @@ const performCreateBranch = async (
   }
 };
 
-const performGetAllBranches = async (
-  orgId: number,
-  token: string,
-  event: IpcMainEvent,
-) => {
+const performGetAllBranches = async (token: string, event: IpcMainEvent) => {
   try {
-    const branches = await GetAllBranches(orgId, token);
+    const branches = await GetAllBranches(token);
 
     // Transform or filter data if necessary
     const transformedBranches = branches.map((branch: any) => ({
       id: branch.id,
       name: branch.name || 'N/A', // Handle missing names
       orgId: branch.org_id,
-      location: branch.location,
+      // location: branch.location,
       createdAt: branch.created_at,
     }));
 
@@ -63,15 +59,12 @@ const performGetAllBranches = async (
 };
 
 const performDeleteBranch = async (
-  event: IpcMainEvent,
-  orgId: number,
   branchId: number,
   token: string,
+  event: IpcMainEvent,
 ) => {
   try {
-    await DeleteBranch(orgId, branchId, token);
-    console.log('Branch deleted successfully:', branchId);
-
+    await DeleteBranch(branchId, token);
     event.reply('branch-deleted', {
       success: true,
       message: 'Branch deleted successfully',

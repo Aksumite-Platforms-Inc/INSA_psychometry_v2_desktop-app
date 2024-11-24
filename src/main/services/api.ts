@@ -200,25 +200,21 @@ const CreateBranch = async (
   }
 };
 
-const GetAllBranches = async (orgId: number, token: string): Promise<any> => {
+const GetAllBranches = async (token: string): Promise<any> => {
   if (!token) {
     throw new Error('Authorization token is missing.');
   }
 
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/organization/${orgId}/branches`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+    const response = await axios.get(`${API_BASE_URL}/organization/branches`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-    );
+    });
 
     if (response.data?.success) {
       return response.data.data; // Return the branches array
-      console.log('Branches:', response.data.data);
     }
     throw new Error('Failed to fetch branches from the API.');
   } catch (error) {
@@ -232,14 +228,14 @@ const GetAllBranches = async (orgId: number, token: string): Promise<any> => {
   }
 };
 
-const DeleteBranch = async (orgId: number, branchId: number, token: string) => {
+const DeleteBranch = async (branchId: number, token: string) => {
   if (!token) {
     throw new Error('Authorization token is missing.');
   }
 
   try {
     const response = await axios.delete(
-      `${API_BASE_URL}/organization/${orgId}/branches/${branchId}`,
+      `${API_BASE_URL}/organization/branches/${branchId}`,
       {
         headers: {
           'Content-Type': 'application/json',
