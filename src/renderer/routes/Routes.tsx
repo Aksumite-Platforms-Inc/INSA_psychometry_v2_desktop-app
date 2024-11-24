@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from '../pages/Auth/Login';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Users from '../pages/Users/UserList';
+import Branches from '../pages/Branches/Branches';
 import Tests from '../pages/Tests/TestsList';
 import Reports from '../pages/Reports/Reports';
 import Profile from '../pages/Users/profile';
@@ -31,6 +32,14 @@ function AppRoutes(): React.ReactElement {
           element={
             <ProtectedRoute allowedRoles={['org_admin', 'branch_admin']}>
               <Users />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/branches"
+          element={
+            <ProtectedRoute allowedRoles={['org_admin', 'branch_admin']}>
+              <Branches />
             </ProtectedRoute>
           }
         />

@@ -166,10 +166,107 @@ const DeleteOrgMember = async (
   }
 };
 
+const CreateBranch = async (
+  orgId: number,
+  name: string,
+  location: string,
+  token: string,
+) => {
+  if (!token) {
+    throw new Error('Authorization token is missing.');
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/organization/${orgId}/branches`,
+      { name, location },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(
+        error.response?.data?.message || 'Failed to create branch.',
+      );
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+};
+
+const GetAllBranches = async (orgId: number, token: string): Promise<any> => {
+  if (!token) {
+    throw new Error('Authorization token is missing.');
+  }
+
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/organization/${orgId}/branches`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.data?.success) {
+      return response.data.data; // Return the branches array
+      console.log('Branches:', response.data.data);
+    }
+    throw new Error('Failed to fetch branches from the API.');
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(
+        error.response?.data?.message || 'Failed to fetch branchess.',
+      );
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+};
+
+const DeleteBranch = async (orgId: number, branchId: number, token: string) => {
+  if (!token) {
+    throw new Error('Authorization token is missing.');
+  }
+
+  try {
+    const response = await axios.delete(
+      `${API_BASE_URL}/organization/${orgId}/branches/${branchId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(
+        error.response?.data?.message || 'Failed to delete branch.',
+      );
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+};
+
 export {
   uploadScreenshot,
   performLogin,
   updateProfile,
   GetAllOrgMembers,
   DeleteOrgMember,
+  CreateBranch,
+  GetAllBranches,
+  DeleteBranch,
 };

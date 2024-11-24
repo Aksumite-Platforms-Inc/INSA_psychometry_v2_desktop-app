@@ -17,6 +17,11 @@ import { resolveHtmlPath } from './util';
 import takeScreenshotAndUpload from './services/testService';
 import login from './services/authService';
 import {
+  performGetAllBranches,
+  performCreateBranch,
+  performDeleteBranch,
+} from './services/branchService';
+import {
   PerformUpdateProfile,
   performGetAllMembers,
   performDeleteMember,
@@ -187,6 +192,31 @@ ipcMain.on(
     await performDeleteMember(event, orgId, userId, token);
   },
 );
+
+// ipcMain.on('create-branch', async (event, { orgId, token, branchName }) => {
+//   console.log('Received create-branch request:', { orgId, token, branchName });
+
+//   // Perform branch creation here
+//   event.reply('branch-created', {
+//     success: true,
+//     branch: { name: branchName },
+//   });
+// });
+
+ipcMain.on('get-branches', async (event: IpcMainEvent, { orgId, token }) => {
+  console.log('Received get-branches request:', { orgId, token });
+  await performGetAllBranches(orgId, token, event);
+});
+
+ipcMain.on('create-branch', async (event, { orgId, token, name, location }) => {
+  console.log('Received create-branch request:', {
+    orgId,
+    token,
+    name,
+    location,
+  });
+  await performCreateBranch(event, name, orgId, location, token);
+});
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even

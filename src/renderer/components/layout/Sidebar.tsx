@@ -38,6 +38,12 @@ function Sidebar() {
       roles: ['Branch Admin', 'Organization Admin'],
     },
     {
+      path: '/branches',
+      label: 'Branches',
+      icon: faUsers,
+      roles: ['Organization Admin'],
+    },
+    {
       path: '/tests',
       label: 'Tests',
       icon: faFileAlt,
