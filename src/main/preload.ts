@@ -18,7 +18,10 @@ export type Channels =
   | 'create-branch'
   | 'branch-created'
   | 'get-branch-details'
-  | 'branch-details-fetched';
+  | 'branch-details-fetched'
+  | 'download-template'
+  | 'template-downloaded'
+  | 'upload-excel-template';
 
 export interface ElectronHandler {
   ipcRenderer: {

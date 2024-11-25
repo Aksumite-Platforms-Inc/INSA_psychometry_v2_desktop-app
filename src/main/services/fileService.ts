@@ -1,4 +1,5 @@
 // src/main/services/fileService.ts
+import { IpcMainEvent } from 'electron';
 import { createExcelTemplate } from './api';
 
 const performDownloadTemplate = async (event: IpcMainEvent) => {

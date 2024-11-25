@@ -18,9 +18,9 @@ import takeScreenshotAndUpload from './services/testService';
 import login from './services/authService';
 import performDownloadTemplate from './services/fileService';
 import {
-  performGetAllBranches,
   performCreateBranch,
   performDeleteBranch,
+  performGetAllBranches,
   performGetBranchDetails,
 } from './services/branchService';
 import {
@@ -200,15 +200,7 @@ ipcMain.on(
   },
 );
 
-// ipcMain.on('create-branch', async (event, { orgId, token, branchName }) => {
-//   console.log('Received create-branch request:', { orgId, token, branchName });
-
-//   // Perform branch creation here
-//   event.reply('branch-created', {
-//     success: true,
-//     branch: { name: branchName },
-//   });
-// });
+// branches Section
 
 ipcMain.on('get-branches', async (event: IpcMainEvent, { token }) => {
   await performGetAllBranches(token, event);
@@ -233,6 +225,13 @@ ipcMain.on(
     await performDeleteBranch(branchId, token, event);
   },
 );
+
+// File download Section
+
+ipcMain.on('download-template', (event) => {
+  console.log('Download template request received'); // Debugging log
+  performDownloadTemplate(event); // Call service
+});
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
