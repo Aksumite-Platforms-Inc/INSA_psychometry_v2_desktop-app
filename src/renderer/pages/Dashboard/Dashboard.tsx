@@ -1,7 +1,15 @@
-import React from 'react';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DefaultLayout from '../../components/layout/defaultlayout';
 
 function Dashboard() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!localStorage.getItem('authToken')) {
+      navigate('/Login');
+    }
+  });
   return (
     <DefaultLayout>
       <main className="p-5 sm:p-5 space-y-6">
