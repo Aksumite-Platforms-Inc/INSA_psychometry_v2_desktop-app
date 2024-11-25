@@ -105,14 +105,15 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@heroicons/react": "^2.1.5",
-    "@types/xlsx": "^0.0.35",
     "axios": "^1.7.7",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-react-boilerplate": "file:",
     "electron-updater": "^6.3.9",
+    "exceljs": "^4.4.0",
     "glob": "^8.1.0",
     "html2canvas": "^1.4.1",
+    "insa-personality-test-pro": "file:",
     "jspdf": "^2.5.2",
     "jwt-decode": "^4.0.0",
     "minimatch": "^3.0.5",
@@ -120,8 +121,7 @@
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.26.2",
-    "react-toastify": "^10.0.6",
-    "xlsx": "^0.18.5"
+    "react-toastify": "^10.0.6"
   },
   "devDependencies": {
     "@electron/rebuild": "^3.3.0",

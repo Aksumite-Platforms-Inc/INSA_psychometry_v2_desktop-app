@@ -164,6 +164,7 @@ ipcMain.on('user-login', async (event, email, password) => {
 
 // File Section
 ipcMain.on('upload-excel-template', async (event, { filePath }) => {
+  console.log('Received file path:', filePath); // Log file path
   try {
     const result = await processExcelFile(filePath);
     event.reply('excel-template-uploaded', {
