@@ -16,7 +16,10 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import takeScreenshotAndUpload from './services/testService';
 import login from './services/authService';
-import performDownloadTemplate from './services/fileService';
+import {
+  performDownloadTemplate,
+  processExcelFile,
+} from './services/fileService';
 import {
   performCreateBranch,
   performDeleteBranch,
@@ -155,6 +158,24 @@ ipcMain.on('user-login', async (event, email, password) => {
     event.reply('user-login-success', {
       success: false,
       message: 'An internal error occurred.',
+    });
+  }
+});
+
+// File Section
+ipcMain.on('upload-excel-template', async (event, { filePath }) => {
+  try {
+    const result = await processExcelFile(filePath);
+    event.reply('excel-template-uploaded', {
+      success: true,
+      message: 'Users added successfully!',
+      data: result,
+    });
+  } catch (error: any) {
+    console.error('Error processing Excel file:', error.message);
+    event.reply('excel-template-uploaded', {
+      success: false,
+      message: error.message || 'An error occurred while processing the file.',
     });
   }
 });

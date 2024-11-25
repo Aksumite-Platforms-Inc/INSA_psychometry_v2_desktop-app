@@ -1,9 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UserTable from '../../components/Tables/UserTable';
 import DefaultLayout from '../../components/layout/defaultlayout';
 
 function Users() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (window.electron && window.electron.ipcRenderer) {
+      const handleUploadResponse = (_event: any, response: any) => {
+        if (response.success) {
+          alert(response.message);
+          // Refresh the user list if needed
+        } else {
+          alert(`Error: ${response.message}`);
+        }
+      };
+
+      window.electron.ipcRenderer.on(
+        'excel-template-uploaded',
+        handleUploadResponse,
+      );
+
+      return () => {
+        window.electron.ipcRenderer.removeListener(
+          'excel-template-uploaded',
+          handleUploadResponse,
+        );
+      };
+    }
+    return undefined;
+  }, []);
 
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
