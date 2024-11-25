@@ -194,16 +194,6 @@ ipcMain.on(
   },
 );
 
-// ipcMain.on('create-branch', async (event, { orgId, token, branchName }) => {
-//   console.log('Received create-branch request:', { orgId, token, branchName });
-
-//   // Perform branch creation here
-//   event.reply('branch-created', {
-//     success: true,
-//     branch: { name: branchName },
-//   });
-// });
-
 ipcMain.on('get-branches', async (event: IpcMainEvent, { token }) => {
   await performGetAllBranches(token, event);
 });
@@ -216,8 +206,6 @@ ipcMain.on('get-branch-details', async (event, { orgId, branchId, token }) => {
 ipcMain.on(
   'create-branch',
   async (event: IpcMainEvent, { orgId, name, token }) => {
-    console.log('Received create-branch request:', { orgId, name, token });
-
     await performCreateBranch(event, orgId, name, token);
   },
 );

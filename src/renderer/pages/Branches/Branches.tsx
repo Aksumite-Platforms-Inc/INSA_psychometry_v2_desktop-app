@@ -74,6 +74,7 @@ function Branches() {
   }, [orgId, token]);
 
   const handleDeleteBranch = (branchId: number) => {
+    setError(null);
     if (window.electron && window.electron.ipcRenderer) {
       // Send request to delete Branch
       window.electron.ipcRenderer.sendMessage('delete-branch', {
@@ -82,10 +83,11 @@ function Branches() {
       });
       const handleBranchDeleted = (_event: any, response: any) => {
         const typedResponse = response as GetResponse;
-        setLoading(false);
 
-        if (typedResponse.success && typedResponse.data) {
-          setBranches(typedResponse.data);
+        if (typedResponse.success) {
+          setBranches((prevBranches) =>
+            prevBranches.filter((branch) => branch.id !== branchId),
+          );
         } else {
           setError(typedResponse.message || 'Failed to delete Branch.');
         }
