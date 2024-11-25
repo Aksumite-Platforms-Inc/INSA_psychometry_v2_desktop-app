@@ -67,6 +67,11 @@ export const getUserRole = (): string => {
   }
 };
 
+export const getBranchId = (): number | null => {
+  const decoded = decodeToken();
+  return decoded?.branch_id || null;
+};
+
 export const isTokenExpired = (): boolean => {
   const decoded = decodeToken();
   if (!decoded) return true;

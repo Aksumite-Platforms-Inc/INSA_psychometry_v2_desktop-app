@@ -1,6 +1,7 @@
 import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs';
+import { IpcMainEvent } from 'electron';
 
 // Define the base URL as a variable for flexibility
 const API_BASE_URL = 'http://172.30.19.24/api/v1';
@@ -29,6 +30,17 @@ const uploadScreenshot = async (
   });
 
   return response;
+};
+const logout = async (event?: IpcMainEvent) => {
+  console.log('Logging out the user...');
+  // Clear local storage and notify the renderer process
+  localStorage.removeItem('authToken');
+  if (event) {
+    event.reply('user-logout-success', {
+      success: true,
+      message: 'User logged out successfully',
+    });
+  }
 };
 
 const performLogin = async (
@@ -166,10 +178,130 @@ const DeleteOrgMember = async (
   }
 };
 
+const CreateBranch = async (orgId: number, name: string, token: string) => {
+  console.log('Sending request to create branch:', { orgId, name, token });
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/organization/${orgId}/branches`,
+      { name },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    console.log('CreateBranch API Response:', response.data);
+    return response.data.data;
+  } catch (error: any) {
+    console.error('CreateBranch API Error:', error.message);
+    throw new Error(error.response?.data?.message || 'Branch creation failed.');
+  }
+};
+
+const GetAllBranches = async (token: string): Promise<any> => {
+  if (!token) {
+    throw new Error('Authorization token is missing.');
+  }
+
+  try {
+    const response = await axios.get(`${API_BASE_URL}/organization/branches`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.data?.success) {
+      return response.data.data; // Return the branches array
+    }
+    throw new Error('Failed to fetch branches from the API.');
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(
+        error.response?.data?.message || 'Failed to fetch branchess.',
+      );
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+};
+const GetBranchById = async (
+  orgId: number,
+  branchId: number,
+  token: string,
+): Promise<any> => {
+  if (!token) {
+    throw new Error('Authorization token is missing.');
+  }
+
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/organization/${orgId}/branches/${branchId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.data?.success) {
+      return response.data.data; // Return the branch details
+    }
+    throw new Error('Failed to fetch branch details from the API.');
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(
+        'API Error in GetBranchById:',
+        error.response?.data || error.message,
+      );
+      throw new Error(
+        error.response?.data?.message || 'Failed to fetch branch details.',
+      );
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+};
+
+const DeleteBranch = async (branchId: number, token: string) => {
+  if (!token) {
+    throw new Error('Authorization token is missing.');
+  }
+
+  try {
+    const response = await axios.delete(
+      `${API_BASE_URL}/organization/branches/${branchId}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(
+        error.response?.data?.message || 'Failed to delete branch.',
+      );
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+};
+
 export {
   uploadScreenshot,
   performLogin,
   updateProfile,
   GetAllOrgMembers,
   DeleteOrgMember,
+  CreateBranch,
+  GetAllBranches,
+  DeleteBranch,
+  GetBranchById,
+  logout,
 };

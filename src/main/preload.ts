@@ -10,7 +10,15 @@ export type Channels =
   | 'delete-member'
   | 'member-deleted'
   | 'members-listed'
-  | 'get-members';
+  | 'get-members'
+  | 'get-branches'
+  | 'branches-listed'
+  | 'delete-branch'
+  | 'branch-deleted'
+  | 'create-branch'
+  | 'branch-created'
+  | 'get-branch-details'
+  | 'branch-details-fetched';
 
 export interface ElectronHandler {
   ipcRenderer: {

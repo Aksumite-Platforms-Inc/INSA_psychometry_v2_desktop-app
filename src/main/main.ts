@@ -17,6 +17,12 @@ import { resolveHtmlPath } from './util';
 import takeScreenshotAndUpload from './services/testService';
 import login from './services/authService';
 import {
+  performGetAllBranches,
+  performCreateBranch,
+  performDeleteBranch,
+  performGetBranchDetails,
+} from './services/branchService';
+import {
   PerformUpdateProfile,
   performGetAllMembers,
   performDeleteMember,
@@ -185,6 +191,40 @@ ipcMain.on(
   'delete-member',
   async (event: IpcMainEvent, { orgId, userId, token }) => {
     await performDeleteMember(event, orgId, userId, token);
+  },
+);
+
+// ipcMain.on('create-branch', async (event, { orgId, token, branchName }) => {
+//   console.log('Received create-branch request:', { orgId, token, branchName });
+
+//   // Perform branch creation here
+//   event.reply('branch-created', {
+//     success: true,
+//     branch: { name: branchName },
+//   });
+// });
+
+ipcMain.on('get-branches', async (event: IpcMainEvent, { token }) => {
+  await performGetAllBranches(token, event);
+});
+
+ipcMain.on('get-branch-details', async (event, { orgId, branchId, token }) => {
+  console.log('Received get-branch-details request:', { branchId, token });
+  await performGetBranchDetails(event, orgId, branchId, token);
+});
+
+ipcMain.on(
+  'create-branch',
+  async (event: IpcMainEvent, { orgId, name, token }) => {
+    console.log('Received create-branch request:', { orgId, name, token });
+
+    await performCreateBranch(event, orgId, name, token);
+  },
+);
+ipcMain.on(
+  'delete-branch',
+  async (event: IpcMainEvent, { branchId, token }) => {
+    await performDeleteBranch(branchId, token, event);
   },
 );
 
