@@ -8,6 +8,7 @@ import Tests from '../pages/Tests/TestsList';
 import Reports from '../pages/Reports/Reports';
 import Profile from '../pages/Users/profile';
 import TestPage from '../pages/Tests/TestPage';
+import BranchDetails from '../pages/Branches/BranchDetails';
 import ProtectedRoute from './ProtectedRoute';
 import Unauthorized from '../pages/Unauthorized';
 
@@ -40,6 +41,14 @@ function AppRoutes(): React.ReactElement {
           element={
             <ProtectedRoute allowedRoles={['org_admin', 'branch_admin']}>
               <Branches />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/branches/:branchId"
+          element={
+            <ProtectedRoute allowedRoles={['org_admin']}>
+              <BranchDetails />
             </ProtectedRoute>
           }
         />

@@ -1,31 +1,33 @@
 import { IpcMainEvent } from 'electron';
-import { CreateBranch, GetAllBranches, DeleteBranch } from './api';
+import {
+  CreateBranch,
+  GetAllBranches,
+  DeleteBranch,
+  GetBranchById,
+} from './api';
 
 const performCreateBranch = async (
   event: IpcMainEvent,
-  name: string,
   orgId: number,
-  branchName: string,
+  name: string,
   token: string,
 ) => {
+  console.log('Attempting to create branch:', { orgId, name, token });
   try {
-    await CreateBranch(orgId, name, branchName, token);
-    console.log('Branch created successfully:', name);
+    const newBranch = await CreateBranch(orgId, name, token);
+    console.log('Branch created successfully in API:', newBranch);
 
     event.reply('branch-created', {
       success: true,
       message: 'Branch created successfully',
+      data: newBranch,
     });
   } catch (error: any) {
-    if (error && error.response) {
-      console.error('Branch creation failed:', error.response.data);
-    } else {
-      console.error('Branch creation failed:', error.message);
-    }
+    console.error('Branch creation failed in API:', error.message);
 
     event.reply('branch-created', {
       success: false,
-      message: 'Branch creation failed. Please try again.',
+      message: error.message || 'Branch creation failed. Please try again.',
     });
   }
 };
@@ -83,4 +85,33 @@ const performDeleteBranch = async (
   }
 };
 
-export { performCreateBranch, performGetAllBranches, performDeleteBranch };
+const performGetBranchDetails = async (
+  event: IpcMainEvent,
+  orgId: number,
+  branchId: number,
+  token: string,
+) => {
+  try {
+    const branchDetails = await GetBranchById(orgId, branchId, token);
+
+    event.reply('branch-details-fetched', {
+      success: true,
+      data: branchDetails,
+    });
+  } catch (error) {
+    console.error('Failed to fetch branch details:', error);
+
+    event.reply('branch-details-fetched', {
+      success: false,
+      message:
+        error instanceof Error ? error.message : 'An unexpected error occurred',
+    });
+  }
+};
+
+export {
+  performCreateBranch,
+  performGetAllBranches,
+  performDeleteBranch,
+  performGetBranchDetails,
+};

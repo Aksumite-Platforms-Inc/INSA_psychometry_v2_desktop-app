@@ -15,7 +15,10 @@ export type Channels =
   | 'branches-listed'
   | 'delete-branch'
   | 'branch-deleted'
-  | 'create-branch';
+  | 'create-branch'
+  | 'branch-created'
+  | 'get-branch-details'
+  | 'branch-details-fetched';
 
 export interface ElectronHandler {
   ipcRenderer: {

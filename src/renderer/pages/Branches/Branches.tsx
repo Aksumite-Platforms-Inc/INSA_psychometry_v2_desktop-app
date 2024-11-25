@@ -1,6 +1,7 @@
 /* eslint-disable consistent-return */
 // create a page that will be used to list branchs create branches, assign admin to branch and delete branches
 import React, { useState, useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,11 +23,11 @@ interface GetResponse {
 
 function Branches() {
   const [branches, setBranches] = useState<Branch[]>([]);
-  // const [newBranch, setNewBranch] = useState('');
+  const [newBranch, setNewBranch] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   // const [admin, setAdmin] = useState('');
-
+  // const navigate = useNavigate();
   const orgId = getOrgId();
   const token = getToken();
   // const branchId = getBranchId();
@@ -103,6 +104,47 @@ function Branches() {
     setError('Electron IPC is not available.');
     setLoading(false);
   };
+
+  const handleAddBranch = () => {
+    if (window.electron && window.electron.ipcRenderer) {
+      console.log('Sending create-branch request:', { name: newBranch, token });
+
+      window.electron.ipcRenderer.sendMessage('create-branch', {
+        name: newBranch,
+        token,
+        orgId,
+      });
+
+      const handleBranchCreated = (_event: any, response: any) => {
+        console.log('Received branch-created response:', response);
+
+        const typedResponse = response as GetResponse;
+        setLoading(false);
+
+        if (typedResponse.success && typedResponse.data) {
+          setBranches(typedResponse.data);
+        } else {
+          setError(typedResponse.message || 'Failed to create Branch.');
+        }
+      };
+
+      window.electron.ipcRenderer.on('branch-created', handleBranchCreated);
+
+      return () => {
+        window.electron.ipcRenderer.removeListener(
+          'branch-created',
+          handleBranchCreated,
+        );
+      };
+    }
+    setError('Electron IPC is not available.');
+  };
+
+  // const handleRowClick = (clickedBranchId: string) => {
+  //   // Handle row click logic here
+  //   navigate(`/branch/${clickedBranchId}`);
+  // };
+
   return (
     <DefaultLayout>
       <div className="flex-1 p-5 h-screen overflow-y-auto">
@@ -126,7 +168,8 @@ function Branches() {
                   branches.map((branch) => (
                     <tr
                       key={branch.id}
-                      className="border-t hover:bg-gray-100 transition duration-150"
+                      className="border-t hover:bg-gray-100 transition duration-150 cursor-pointer"
+                      // onClick={() => handleRowClick(branch.id.toString())}
                     >
                       <td className="py-3 px-6">{branch.id}</td>
                       <td className="py-3 px-6">{branch.name}</td>
@@ -155,6 +198,22 @@ function Branches() {
                 )}
               </tbody>
             </table>
+            <div className="mt-5">
+              <form className="space-y-4" onSubmit={handleAddBranch}>
+                <input
+                  type="text"
+                  value={newBranch}
+                  onChange={(e) => setNewBranch(e.target.value)}
+                  placeholder="New Branch Name"
+                  className="border p-2 rounded w-full"
+                />
+                <input
+                  type="submit"
+                  value="Add Branch"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                />
+              </form>
+            </div>
           </>
         )}
       </div>

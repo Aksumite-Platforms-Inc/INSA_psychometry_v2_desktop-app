@@ -20,6 +20,7 @@ import {
   performGetAllBranches,
   performCreateBranch,
   performDeleteBranch,
+  performGetBranchDetails,
 } from './services/branchService';
 import {
   PerformUpdateProfile,
@@ -207,10 +208,19 @@ ipcMain.on('get-branches', async (event: IpcMainEvent, { token }) => {
   await performGetAllBranches(token, event);
 });
 
-ipcMain.on('create-branch', async (event, { orgId, token, name, location }) => {
-  await performCreateBranch(event, name, orgId, location, token);
+ipcMain.on('get-branch-details', async (event, { orgId, branchId, token }) => {
+  console.log('Received get-branch-details request:', { branchId, token });
+  await performGetBranchDetails(event, orgId, branchId, token);
 });
 
+ipcMain.on(
+  'create-branch',
+  async (event: IpcMainEvent, { orgId, name, token }) => {
+    console.log('Received create-branch request:', { orgId, name, token });
+
+    await performCreateBranch(event, orgId, name, token);
+  },
+);
 ipcMain.on(
   'delete-branch',
   async (event: IpcMainEvent, { branchId, token }) => {
