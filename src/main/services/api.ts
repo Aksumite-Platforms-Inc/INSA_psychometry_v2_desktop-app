@@ -1,7 +1,8 @@
 import axios from 'axios';
 import FormData from 'form-data';
+import path from 'path';
 import fs from 'fs';
-import { IpcMainEvent } from 'electron';
+import { IpcMainEvent, app } from 'electron';
 
 // Define the base URL as a variable for flexibility
 const API_BASE_URL = 'http://localhost:8080/api/v1';
@@ -293,6 +294,15 @@ const DeleteBranch = async (branchId: number, token: string) => {
   }
 };
 
+const createExcelTemplate = async (): Promise<string> => {
+  const outputPath = path.join(app.getPath('downloads'), 'UserTemplate.xlsx');
+  console.log('Template file will be saved at:', outputPath); // Debugging log
+
+  // Generate the Excel template (simplified for example)
+  await fs.promises.writeFile(outputPath, 'Template data here...');
+  return outputPath;
+};
+
 export {
   uploadScreenshot,
   performLogin,
@@ -304,4 +314,5 @@ export {
   DeleteBranch,
   GetBranchById,
   logout,
+  createExcelTemplate,
 };

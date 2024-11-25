@@ -16,6 +16,7 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import takeScreenshotAndUpload from './services/testService';
 import login from './services/authService';
+import performDownloadTemplate from './services/fileService';
 import {
   performGetAllBranches,
   performCreateBranch,
@@ -140,6 +141,9 @@ ipcMain.on('take-screenshot', async (event, testId, token) => {
     event.reply('screenshot-taken', 'Error: mainWindow is not available');
   }
 });
+
+// Login Section
+
 ipcMain.on('user-login', async (event, email, password) => {
   console.log('Received login attempt:', { email, password });
 
@@ -154,6 +158,8 @@ ipcMain.on('user-login', async (event, email, password) => {
     });
   }
 });
+
+// Members Section
 
 ipcMain.on(
   'update-profile',
