@@ -4,7 +4,7 @@ import fs from 'fs';
 import { IpcMainEvent } from 'electron';
 
 // Define the base URL as a variable for flexibility
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const API_BASE_URL = 'http://172.30.19.24/api/v1';
 
 // Set the default base URL for Axios
 axios.defaults.baseURL = API_BASE_URL;
