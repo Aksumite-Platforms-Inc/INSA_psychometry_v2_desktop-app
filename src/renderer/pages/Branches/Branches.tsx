@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 // create a page that will be used to list branchs create branches, assign admin to branch and delete branches
 import React, { useState, useEffect } from 'react';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -27,7 +27,7 @@ function Branches() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   // const [admin, setAdmin] = useState('');
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const orgId = getOrgId();
   const token = getToken();
   // const branchId = getBranchId();
@@ -84,8 +84,8 @@ function Branches() {
         const typedResponse = response as GetResponse;
         setLoading(false);
 
-        if (typedResponse.success && typedResponse.data) {
-          setBranches(typedResponse.data);
+        if (typedResponse.success) {
+          setBranches(branches.filter((branch) => branch.id !== branchId));
         } else {
           setError(typedResponse.message || 'Failed to delete Branch.');
         }
@@ -140,10 +140,10 @@ function Branches() {
     setError('Electron IPC is not available.');
   };
 
-  // const handleRowClick = (clickedBranchId: string) => {
-  //   // Handle row click logic here
-  //   navigate(`/branch/${clickedBranchId}`);
-  // };
+  const handleRowClick = (clickedBranchId: number) => {
+    // Handle row click logic here
+    navigate(`/branches/${clickedBranchId}`);
+  };
 
   return (
     <DefaultLayout>
@@ -169,11 +169,16 @@ function Branches() {
                     <tr
                       key={branch.id}
                       className="border-t hover:bg-gray-100 transition duration-150 cursor-pointer"
-                      // onClick={() => handleRowClick(branch.id.toString())}
+                      onClick={() => handleRowClick(branch.id)}
                     >
                       <td className="py-3 px-6">{branch.id}</td>
                       <td className="py-3 px-6">{branch.name}</td>
-                      <td className="py-3 px-6 text-center flex justify-center space-x-4">
+                      <td
+                        className="py-3 px-6 text-center flex justify-center space-x-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
                         {/* add branch admin asign button */}
                         <button
                           type="button"
