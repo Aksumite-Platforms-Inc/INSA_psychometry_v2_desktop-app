@@ -1,7 +1,8 @@
 import axios from 'axios';
 import FormData from 'form-data';
+import path from 'path';
 import fs from 'fs';
-import { IpcMainEvent } from 'electron';
+import { IpcMainEvent, app } from 'electron';
 
 // Define the base URL as a variable for flexibility
 const API_BASE_URL = 'http://localhost:8080/api/v1';
@@ -9,6 +10,14 @@ const API_BASE_URL = 'http://localhost:8080/api/v1';
 // Set the default base URL for Axios
 axios.defaults.baseURL = API_BASE_URL;
 
+// File Section
+const addBulkUsers = async (users: { name: string; email: string }[]) => {
+  const response = await axios.post('/users/bulk-add', { users });
+  if (!response.data.success) {
+    throw new Error(response.data.message || 'Failed to add users.');
+  }
+  return response.data;
+};
 const uploadScreenshot = async (
   screenshotPath: string,
   testId: string,
@@ -31,6 +40,8 @@ const uploadScreenshot = async (
 
   return response;
 };
+
+// Auth Section
 const logout = async (event?: IpcMainEvent) => {
   console.log('Logging out the user...');
   // Clear local storage and notify the renderer process
@@ -115,6 +126,7 @@ const updateProfile = async (
   }
 };
 
+// Users Section
 const GetAllOrgMembers = async (orgId: number, token: string): Promise<any> => {
   if (!token) {
     throw new Error('Authorization token is missing.');
@@ -177,6 +189,8 @@ const DeleteOrgMember = async (
     throw new Error('An unexpected error occurred.');
   }
 };
+
+// Branches Section
 
 const CreateBranch = async (orgId: number, name: string, token: string) => {
   console.log('Sending request to create branch:', { orgId, name, token });
@@ -293,10 +307,20 @@ const DeleteBranch = async (branchId: number, token: string) => {
   }
 };
 
+const createExcelTemplate = async (): Promise<string> => {
+  const outputPath = path.join(app.getPath('downloads'), 'UserTemplate.xlsx');
+  console.log('Template file will be saved at:', outputPath); // Debugging log
+
+  // Generate the Excel template (simplified for example)
+  await fs.promises.writeFile(outputPath, 'Template data here...');
+  return outputPath;
+};
+
 export {
   uploadScreenshot,
   performLogin,
   updateProfile,
+  addBulkUsers,
   GetAllOrgMembers,
   DeleteOrgMember,
   CreateBranch,
@@ -304,4 +328,5 @@ export {
   DeleteBranch,
   GetBranchById,
   logout,
+  createExcelTemplate,
 };

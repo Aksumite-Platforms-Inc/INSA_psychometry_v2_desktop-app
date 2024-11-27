@@ -17,9 +17,13 @@ import { resolveHtmlPath } from './util';
 import takeScreenshotAndUpload from './services/testService';
 import login from './services/authService';
 import {
-  performGetAllBranches,
+  performDownloadTemplate,
+  processExcelFile,
+} from './services/fileService';
+import {
   performCreateBranch,
   performDeleteBranch,
+  performGetAllBranches,
   performGetBranchDetails,
 } from './services/branchService';
 import {
@@ -140,6 +144,9 @@ ipcMain.on('take-screenshot', async (event, testId, token) => {
     event.reply('screenshot-taken', 'Error: mainWindow is not available');
   }
 });
+
+// Login Section
+
 ipcMain.on('user-login', async (event, email, password) => {
   console.log('Received login attempt:', { email, password });
 
@@ -154,6 +161,27 @@ ipcMain.on('user-login', async (event, email, password) => {
     });
   }
 });
+
+// File Section
+ipcMain.on('upload-excel-template', async (event, { filePath }) => {
+  console.log('Received file path:', filePath); // Log file path
+  try {
+    const result = await processExcelFile(filePath);
+    event.reply('excel-template-uploaded', {
+      success: true,
+      message: 'Users added successfully!',
+      data: result,
+    });
+  } catch (error: any) {
+    console.error('Error processing Excel file:', error.message);
+    event.reply('excel-template-uploaded', {
+      success: false,
+      message: error.message || 'An error occurred while processing the file.',
+    });
+  }
+});
+
+// Members Section
 
 ipcMain.on(
   'update-profile',
@@ -194,6 +222,7 @@ ipcMain.on(
   },
 );
 
+
 ipcMain.on('get-branches', async (event: IpcMainEvent, { token }) => {
   await performGetAllBranches(token, event);
 });
@@ -215,6 +244,13 @@ ipcMain.on(
     await performDeleteBranch(branchId, token, event);
   },
 );
+
+// File download Section
+
+ipcMain.on('download-template', (event) => {
+  console.log('Download template request received'); // Debugging log
+  performDownloadTemplate(event); // Call service
+});
 
 app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even

@@ -1,108 +1,132 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UserTable from '../../components/Tables/UserTable';
 import DefaultLayout from '../../components/layout/defaultlayout';
 
 function Users() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [emailList, setEmailList] = useState('');
-  const [newUsers, setNewUsers] = useState<{ email: string }[]>([]);
-  // INFO: user add will be added in the future
-  // Toggle modal visibility
-  const toggleModal = () => setIsModalOpen((prev) => !prev);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadedData, setUploadedData] = useState<any[]>([]); // Store processed JSON data
+  const [error, setError] = useState<string | null>(null);
 
-  // Handle user addition (bulk or individual)
-  const handleAddUsers = () => {
-    const emails = emailList
-      .split(',')
-      .map((email) => email.trim())
-      .filter((email) => email); // Remove empty entries
-    const usersToAdd = emails.map((email) => ({ email }));
+  useEffect(() => {
+    if (window.electron && window.electron.ipcRenderer) {
+      const handleUploadResponse = (_event: any, response: any) => {
+        if (response.success) {
+          console.log('Processed Data:', response.data);
+          setUploadedData(response.data); // Save for potential display or debugging
+          alert('File processed successfully!');
+        } else {
+          console.error('Error processing file:', response.message);
+          setError(response.message);
+        }
+      };
 
-    setNewUsers((prev) => [...prev, ...usersToAdd]);
-    setEmailList('');
-    toggleModal();
+      window.electron.ipcRenderer.on(
+        'excel-template-uploaded',
+        handleUploadResponse,
+      );
+
+      return () => {
+        window.electron.ipcRenderer.removeListener(
+          'excel-template-uploaded',
+          handleUploadResponse,
+        );
+      };
+    }
+    return undefined;
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const validExtensions = ['.xlsx', '.xls'];
+
+      if (!validExtensions.some((ext) => file.name.endsWith(ext))) {
+        alert('Please upload a valid Excel file (.xlsx or .xls).');
+        return;
+      }
+
+      setSelectedFile(file);
+    }
+  };
+
+  const handleFileUpload = () => {
+    if (!selectedFile) {
+      alert('No file selected. Please choose a file to upload.');
+      return;
+    }
+
+    console.log('Selected file path:', selectedFile.path); // Log the file path
+
+    if (window.electron && window.electron.ipcRenderer) {
+      window.electron.ipcRenderer.sendMessage('upload-excel-template', {
+        filePath: selectedFile.path,
+      });
+
+      alert('File uploaded successfully! Processing...');
+    }
   };
 
   return (
     <DefaultLayout>
       <div className="relative">
         {/* Main Content */}
-        <div className={`flex ${isModalOpen ? 'backdrop-blur-sm' : ''}`}>
-          <div className="flex-1 p-5 h-screen overflow-y-auto">
-            <div className="flex justify-between items-center mt-5">
-              {/* Search Input */}
-              <input
-                type="text"
-                placeholder="Search..."
-                className="p-2 border border-gray-300 rounded-md"
-              />
+        <div className="flex-1 p-5 h-screen overflow-y-auto">
+          <div className="flex justify-between items-center mt-5">
+            <h1 className="text-xl font-semibold">Manage Users</h1>
 
-              {/* Add Users Button */}
+            {/* Download Template Button */}
+            <button
+              type="button"
+              className="bg-green-500 text-white px-4 py-2 rounded-md"
+              onClick={() =>
+                window.electron &&
+                window.electron.ipcRenderer.sendMessage('download-template')
+              }
+            >
+              Download Template
+            </button>
+          </div>
+
+          {/* Upload Excel Template */}
+          <div className="mt-5 p-5 bg-white shadow rounded-md">
+            <h2 className="text-lg font-bold mb-3">Bulk Upload Users</h2>
+            <div className="flex items-center space-x-4">
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                className="border p-2 rounded-md"
+                onChange={handleFileChange}
+              />
               <button
                 type="button"
                 className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                onClick={toggleModal}
+                onClick={handleFileUpload}
               >
-                Add Users
+                Upload File
               </button>
             </div>
+          </div>
+          {/* Optional: Render Uploaded Data */}
+          {uploadedData.length > 0 && (
+            <div className="mt-5">
+              <h3 className="text-lg font-bold">Uploaded Users:</h3>
+              <ul>
+                {uploadedData.map((user) => (
+                  <li key={user.email}>
+                    {user.name} ({user.email})
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-            {/* User Table */}
+          {error && <p className="text-red-500 mt-5">{error}</p>}
+
+          {/* User Table */}
+          <div className="mt-8">
             <UserTable />
           </div>
         </div>
-
-        {/* Add Users Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-              <h2 className="text-2xl font-bold mb-5">Add Users</h2>
-              <form
-                className="space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleAddUsers();
-                }}
-              >
-                {/* Email Input */}
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="emails"
-                    className="text-gray-600 font-semibold"
-                  >
-                    Email Addresses (comma separated)
-                  </label>
-                  <textarea
-                    id="emails"
-                    className="p-2 border border-gray-300 rounded-md"
-                    placeholder="Enter email addresses, separated by commas"
-                    rows={4}
-                    value={emailList}
-                    onChange={(e) => setEmailList(e.target.value)}
-                  />
-                </div>
-
-                {/* Modal Actions */}
-                <div className="flex justify-end space-x-4 mt-6">
-                  <button
-                    type="button"
-                    className="bg-gray-500 text-white px-4 py-2 rounded-md"
-                    onClick={toggleModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                  >
-                    Add Users
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
       </div>
     </DefaultLayout>
   );

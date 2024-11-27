@@ -1,15 +1,25 @@
-import { BrowserWindow, IpcMainEvent } from 'electron';
-import fs from 'fs';
-import path from 'path';
+import { BrowserWindow, IpcMainEvent, app } from 'electron';
+import * as fs from 'fs';
+import * as path from 'path';
 import { uploadScreenshot } from './api';
 
+function setupUploadsDir() {
+  const writablePath = app.getPath('userData'); // Or 'temp'
+  const uploadsDir = path.join(writablePath, 'uploads');
+
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+
+  return uploadsDir;
+}
 const takeScreenshotAndUpload = async (
   mainWindow: BrowserWindow,
   testId: string,
   event: IpcMainEvent,
   token: string,
 ) => {
-  const screenshotPath = path.join(__dirname, `../upload/${testId}.png`);
+  const screenshotPath = path.join(setupUploadsDir(), `${testId}.png`);
   const uploadDir = path.dirname(screenshotPath);
 
   // Ensure the upload directory exists
