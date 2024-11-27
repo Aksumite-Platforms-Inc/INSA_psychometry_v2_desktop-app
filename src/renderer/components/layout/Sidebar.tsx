@@ -47,7 +47,7 @@ function Sidebar() {
       path: '/tests',
       label: 'Tests',
       icon: faFileAlt,
-      roles: ['Employee'],
+      roles: ['Employee', 'Branch Admin', 'Organization Admin'],
     },
     {
       path: '/reports',
