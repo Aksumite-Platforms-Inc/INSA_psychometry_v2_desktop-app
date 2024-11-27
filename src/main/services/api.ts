@@ -5,14 +5,24 @@ import fs from 'fs';
 import { IpcMainEvent, app } from 'electron';
 
 // Define the base URL as a variable for flexibility
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const API_BASE_URL = 'http://api.personality.insa.gov.et/api/v1';
 
 // Set the default base URL for Axios
 axios.defaults.baseURL = API_BASE_URL;
 
 // File Section
 const addBulkUsers = async (users: { name: string; email: string }[]) => {
-  const response = await axios.post('/users/bulk-add', { users });
+  console.log('Adding bulk users:', users);
+  const response = await axios.post(
+    '/organization/addbulkmembers',
+    { users },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
   if (!response.data.success) {
     throw new Error(response.data.message || 'Failed to add users.');
   }

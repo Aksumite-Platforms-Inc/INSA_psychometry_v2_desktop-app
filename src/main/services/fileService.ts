@@ -56,7 +56,10 @@ const performDownloadTemplate = async (event: IpcMainEvent) => {
 };
 
 // Process Uploaded Excel File
-const processExcelFile = async (filePath: string): Promise<any> => {
+const processExcelFile = async (
+  event: IpcMainEvent,
+  filePath: string,
+): Promise<void> => {
   console.log('Attempting to access file:', filePath);
 
   if (!fs.existsSync(filePath)) {
@@ -123,10 +126,13 @@ const processExcelFile = async (filePath: string): Promise<any> => {
     }
 
     console.log('Parsed rows:', parsedRows);
-    return parsedRows;
+    event.reply('excel-file-processed', { success: true, data: parsedRows });
   } catch (error) {
     console.error('Error processing Excel file:', error);
-    throw new Error('Failed to process the Excel file.');
+    event.reply('excel-file-processed', {
+      success: false,
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 };
 
