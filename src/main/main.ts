@@ -100,7 +100,7 @@ const createWindow = async () => {
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('Login'));
+  mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -222,7 +222,6 @@ ipcMain.on(
   },
 );
 
-// branches Section
 
 ipcMain.on('get-branches', async (event: IpcMainEvent, { token }) => {
   await performGetAllBranches(token, event);
@@ -236,8 +235,6 @@ ipcMain.on('get-branch-details', async (event, { orgId, branchId, token }) => {
 ipcMain.on(
   'create-branch',
   async (event: IpcMainEvent, { orgId, name, token }) => {
-    console.log('Received create-branch request:', { orgId, name, token });
-
     await performCreateBranch(event, orgId, name, token);
   },
 );

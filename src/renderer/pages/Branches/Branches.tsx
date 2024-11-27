@@ -74,6 +74,7 @@ function Branches() {
   }, [orgId, token]);
 
   const handleDeleteBranch = (branchId: number) => {
+    setError(null);
     if (window.electron && window.electron.ipcRenderer) {
       // Send request to delete Branch
       window.electron.ipcRenderer.sendMessage('delete-branch', {
@@ -82,7 +83,6 @@ function Branches() {
       });
       const handleBranchDeleted = (_event: any, response: any) => {
         const typedResponse = response as GetResponse;
-        setLoading(false);
 
         if (typedResponse.success) {
           setBranches(branches.filter((branch) => branch.id !== branchId));

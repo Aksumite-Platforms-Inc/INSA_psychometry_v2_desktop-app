@@ -36,8 +36,6 @@ function UserTable() {
 
     const fetchUsers = () => {
       if (window.electron && window.electron.ipcRenderer) {
-        console.log('Fetching users with token:', token); // Debugging token
-
         // Send request to fetch users
         window.electron.ipcRenderer.sendMessage('get-members', {
           orgId,
@@ -45,8 +43,6 @@ function UserTable() {
         });
 
         const handleMembersListed = (_event: any, response: any) => {
-          console.log('Received members-listed response:', response); // Debugging response
-
           const typedResponse = response as GetResponse;
           setLoading(false);
 
