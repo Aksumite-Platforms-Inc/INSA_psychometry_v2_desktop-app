@@ -4,23 +4,42 @@ import * as fs from 'fs';
 import * as path from 'path';
 import ExcelJS from 'exceljs';
 
+const { dialog } = require('electron');
+
 // Generate Excel Template
 const performDownloadTemplate = async (event: IpcMainEvent) => {
   try {
-    console.log('Generating template file...'); // Debugging log
+    const appDataPath = path.join(
+      path.resolve(__dirname, '../../'), // Navigate to the root of the project
+      'resources/templates/user-template.xlsx', // Append the file path
+    );
 
-    // Create a workbook and worksheet
+    console.log('Preparing to download template file...'); // Debugging log
+
+    // Check if the template file exists in the app data
+    if (!fs.existsSync(appDataPath)) {
+      throw new Error('Template file not found in app data.');
+    }
+
+    // Open a dialog to let the user choose where to save the file
+    const { filePath } = await dialog.showSaveDialog({
+      title: 'Save Template File',
+      defaultPath: 'user-template.xlsx',
+      filters: [{ name: 'Excel Files', extensions: ['xlsx'] }],
+    });
+
+    if (!filePath) {
+      throw new Error('No file path selected.');
+    }
+
+    // Copy the template file to the chosen location
+    fs.copyFileSync(appDataPath, filePath);
+
+    console.log('Template file copied to:', filePath); // Debugging log
+
+    // Create a new workbook instance
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Template');
-
-    // Define the template columns
-    worksheet.columns = [
-      { header: 'Name', key: 'name', width: 25 },
-      { header: 'Email', key: 'email', width: 35 },
-    ];
-
-    // File path for the template
-    const filePath = path.join(process.cwd(), 'user-template.xlsx');
+    await workbook.xlsx.readFile(appDataPath);
 
     // Write the workbook to the file
     await workbook.xlsx.writeFile(filePath);
