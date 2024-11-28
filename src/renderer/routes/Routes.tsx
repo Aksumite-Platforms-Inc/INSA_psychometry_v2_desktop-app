@@ -18,7 +18,7 @@ function AppRoutes(): React.ReactElement {
       <Routes>
         <Route path="/Login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route path="/" element={<Dashboard />} />
+        <Route path="*" element={<Dashboard />} />
         <Route
           path="/dashboard"
           element={
