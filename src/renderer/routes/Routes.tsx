@@ -1,12 +1,12 @@
 import React from 'react';
-import { HashRouter as Router, Route, Routes } from 'react-router-dom';
+import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from '../pages/Auth/Login';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Users from '../pages/Users/UserList';
 import Branches from '../pages/Branches/Branches';
 import Tests from '../pages/Tests/TestsList';
 import Reports from '../pages/Reports/Reports';
-import Profile from '../pages/Users/profile';
+import Profile from '../pages/Users/Profile';
 import TestPage from '../pages/Tests/TestPage';
 import BranchDetails from '../pages/Branches/BranchDetails';
 import ProtectedRoute from './ProtectedRoute';
@@ -16,10 +16,9 @@ function AppRoutes(): React.ReactElement {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
         <Route path="/" element={<Dashboard />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route path="*" element={<Dashboard />} />
         <Route
           path="/dashboard"
           element={
@@ -90,6 +89,8 @@ function AppRoutes(): React.ReactElement {
             </ProtectedRoute>
           }
         />
+        {/* Catch-all route */}
+        <Route path="*" element={<Dashboard />} />
       </Routes>
     </Router>
   );
