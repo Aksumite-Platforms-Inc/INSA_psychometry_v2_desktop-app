@@ -79,17 +79,43 @@ function Header({ toggleSidebar }: HeaderProps) {
         {/* Dropdown Panel */}
         {panel && (
           <div className="absolute top-20 bg-white border rounded-md p-2 w-56">
-            <div className="p-2 hover:bg-blue-100 cursor-pointer">Profile</div>
-            <div className="p-2 hover:bg-blue-100 cursor-pointer">Messages</div>
-            <div className="p-2 hover:bg-blue-100 cursor-pointer">
-              To-Do&apos;s
+            <div
+              className="p-2 hover:bg-blue-100 cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate('/profile')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  navigate('/profile');
+                }
+              }}
+            >
+              Profile
+            </div>
+
+            <div
+              className="p-2 hover:bg-blue-100 cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                localStorage.removeItem('authToken');
+
+                navigate('/login');
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  navigate('/login');
+                }
+              }}
+            >
+              Logout
             </div>
           </div>
         )}
 
         {/* Notifications & Logout */}
         <div className="border-l pl-3 ml-3 space-x-1">
-          <button
+          {/* <button
             type="button"
             className="relative p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:bg-gray-100 focus:text-gray-600 rounded-full"
           >
@@ -110,7 +136,7 @@ function Header({ toggleSidebar }: HeaderProps) {
                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
               />
             </svg>
-          </button>
+          </button> */}
 
           <button
             type="button"

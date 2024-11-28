@@ -3,10 +3,12 @@ import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUsers,
+  faCodeBranch,
   faFileAlt,
   faChartBar,
   faUserCircle,
   faQuestionCircle,
+  // faC,
 } from '@fortawesome/free-solid-svg-icons';
 import { useLocation, Link } from 'react-router-dom';
 import { getUserName, getUserRole } from '../../utils/validationUtils';
@@ -40,7 +42,7 @@ function Sidebar() {
     {
       path: '/branches',
       label: 'Branches',
-      icon: faUsers,
+      icon: faCodeBranch,
       roles: ['Organization Admin'],
     },
     {

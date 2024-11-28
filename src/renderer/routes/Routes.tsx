@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from '../pages/Auth/Login';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Users from '../pages/Users/UserList';
@@ -14,19 +14,11 @@ import Unauthorized from '../pages/Unauthorized';
 
 function AppRoutes(): React.ReactElement {
   return (
-    <Router
-      initialEntries={['/login']} // Default route when the app starts (change as needed)
-      initialIndex={0} // Set the index to point to the first entry
-    >
+    <Router>
       <Routes>
-        {/* Public Routes */}
         <Route path="/login" element={<Login />} />
-        <Route path="/unauthorized" element={<Unauthorized />} />
-
-        {/* Default Dashboard Route */}
         <Route path="/" element={<Dashboard />} />
-
-        {/* Protected Routes */}
+        <Route path="/unauthorized" element={<Unauthorized />} />
         <Route
           path="/dashboard"
           element={
@@ -97,6 +89,8 @@ function AppRoutes(): React.ReactElement {
             </ProtectedRoute>
           }
         />
+        {/* Fallback Route */}
+        <Route path="*" element={<Unauthorized />} />
       </Routes>
     </Router>
   );
