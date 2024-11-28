@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DefaultLayout from '../../components/layout/defaultlayout';
+import { getToken } from '../../utils/validationUtils';
 
 // List of tests with their IDs and URLs
 const tests = [
@@ -30,6 +31,7 @@ function TestPage() {
   const { testId } = useParams<{ testId: string }>();
   const navigate = useNavigate();
   const test = tests.find((t) => t.id === parseInt(testId || '', 10));
+  const token = getToken();
 
   const [testStarted, setTestStarted] = useState(false);
   const [iframeUrl] = useState<string>(test ? test.url : '');
@@ -76,7 +78,11 @@ function TestPage() {
         'Are you sure you want to submit the test?',
       );
       if (confirmed) {
-        window.electron.ipcRenderer.sendMessage('take-screenshot', test.id);
+        window.electron.ipcRenderer.sendMessage(
+          'take-screenshot',
+          test.id,
+          token,
+        );
         navigate('/tests');
       }
     } else {
