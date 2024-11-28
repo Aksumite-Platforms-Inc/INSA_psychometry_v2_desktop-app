@@ -14,6 +14,9 @@ interface LoginResponse {
   };
 }
 
+// Initialize toast notifications
+// toast.configure();
+
 function LoginForm() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -26,19 +29,25 @@ function LoginForm() {
       const unsubscribe = window.electron.ipcRenderer.on(
         'user-login-success',
         (_event, response) => {
-          // console.log('Received response from main process:', response);
-
           const typedResponse = response as LoginResponse & { token: string };
           if (typedResponse.success) {
-            // console.log('Login successful:', typedResponse.user);
-
             // Save token in localStorage
             if (typedResponse.token) {
               localStorage.setItem('authToken', typedResponse.token);
-              toast.success('Login successful!');
-
-              // console.log('Token saved to localStorage:', typedResponse.token);
+              // Show success toast
+              toast.success('Login successful!', {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'colored',
+              });
             }
+
+            // Navigate based on user role
             if (
               userRole === 'Organization Admin' ||
               userRole === 'Branch Admin'
@@ -48,7 +57,17 @@ function LoginForm() {
               navigate('/tests');
             }
           } else {
-            console.error('Login failed:', typedResponse.message);
+            // Show error toast
+            toast.error(typedResponse.message || 'Login failed!', {
+              position: 'top-right',
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'colored',
+            });
             setError(typedResponse.message || 'An unexpected error occurred.');
           }
         },
@@ -68,6 +87,16 @@ function LoginForm() {
       window.electron.ipcRenderer.sendMessage('user-login', email, password);
     } else {
       setError('Electron IPC is not available');
+      toast.error('Electron IPC is not available', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'colored',
+      });
     }
   };
 
@@ -79,17 +108,12 @@ function LoginForm() {
             <Link className="mb-5.5 inline-block" to="/">
               <img className="hidden dark:block" src={Logo} alt="Logo" />
             </Link>
-            {/* <p className="">INSA Personality Test</p> */}
-            <h2 className="mb-9  font-bold  ">
-              INSA | Personality Test Platform
-            </h2>
+            <h2 className="mb-9 font-bold">INSA | Personality Test Platform</h2>
           </div>
         </div>
 
         <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
           <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-            {/* <span className="mb-1.5 block font-medium">Welcome Back</span> */}
-
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label
@@ -104,7 +128,7 @@ function LoginForm() {
                       placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-gray-900 dark:focus:border-primary"
+                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                     />
                   </div>
                 </label>
@@ -118,11 +142,12 @@ function LoginForm() {
                   Password
                   <div className="relative">
                     <input
+                      id="password"
                       type="password"
                       placeholder="8+ Characters, 1 Capital letter"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-gray-900 dark:focus:border-primary"
+                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                     />
                   </div>
                 </label>
