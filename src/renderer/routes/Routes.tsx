@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from '../pages/Auth/Login';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Users from '../pages/Users/UserList';
@@ -16,7 +16,8 @@ function AppRoutes(): React.ReactElement {
   return (
     <Router>
       <Routes>
-        <Route path="/Login" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="*" element={<Dashboard />} />
         <Route

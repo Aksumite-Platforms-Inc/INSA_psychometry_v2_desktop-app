@@ -29,7 +29,7 @@ const configuration: webpack.Configuration = {
 
   output: {
     path: webpackPaths.distRendererPath,
-    publicPath: './',
+    publicPath: './', // Ensure correct resource loading in production
     filename: 'renderer.js',
     library: {
       type: 'umd',
@@ -115,25 +115,20 @@ const configuration: webpack.Configuration = {
       filename: 'style.css',
     }),
 
-    new BundleAnalyzerPlugin({
-      analyzerMode: process.env.ANALYZE === 'true' ? 'server' : 'disabled',
-      analyzerPort: 8889,
-    }),
-
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
+      publicPath: './',
       minify: {
         collapseWhitespace: true,
         removeAttributeQuotes: true,
         removeComments: true,
       },
-      isBrowser: false,
-      isDevelopment: false,
     }),
 
-    new webpack.DefinePlugin({
-      'process.type': '"renderer"',
+    new BundleAnalyzerPlugin({
+      analyzerMode: process.env.ANALYZE === 'true' ? 'server' : 'disabled',
+      analyzerPort: 8889,
     }),
   ],
 };
