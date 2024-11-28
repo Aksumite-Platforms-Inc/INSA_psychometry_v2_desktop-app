@@ -1,5 +1,10 @@
 import { IpcMainEvent } from 'electron';
-import { updateProfile, GetAllOrgMembers, DeleteOrgMember } from './api';
+import {
+  updateProfile,
+  GetAllOrgMembers,
+  DeleteOrgMember,
+  GetAllBranchMembers,
+} from './api';
 
 const PerformUpdateProfile = async (
   fullName: string,
@@ -78,6 +83,34 @@ const performGetAllMembers = async (
     });
   }
 };
+const performGetBranchMembers = async (
+  orgId: number,
+  branchId: number,
+  token: string,
+  event: IpcMainEvent,
+) => {
+  try {
+    console.log('Fetching branch members:', { orgId, branchId, token }); // Debugging log
+
+    // Call the API to get branch members
+    const members = await GetAllBranchMembers(orgId, branchId, token);
+    console.log('Fetched branch members:', members);
+
+    // Reply with the success response
+    event.reply('branch-members-listed', {
+      success: true,
+      data: members,
+    });
+  } catch (error: any) {
+    console.error('Error fetching branch members:', error.message);
+
+    // Reply with the failure response
+    event.reply('branch-members-listed', {
+      success: false,
+      message: error.message || 'Failed to fetch branch members.',
+    });
+  }
+};
 
 const performDeleteMember = async (
   event: IpcMainEvent,
@@ -95,4 +128,9 @@ const performDeleteMember = async (
     });
   }
 };
-export { PerformUpdateProfile, performGetAllMembers, performDeleteMember };
+export {
+  PerformUpdateProfile,
+  performGetAllMembers,
+  performDeleteMember,
+  performGetBranchMembers,
+};

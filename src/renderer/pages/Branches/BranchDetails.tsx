@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { getToken, getOrgId } from '../../utils/validationUtils';
 import DefaultLayout from '../../components/layout/defaultlayout';
+import BranchUserTable from '../../components/Tables/BranchUserTable';
 
 interface BranchDetails {
   id: number;
@@ -124,16 +125,17 @@ function BranchDetailsPage() {
                 <span className="font-semibold">Branch Name:</span>{' '}
                 {branchDetails.name}
               </p>
-              {/* <p className="text-gray-700 mb-1">
-                <span className="font-semibold">Location:</span>{' '}
-                {branchDetails.location || 'Unknown'}
-              </p> */}
               <p className="text-gray-700 mb-1">
                 <span className="font-semibold">Created At:</span>{' '}
                 {branchDetails.createdAt || 'Unknown'}
               </p>
             </div>
           </div>
+        )}
+
+        {/* Pass branchId to BranchUserTable */}
+        {branchId && (
+          <BranchUserTable branchId={Number(branchId)} orgId={Number(orgId)} />
         )}
       </div>
     </DefaultLayout>

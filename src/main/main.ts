@@ -29,6 +29,7 @@ import {
 import {
   PerformUpdateProfile,
   performGetAllMembers,
+  performGetBranchMembers,
   performDeleteMember,
 } from './services/userService';
 
@@ -218,6 +219,12 @@ ipcMain.on(
 ipcMain.on('get-members', async (event: IpcMainEvent, { orgId, token }) => {
   await performGetAllMembers(orgId, token, event);
 });
+ipcMain.on(
+  'get-branch-members',
+  async (event: IpcMainEvent, { orgId, branchId, token }) => {
+    await performGetBranchMembers(orgId, branchId, token, event);
+  },
+);
 
 ipcMain.on(
   'delete-member',
