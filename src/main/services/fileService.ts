@@ -1,27 +1,28 @@
 // src/main/services/fileService.ts
-import { IpcMainEvent } from 'electron';
+import { IpcMainEvent, app } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
 import ExcelJS from 'exceljs';
+import { addBulkUsers } from './api'; // Import the API function
 
 const { dialog } = require('electron');
+
+const getTemplatePath = () => {
+  const basePath = app.isPackaged
+    ? process.resourcesPath // In packaged app
+    : app.getAppPath(); // In development
+
+  return path.join(basePath, 'resources/templates/user-template.xlsx');
+};
 
 // Generate Excel Template
 const performDownloadTemplate = async (event: IpcMainEvent) => {
   try {
-    const appDataPath = path.join(
-      path.resolve(__dirname, '../../'), // Navigate to the root of the project
-      'resources/templates/user-template.xlsx', // Append the file path
-    );
-
-    console.log('Preparing to download template file...'); // Debugging log
-
-    // Check if the template file exists in the app data
-    if (!fs.existsSync(appDataPath)) {
-      throw new Error('Template file not found in app data.');
+    const TempPath = getTemplatePath();
+    if (!fs.existsSync(TempPath)) {
+      throw new Error('Template file not found.');
     }
 
-    // Open a dialog to let the user choose where to save the file
     const { filePath } = await dialog.showSaveDialog({
       title: 'Save Template File',
       defaultPath: 'user-template.xlsx',
@@ -32,19 +33,12 @@ const performDownloadTemplate = async (event: IpcMainEvent) => {
       throw new Error('No file path selected.');
     }
 
-    // Copy the template file to the chosen location
-    fs.copyFileSync(appDataPath, filePath);
+    fs.copyFileSync(TempPath, filePath);
 
-    console.log('Template file copied to:', filePath); // Debugging log
-
-    // Create a new workbook instance
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(appDataPath);
-
-    // Write the workbook to the file
+    await workbook.xlsx.readFile(TempPath);
     await workbook.xlsx.writeFile(filePath);
 
-    console.log('Template file created at:', filePath); // Debugging log
     event.reply('template-downloaded', { success: true, filePath });
   } catch (error) {
     console.error('Error generating template file:', error);
@@ -56,7 +50,11 @@ const performDownloadTemplate = async (event: IpcMainEvent) => {
 };
 
 // Process Uploaded Excel File
-const processExcelFile = async (filePath: string): Promise<any> => {
+const processExcelFile = async (
+  event: IpcMainEvent,
+  token: number,
+  filePath: string,
+): Promise<void> => {
   console.log('Attempting to access file:', filePath);
 
   if (!fs.existsSync(filePath)) {
@@ -82,6 +80,7 @@ const processExcelFile = async (filePath: string): Promise<any> => {
       throw new Error('The worksheet is empty or has no data.');
     }
 
+    // Parse the rows into JSON format
     const parsedRows = rows
       .slice(1) // Skip the header row
       .filter((row) => {
@@ -100,13 +99,12 @@ const processExcelFile = async (filePath: string): Promise<any> => {
             return cell.toString().trim();
           }
           if (typeof cell === 'object') {
-            // Handle complex cell types (e.g., hyperlinks, rich text)
-            if ('text' in cell) return cell.text.trim(); // Example: Handle hyperlink text
+            if ('text' in cell) return cell.text.trim();
             if ('richText' in cell) {
               return cell.richText
                 .map((part: any) => part.text)
                 .join('')
-                .trim(); // Handle rich text
+                .trim();
             }
           }
           return ''; // Fallback for unsupported types
@@ -123,11 +121,19 @@ const processExcelFile = async (filePath: string): Promise<any> => {
     }
 
     console.log('Parsed rows:', parsedRows);
-    return parsedRows;
+
+    // Send the parsed data to the API
+    const apiResponse = await addBulkUsers(token, parsedRows); // Use your API function
+    console.log('API response:', apiResponse);
+
+    // Send success response back to the renderer process
+    event.reply('excel-file-processed', { success: true, data: apiResponse });
   } catch (error) {
     console.error('Error processing Excel file:', error);
-    throw new Error('Failed to process the Excel file.');
+    event.reply('excel-file-processed', {
+      success: false,
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 };
-
 export { performDownloadTemplate, processExcelFile };
