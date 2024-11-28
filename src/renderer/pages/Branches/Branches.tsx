@@ -144,7 +144,7 @@ function Branches() {
 
   const handleRowClick = (clickedBranchId: number) => {
     // Handle row click logic here
-    navigate(`/branches/${clickedBranchId}`);
+    navigate(`/branches/${clickedBranchId}`, { state: { orgId } });
   };
 
   return (

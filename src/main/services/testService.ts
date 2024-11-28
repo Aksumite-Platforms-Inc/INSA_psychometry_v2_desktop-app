@@ -78,6 +78,22 @@ const takeScreenshotAndUpload = async (
           });
         }
       }
+
+      if (fs.existsSync(screenshotPath)) {
+        const alreadyTaken = await mainWindow.webContents.executeJavaScript(
+          `window.confirm('Test already exists. Do you want to send it again?')`,
+        );
+
+        if (alreadyTaken) {
+          await uploadFile(screenshotPath);
+        } else {
+          event.reply('screenshot-taken', {
+            status: 'cancelled',
+            message: 'User chose not to resend the existing screenshot',
+          });
+        }
+      }
+
     } catch (error) {
       console.error('Error uploading screenshot:', error);
       const retry = await mainWindow.webContents.executeJavaScript(
