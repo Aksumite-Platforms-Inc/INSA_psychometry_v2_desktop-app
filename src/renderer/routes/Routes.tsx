@@ -1,4 +1,5 @@
 import React from 'react';
+import { createHashHistory } from "history";
 import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from '../pages/Auth/Login';
 import Dashboard from '../pages/Dashboard/Dashboard';
@@ -12,9 +13,11 @@ import BranchDetails from '../pages/Branches/BranchDetails';
 import ProtectedRoute from './ProtectedRoute';
 import Unauthorized from '../pages/Unauthorized';
 
+const history = createHashHistory();
+
 function AppRoutes(): React.ReactElement {
   return (
-    <Router>
+    <Router history={history}>
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
