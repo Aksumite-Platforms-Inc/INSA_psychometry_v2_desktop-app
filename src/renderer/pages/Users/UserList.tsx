@@ -1,51 +1,57 @@
+/* eslint-disable consistent-return */
 import React, { useState, useEffect } from 'react';
 import UserTable from '../../components/Tables/UserTable';
 import DefaultLayout from '../../components/layout/defaultlayout';
+import { getToken } from '../../utils/validationUtils';
 
 function Users() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploadedData, setUploadedData] = useState<any[]>([]); // Store processed JSON data
+  const [uploadedData, setUploadedData] = useState<
+    { name: string; email: string }[]
+  >([]);
   const [error, setError] = useState<string | null>(null);
+  const token = getToken();
 
   useEffect(() => {
-    if (window.electron && window.electron.ipcRenderer) {
-      const handleUploadResponse = (_event: any, response: any) => {
-        if (response.success) {
-          console.log('Processed Data:', response.data);
-          setUploadedData(response.data); // Save for potential display or debugging
+    const { electron } = window;
+
+    if (electron?.ipcRenderer) {
+      const handleUploadResponse = (_event: any, response: unknown) => {
+        const typedResponse = response as {
+          success: boolean;
+          data?: any[];
+          message?: string;
+        };
+        if (typedResponse.success) {
+          setUploadedData(typedResponse.data || []);
           alert('File processed successfully!');
         } else {
-          console.error('Error processing file:', response.message);
-          setError(response.message);
+          setError(typedResponse.message || 'Error processing file.');
         }
       };
 
-      window.electron.ipcRenderer.on(
-        'excel-template-uploaded',
-        handleUploadResponse,
-      );
+      electron.ipcRenderer.on('excel-template-uploaded', handleUploadResponse);
 
       return () => {
-        window.electron.ipcRenderer.removeListener(
+        electron.ipcRenderer.removeListener(
           'excel-template-uploaded',
           handleUploadResponse,
         );
       };
     }
-    return undefined;
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const validExtensions = ['.xlsx', '.xls'];
+    const file = e.target.files?.[0];
+    const validExtensions = ['.xlsx', '.xls'];
 
+    if (file) {
       if (!validExtensions.some((ext) => file.name.endsWith(ext))) {
         alert('Please upload a valid Excel file (.xlsx or .xls).');
         return;
       }
-
       setSelectedFile(file);
+      setError(null); // Clear previous errors
     }
   };
 
@@ -55,39 +61,43 @@ function Users() {
       return;
     }
 
-    console.log('Selected file path:', selectedFile.path); // Log the file path
+    const { electron } = window;
 
-    if (window.electron && window.electron.ipcRenderer) {
-      window.electron.ipcRenderer.sendMessage('upload-excel-template', {
+    if (electron?.ipcRenderer) {
+      electron.ipcRenderer.sendMessage('upload-excel-template', {
+        token,
         filePath: selectedFile.path,
       });
-
       alert('File uploaded successfully! Processing...');
+    }
+  };
+
+  const handleDownloadTemplate = () => {
+    const { electron } = window;
+
+    if (electron?.ipcRenderer) {
+      electron.ipcRenderer.sendMessage('download-template');
+      alert('Downloading template...');
     }
   };
 
   return (
     <DefaultLayout>
       <div className="relative">
-        {/* Main Content */}
         <div className="flex-1 p-5 h-screen overflow-y-auto">
+          {/* Header */}
           <div className="flex justify-between items-center mt-5">
             <h1 className="text-xl font-semibold">Manage Users</h1>
-
-            {/* Download Template Button */}
             <button
               type="button"
               className="bg-green-500 text-white px-4 py-2 rounded-md"
-              onClick={() =>
-                window.electron &&
-                window.electron.ipcRenderer.sendMessage('download-template')
-              }
+              onClick={handleDownloadTemplate}
             >
               Download Template
             </button>
           </div>
 
-          {/* Upload Excel Template */}
+          {/* Bulk Upload Section */}
           <div className="mt-5 p-5 bg-white shadow rounded-md">
             <h2 className="text-lg font-bold mb-3">Bulk Upload Users</h2>
             <div className="flex items-center space-x-4">
@@ -106,13 +116,14 @@ function Users() {
               </button>
             </div>
           </div>
-          {/* Optional: Render Uploaded Data */}
+
+          {/* Uploaded Data Section */}
           {uploadedData.length > 0 && (
             <div className="mt-5">
               <h3 className="text-lg font-bold">Uploaded Users:</h3>
-              <ul>
+              <ul className="list-disc pl-5">
                 {uploadedData.map((user) => (
-                  <li key={user.email}>
+                  <li key={user.email} className="py-1">
                     {user.name} ({user.email})
                   </li>
                 ))}
@@ -120,7 +131,12 @@ function Users() {
             </div>
           )}
 
-          {error && <p className="text-red-500 mt-5">{error}</p>}
+          {/* Error Message */}
+          {error && (
+            <p className="text-red-500 mt-5">
+              <strong>Error:</strong> {error}
+            </p>
+          )}
 
           {/* User Table */}
           <div className="mt-8">

@@ -5,28 +5,56 @@ import fs from 'fs';
 import { IpcMainEvent, app } from 'electron';
 
 // Define the base URL as a variable for flexibility
-const API_BASE_URL = 'http://api.personality.insa.gov.et/api/v1';
+const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 // Set the default base URL for Axios
 axios.defaults.baseURL = API_BASE_URL;
 
 // File Section
-const addBulkUsers = async (users: { name: string; email: string }[]) => {
-  console.log('Adding bulk users:', users);
-  const response = await axios.post(
-    '/organization/addbulkmembers',
-    { users },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    },
-  );
+const validateUsers = (users: { name: string; email: string }[]) => {
+  return users.filter((user) => {
+    return (
+      user.name.trim().length > 0 &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(user.email)
+    );
+  });
+};
+const addBulkUsers = async (
+  token: number,
+  users: { name: string; email: string }[],
+) => {
+  const validUsers = validateUsers(users);
 
-  if (!response.data.success) {
-    throw new Error(response.data.message || 'Failed to add users.');
+  if (validUsers.length === 0) {
+    throw new Error('No valid users to send.');
   }
-  return response.data;
+
+  try {
+    const response = await axios.post(
+      'http://localhost:8080/api/v1/organization/addbulkmembers',
+      { users: validUsers },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to add users.');
+    }
+
+    console.log('Successfully added users:', response.data);
+    return response.data;
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error adding users:', error.message);
+    } else {
+      console.error('Error adding users:', error);
+    }
+    throw error;
+  }
 };
 const uploadScreenshot = async (
   screenshotPath: string,
