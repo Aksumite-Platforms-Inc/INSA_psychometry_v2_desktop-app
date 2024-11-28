@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { MemoryRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from '../pages/Auth/Login';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Users from '../pages/Users/UserList';
@@ -14,11 +14,19 @@ import Unauthorized from '../pages/Unauthorized';
 
 function AppRoutes(): React.ReactElement {
   return (
-    <Router>
+    <Router
+      initialEntries={['/login']} // Default route when the app starts (change as needed)
+      initialIndex={0} // Set the index to point to the first entry
+    >
       <Routes>
-        <Route path="/Login" element={<Login />} />
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route path="*" element={<Dashboard />} />
+
+        {/* Default Dashboard Route */}
+        <Route path="/" element={<Dashboard />} />
+
+        {/* Protected Routes */}
         <Route
           path="/dashboard"
           element={

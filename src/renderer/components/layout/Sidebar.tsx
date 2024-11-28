@@ -8,7 +8,7 @@ import {
   faUserCircle,
   faQuestionCircle,
 } from '@fortawesome/free-solid-svg-icons';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { getUserName, getUserRole } from '../../utils/validationUtils';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
@@ -117,8 +117,8 @@ function Sidebar() {
                       : 'hover:bg-gray-700'
                   }`}
                 >
-                  <a
-                    href={link.path}
+                  <Link
+                    to={link.path}
                     className="py-3 flex items-center space-x-3 px-3"
                   >
                     <FontAwesomeIcon
@@ -128,7 +128,7 @@ function Sidebar() {
                       }`}
                     />
                     <span className="text-base">{link.label}</span>
-                  </a>
+                  </Link>
                 </li>
               ))}
           </ul>

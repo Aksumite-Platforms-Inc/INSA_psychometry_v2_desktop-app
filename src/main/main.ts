@@ -54,7 +54,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'false';
 
 if (isDebug) {
   require('electron-debug')();
@@ -100,7 +100,7 @@ const createWindow = async () => {
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
+  mainWindow.loadURL(resolveHtmlPath('index.html#/login'));
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {

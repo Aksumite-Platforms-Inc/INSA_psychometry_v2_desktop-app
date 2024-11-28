@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import profielPicture from '../../assets/Images/habesha.jpg';
 import { getUserName, getUserRole } from '../../utils/validationUtils';
 
@@ -11,6 +12,7 @@ function Header({ toggleSidebar }: HeaderProps) {
 
   const userName = getUserName();
   const userRole = getUserRole();
+  const navigate = useNavigate();
   return (
     <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
       <div
@@ -116,7 +118,7 @@ function Header({ toggleSidebar }: HeaderProps) {
             // onclick delete locally stored token
             onClick={() => {
               localStorage.removeItem('authToken');
-              window.location.href = '/login';
+              navigate('/login');
             }}
           >
             <span className="sr-only">Log out</span>
