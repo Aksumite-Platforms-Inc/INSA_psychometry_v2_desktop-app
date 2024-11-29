@@ -7,8 +7,8 @@ import BranchUserTable from '../../components/Tables/BranchUserTable';
 interface BranchDetails {
   id: number;
   name: string;
-  location?: string;
-  createdAt?: string;
+  location: string;
+  createdAt: string;
 }
 
 interface GetBranchResponse {

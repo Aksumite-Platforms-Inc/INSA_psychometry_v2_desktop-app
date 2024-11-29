@@ -111,14 +111,14 @@ function UserTable() {
     setError('Electron IPC is not available.');
   };
 
-  const handleToggleUser = (userId: number) => {
-    // Add logic to update the user's active state (API call or state update)
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === userId ? { ...user, isActive: !user.isActive } : user,
-      ),
-    );
-  };
+  // const handleToggleUser = (userId: number) => {
+  //   // Add logic to update the user's active state (API call or state update)
+  //   setUsers((prevUsers) =>
+  //     prevUsers.map((user) =>
+  //       user.id === userId ? { ...user, isActive: !user.isActive } : user,
+  //     ),
+  //   );
+  // };
 
   const activeUsers = users.filter(
     (user) => user.activation_code !== '' && user.id !== currentUserId,
@@ -154,7 +154,7 @@ function UserTable() {
                     <td className="py-3 px-6">{user.name || 'N/A'}</td>
                     <td className="py-3 px-6">{user.email}</td>
                     <td className="py-3 px-6 text-center flex justify-center space-x-4">
-                      <label
+                      {/* <label
                         className="relative inline-flex items-center cursor-pointer"
                         aria-label={`Toggle user ${user.name}`}
                         htmlFor={`toggle-user-${user.id}`}
@@ -167,7 +167,7 @@ function UserTable() {
                           onChange={() => handleToggleUser(user.id)}
                         />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-300 rounded-full peer dark:bg-gray-700 peer-checked:bg-green-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600" />
-                      </label>
+                      </label> */}
                       <button
                         type="button"
                         className="text-red-500 hover:text-red-700"

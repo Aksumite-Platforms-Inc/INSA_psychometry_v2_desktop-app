@@ -1,7 +1,7 @@
 import React from 'react';
 import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from '../pages/Auth/Login';
-import ForgotPassword from '../pages/Auth/ForgotPassword.tsx'
+import ForgotPassword from '../pages/Auth/ForgotPassword';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import Users from '../pages/Users/UserList';
 import Branches from '../pages/Branches/Branches';
@@ -80,13 +80,8 @@ function AppRoutes(): React.ReactElement {
             </ProtectedRoute>
           }
         />
-        
-        <Route
-          path="/forgotpassword"
-          element={
-            <ForgotPassword/>
-          }
-        />
+
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route
           path="/test/:testId"
           element={

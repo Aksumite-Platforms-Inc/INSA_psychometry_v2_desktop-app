@@ -166,22 +166,7 @@ function LoginForm() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (window.electron && window.electron.shell) {
-                      window.electron.shell.openExternal(
-                        'https://personality.insa.gov.et',
-                      );
-                    } else {
-                      toast.error('Unable to open external link', {
-                        position: 'top-right',
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: 'colored',
-                      });
-                    }
+                    navigate('/forgotpassword');
                   }}
                   className="text-sm font-medium text-primary hover:underline"
                 >

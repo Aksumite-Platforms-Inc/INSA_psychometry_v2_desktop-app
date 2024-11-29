@@ -1,6 +1,6 @@
 {
   "name": "insa-personality-test-pro",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "personality test taking app",
   "keywords": [
     "personality",
@@ -27,8 +27,8 @@
       "url": "https://github.com/enochCodes"
     },
     {
-      "name": "zemicael tefera",
-      "email": "themichaeltefera@gmail.com",
+      "name": "zemichael tefera",
+      "email": "themickmay15@gmail.com",
       "url": "https://github.com/zemuumez"
     }
   ],
@@ -264,7 +264,7 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "Aksumite-Platforms-Inc",
+      "owner": "Information Network Security Administration (INSA) of Ethiopia",
       "repo": "https://github.com/Aksumite-Platforms-Inc/INSA-Personality-Test_Desktop-app"
     }
   },
