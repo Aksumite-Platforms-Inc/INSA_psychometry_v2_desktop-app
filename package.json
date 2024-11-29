@@ -205,6 +205,7 @@
     "files": [
       "dist/**/*",
       "resources/**/*",
+      "upload/**/*",
       "node_modules",
       "package.json"
     ],

@@ -22,7 +22,9 @@ export type Channels =
   | 'download-template'
   | 'template-downloaded'
   | 'upload-excel-template'
-  | 'excel-template-uploaded';
+  | 'excel-template-uploaded'
+  | 'get-branch-members'
+  | 'branch-members-listed';
 
 export interface ElectronHandler {
   ipcRenderer: {

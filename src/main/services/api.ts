@@ -31,7 +31,7 @@ const addBulkUsers = async (
 
   try {
     const response = await axios.post(
-      'http://localhost:8080/api/v1/organization/addbulkmembers',
+      `${API_BASE_URL}/organization/addbulkmembers`,
       { users: validUsers },
       {
         headers: {
@@ -56,27 +56,53 @@ const addBulkUsers = async (
     throw error;
   }
 };
-const uploadScreenshot = async (
+export const uploadScreenshot = async (
   screenshotPath: string,
   testId: string,
   token: string,
 ) => {
-  const formData = new FormData();
-  formData.append('image', fs.createReadStream(screenshotPath));
-  formData.append('test_id', testId);
-
   if (!token) {
     throw new Error('Authorization token is missing.');
   }
 
-  const response = await axios.post('/organization/submit', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const formData = new FormData();
+  formData.append('image', fs.createReadStream(screenshotPath));
+  formData.append('test_id', testId);
 
-  return response;
+  try {
+    console.log('Uploading with token:', token); // Debugging token
+    console.log('Uploading screenshot from path:', screenshotPath); // Debugging path
+
+    const response = await axios.post(
+      `${API_BASE_URL}/organization/submit`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+        maxBodyLength: Infinity, // Handle large file uploads
+        maxContentLength: Infinity, // Handle large file uploads
+      },
+    );
+
+    console.log('Upload response:', response.data); // Debugging response
+
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed.');
+    }
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('Error response:', error.response?.data || error.message);
+      throw new Error(
+        `Upload failed: ${error.response?.data || error.message}`,
+      );
+    } else {
+      console.error('Unexpected error:', error);
+      throw new Error('Unexpected error occurred during upload.');
+    }
+  }
 };
 
 // Auth Section
@@ -173,6 +199,40 @@ const GetAllOrgMembers = async (orgId: number, token: string): Promise<any> => {
   try {
     const response = await axios.get(
       `${API_BASE_URL}/organization/${orgId}/members`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (response.data?.success) {
+      return response.data.data; // Return the members array
+    }
+    throw new Error('Failed to fetch members from the API.');
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(
+        error.response?.data?.message || 'Failed to fetch members.',
+      );
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+};
+const GetAllBranchMembers = async (
+  orgId: number,
+  branchId: number,
+  token: string,
+): Promise<any> => {
+  if (!token) {
+    throw new Error('Authorization token is missing.');
+  }
+
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/organization/${orgId}/branchs/${branchId}/members`,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -355,11 +415,11 @@ const createExcelTemplate = async (): Promise<string> => {
 };
 
 export {
-  uploadScreenshot,
   performLogin,
   updateProfile,
   addBulkUsers,
   GetAllOrgMembers,
+  GetAllBranchMembers,
   DeleteOrgMember,
   CreateBranch,
   GetAllBranches,

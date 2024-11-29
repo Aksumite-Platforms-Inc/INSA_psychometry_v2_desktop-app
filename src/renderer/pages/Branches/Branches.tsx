@@ -106,6 +106,7 @@ function Branches() {
   };
 
   const handleAddBranch = () => {
+    setError(null);
     if (window.electron && window.electron.ipcRenderer) {
       console.log('Sending create-branch request:', { name: newBranch, token });
 
@@ -119,7 +120,7 @@ function Branches() {
         console.log('Received branch-created response:', response);
 
         const typedResponse = response as GetResponse;
-        setLoading(false);
+        // setLoading(false);
 
         if (typedResponse.success && typedResponse.data) {
           setBranches(typedResponse.data);
@@ -138,11 +139,12 @@ function Branches() {
       };
     }
     setError('Electron IPC is not available.');
+    setLoading(false);
   };
 
   const handleRowClick = (clickedBranchId: number) => {
     // Handle row click logic here
-    navigate(`/branches/${clickedBranchId}`);
+    navigate(`/branches/${clickedBranchId}`, { state: { orgId } });
   };
 
   return (
