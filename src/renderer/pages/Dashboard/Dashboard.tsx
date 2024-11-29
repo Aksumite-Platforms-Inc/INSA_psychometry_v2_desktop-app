@@ -18,14 +18,13 @@ function Dashboard() {
         <div className="flex flex-col space-y-6 md:space-y-0 md:flex-row justify-between">
           <div className="mr-6">
             <h1 className="text-4xl font-semibold mb-2">Dashboard</h1>
-            <h2 className="text-gray-600 ml-0.5">
-              Government Management System
-            </h2>
+            <h2 className="text-gray-600 ml-0.5">INSA personality test</h2>
           </div>
           <div className="flex flex-wrap items-start justify-end -mb-3">
             <button
               type="button"
               className="inline-flex px-5 py-3 text-blue-600 hover:text-blue-700 focus:text-blue-700 hover:bg-blue-100 focus:bg-blue-100 border border-blue-600 rounded-md mb-3"
+              onClick={() => navigate('/users')}
             >
               <svg
                 aria-hidden="true"
@@ -37,7 +36,6 @@ function Dashboard() {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
                   d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                 />
               </svg>
@@ -85,7 +83,7 @@ function Dashboard() {
               </svg>
             </div>
             <div>
-              <span className="block text-2xl font-bold">62</span>
+              <span className="block text-2xl font-bold">-</span>
               <span className="block text-gray-500">Active Users</span>
             </div>
           </div>
@@ -107,7 +105,7 @@ function Dashboard() {
               </svg>
             </div>
             <div>
-              <span className="block text-2xl font-bold">68</span>
+              <span className="block text-2xl font-bold">-</span>
               <span className="block text-gray-500">Pending Users</span>
             </div>
           </div>
@@ -159,7 +157,7 @@ function Dashboard() {
               </svg>
             </div>
             <div>
-              <span className="block text-2xl font-bold">25</span>
+              <span className="block text-2xl font-bold">-</span>
               <span className="block text-gray-500">Reports Generated</span>
             </div>
           </div>

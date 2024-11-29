@@ -23,7 +23,7 @@ const performDownloadTemplate = async (event: IpcMainEvent) => {
       throw new Error('Template file not found.');
     }
 
-    const { filePath } = await dialog.showSaveDialog({
+    const { filePath } = await dialog.showSaveDialog(null, {
       title: 'Save Template File',
       defaultPath: 'user-template.xlsx',
       filters: [{ name: 'Excel Files', extensions: ['xlsx'] }],
@@ -41,7 +41,9 @@ const performDownloadTemplate = async (event: IpcMainEvent) => {
 
     event.reply('template-downloaded', { success: true, filePath });
   } catch (error) {
-    console.error('Error generating template file:', error);
+    event.reply('template-error', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
     event.reply('template-downloaded', {
       success: false,
       message: error instanceof Error ? error.message : 'Unknown error',
