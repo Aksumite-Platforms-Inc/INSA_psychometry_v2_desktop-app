@@ -162,6 +162,32 @@ function LoginForm() {
                   className="w-full cursor-pointer rounded-lg border border-primary bg-blue-700 p-4 text-white transition hover:bg-opacity-90"
                 />
               </div>
+              <div className="mb-2.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.electron && window.electron.shell) {
+                      window.electron.shell.openExternal(
+                        'https://personality.insa.gov.et',
+                      );
+                    } else {
+                      toast.error('Unable to open external link', {
+                        position: 'top-right',
+                        autoClose: 3000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: 'colored',
+                      });
+                    }
+                  }}
+                  className="text-sm font-medium text-primary hover:underline"
+                >
+                  Forgot Password?
+                </button>
+              </div>
             </form>
           </div>
         </div>

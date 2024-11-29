@@ -1,60 +1,33 @@
-import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
+import React from 'react';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DefaultLayout from '../../components/layout/defaultlayout';
 
 function Reports() {
   return (
     <DefaultLayout>
-      <div className="flex h-screen">
-        <div className="flex-1 p-6 bg-gray-50">
-          <div className="mt-5 bg-white p-6 rounded-lg shadow-lg overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">
-              Organization Reports
+      <div className="relative">
+        <div className="flex h-screen overflow-y-auto items-center justify-center bg-gray-50">
+          <div className="text-center p-6 bg-white rounded-lg shadow-lg">
+            <FontAwesomeIcon
+              icon={faClock}
+              className="text-blue-500 text-6xl mb-4"
+            />
+            <h2 className="text-3xl font-bold mb-2 text-gray-800">
+              Coming Soon
             </h2>
-
-            {/* Reports Table */}
-            <div className="mt-5 overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead className="bg-blue-100 text-gray-700">
-                  <tr>
-                    <th className="py-3 px-5">Report Name</th>
-                    <th className="py-3 px-5">Date Generated</th>
-                    <th className="py-3 px-5 text-center">Download</th>
-                  </tr>
-                </thead>
-                <tbody className="text-gray-600">
-                  {/* Replace with dynamic content */}
-                  <tr className="border-t hover:bg-gray-100 transition duration-150">
-                    <td className="py-3 px-5">Abyssinia Bank Test Report</td>
-                    <td className="py-3 px-5">September 22, 2024</td>
-                    <td className="py-3 px-5 text-center">
-                      <button
-                        type="button"
-                        className="text-blue-500 hover:text-blue-700 transition duration-150 ease-in-out"
-                      >
-                        <FontAwesomeIcon icon={faFileAlt} className="mr-2" />{' '}
-                        Download
-                      </button>
-                    </td>
-                  </tr>
-                  {/* Repeat for more reports */}
-                  <tr className="border-t hover:bg-gray-100 transition duration-150">
-                    <td className="py-3 px-5">Other Report Example</td>
-                    <td className="py-3 px-5">August 15, 2024</td>
-                    <td className="py-3 px-5 text-center">
-                      <button
-                        type="button"
-                        className="text-blue-500 hover:text-blue-700 transition duration-150 ease-in-out"
-                      >
-                        <FontAwesomeIcon icon={faFileAlt} className="mr-2" />{' '}
-                        Download
-                      </button>
-                    </td>
-                  </tr>
-                  {/* Add more rows as needed */}
-                </tbody>
-              </table>
-            </div>
+            <p className="text-gray-600 mb-4">
+              We are working hard to bring you this feature. Stay tuned!
+            </p>
+            <button
+              type="button"
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-150 ease-in-out"
+              onClick={() =>
+                alert('You will be notified when this feature is available.')
+              }
+            >
+              Notify Me
+            </button>
           </div>
         </div>
       </div>
