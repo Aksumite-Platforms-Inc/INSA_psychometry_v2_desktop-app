@@ -78,21 +78,6 @@ const takeScreenshotAndUpload = async (
           });
         }
       }
-
-      if (fs.existsSync(screenshotPath)) {
-        const alreadyTaken = await mainWindow.webContents.executeJavaScript(
-          `window.confirm('Test already exists. Do you want to send it again?')`,
-        );
-
-        if (alreadyTaken) {
-          await uploadFile(screenshotPath);
-        } else {
-          event.reply('screenshot-taken', {
-            status: 'cancelled',
-            message: 'User chose not to resend the existing screenshot',
-          });
-        }
-      }
     } catch (error) {
       console.error('Error uploading screenshot:', error);
       const retry = await mainWindow.webContents.executeJavaScript(
@@ -110,24 +95,9 @@ const takeScreenshotAndUpload = async (
   };
 
   try {
-    const iframeRect = { x: 600, y: 80, width: 1000, height: 750 };
+    const iframeRect = { x: 10, y: 10, width: 1200, height: 800 };
 
     if (mainWindow) {
-      if (fs.existsSync(screenshotPath)) {
-        const alreadyTaken = await mainWindow.webContents.executeJavaScript(
-          `window.confirm('Test already exists. Do you want to send it again?')`,
-        );
-
-        if (alreadyTaken) {
-          await uploadFile(screenshotPath);
-        } else {
-          event.reply('screenshot-taken', {
-            status: 'cancelled',
-            message: 'User chose not to resend the existing screenshot',
-          });
-          return;
-        }
-      }
       const image = await mainWindow.webContents.capturePage(iframeRect);
       fs.writeFileSync(screenshotPath, image.toPNG());
       console.log(`Screenshot saved at: ${screenshotPath}`);

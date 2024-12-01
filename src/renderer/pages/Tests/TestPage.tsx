@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+/* eslint-disable react/button-has-type */
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DefaultLayout from '../../components/layout/defaultlayout';
 import { getToken } from '../../utils/validationUtils';
 
-// List of tests with their IDs and URLs
 const tests = [
   {
     id: 1,
@@ -33,56 +33,30 @@ function TestPage() {
   const test = tests.find((t) => t.id === parseInt(testId || '', 10));
   const token = getToken();
 
-  const [testStarted, setTestStarted] = useState(false);
-  const [iframeUrl] = useState<string>(test ? test.url : '');
-  const [interactionBlocked, setInteractionBlocked] = useState(true);
-
-  useEffect(() => {
-    if (window.electron && window.electron.ipcRenderer) {
-      const unsubscribe = window.electron.ipcRenderer.on(
-        'screenshot-taken',
-        (_event: unknown, screenshotPath: unknown) => {
-          console.log(`Screenshot saved at: ${screenshotPath}`);
-        },
-      );
-
-      return () => {
-        if (unsubscribe) unsubscribe();
-      };
-    }
-    return undefined;
-  }, []);
-
-  if (!test) {
-    return (
-      <DefaultLayout>
-        <div className="flex">
-          <div className="flex-1 p-5">
-            <p>The selected test was not found.</p>
-          </div>
-        </div>
-      </DefaultLayout>
-    );
-  }
+  const [fullscreen, setFullscreen] = useState(false);
 
   const handleStartTest = () => {
-    setTestStarted(true);
-    setInteractionBlocked(false);
+    setFullscreen(true); // Enable fullscreen mode
+  };
+
+  const handleQuitTest = () => {
+    setFullscreen(false); // Exit fullscreen mode
   };
 
   const handleEndTest = () => {
-    setTestStarted(false);
-    setInteractionBlocked(true);
     if (window.electron && window.electron.ipcRenderer) {
       const confirmed = window.confirm(
         'Are you sure you want to submit the test?',
       );
       if (confirmed) {
-        window.electron.ipcRenderer.sendMessage(
-          'take-screenshot',
-          test.id,
-          token,
-        );
+        if (test) {
+          window.electron.ipcRenderer.sendMessage(
+            'take-screenshot',
+            test.id,
+            token,
+          );
+        }
+        setFullscreen(false); // Exit fullscreen mode
         navigate('/tests');
       }
     } else {
@@ -90,56 +64,64 @@ function TestPage() {
     }
   };
 
+  if (!test) {
+    return (
+      <DefaultLayout>
+        <div className="flex justify-center items-center h-full">
+          <p className="text-lg text-gray-700">
+            The selected test was not found.
+          </p>
+        </div>
+      </DefaultLayout>
+    );
+  }
+
   return (
     <DefaultLayout>
-      <div className="flex">
-        <div className="flex-1 p-5">
-          <div className="relative flex flex-col items-center mt-10 space-y-5">
-            {/* Iframe with overlay for blocking interaction */}
-            <div className="relative w-full flex justify-center">
-              <iframe
-                src={iframeUrl}
-                title={test.name}
-                width="1000"
-                height="750"
-                className="border rounded-md"
-                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-              />
-              {interactionBlocked && (
-                <div className="absolute top-0 left-0 w-full h-full bg-gray-200 bg-opacity-50 flex items-center justify-center">
-                  <p className="text-gray-700">
-                    Click &quot;Start Test&quot; to begin
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Start and End Test Buttons */}
-            <div className="flex space-x-5">
-              <button
-                type="button"
-                onClick={handleStartTest}
-                className={`bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition duration-200 ease-in-out ${
-                  testStarted ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-                disabled={testStarted}
-              >
-                Start Test
-              </button>
-              <button
-                type="button"
-                onClick={handleEndTest}
-                className={`bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-200 transition duration-200 ease-in-out ${
-                  !testStarted ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-                disabled={!testStarted}
-              >
-                Submit Test
-              </button>
-            </div>
+      {fullscreen ? (
+        // Fullscreen Mode
+        <div className="fixed inset-0 z-50 flex flex-col bg-white">
+          <iframe
+            src={test.url}
+            title={test.name}
+            className="flex-grow w-full h-full border-none"
+            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+          />
+          <div className="flex justify-between bg-gray-200 p-4">
+            <button
+              onClick={handleQuitTest}
+              className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            >
+              Quit Test
+            </button>
+            <button
+              onClick={handleEndTest}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              End Test
+            </button>
           </div>
         </div>
-      </div>
+      ) : (
+        // Normal View
+        <div className="flex flex-col items-center space-y-5 mt-10">
+          <iframe
+            src={test.url}
+            title={test.name}
+            width="1000"
+            height="500"
+            className="border rounded shadow-lg"
+            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+          />
+          <button
+            type="button"
+            onClick={handleStartTest}
+            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Start Test
+          </button>
+        </div>
+      )}
     </DefaultLayout>
   );
 }
