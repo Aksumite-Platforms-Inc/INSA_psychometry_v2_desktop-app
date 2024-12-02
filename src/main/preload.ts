@@ -24,7 +24,9 @@ export type Channels =
   | 'upload-excel-template'
   | 'excel-template-uploaded'
   | 'get-branch-members'
-  | 'branch-members-listed';
+  | 'branch-members-listed'
+  | 'iframe-loaded'
+  | 'get-iframe-bounds';
 
 export interface ElectronHandler {
   ipcRenderer: {

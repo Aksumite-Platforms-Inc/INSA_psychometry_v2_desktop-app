@@ -23,6 +23,7 @@ function setupUploadsDir(): string {
 const takeScreenshotAndUpload = async (
   mainWindow: BrowserWindow,
   testId: string,
+  dimensions: { width: number; height: number },
   event: IpcMainEvent,
   token: string,
 ): Promise<void> => {
@@ -49,8 +50,8 @@ const takeScreenshotAndUpload = async (
           }
         }
       },
-      10 * 60 * 1000,
-    ); // 10 minutes
+      10 * 60 * 1000, // 10 minutes
+    );
   };
 
   const uploadFile = async (filePath: string): Promise<void> => {
@@ -110,7 +111,15 @@ const takeScreenshotAndUpload = async (
   };
 
   try {
-    const iframeRect = { x: 600, y: 80, width: 1000, height: 750 };
+    // Use dimensions sent from the renderer process
+    const iframeRect = {
+      x: 0,
+      y: 0,
+      width: dimensions.width,
+      height: dimensions.height,
+    };
+
+    console.log('Taking screenshot with rect:', iframeRect);
 
     if (mainWindow) {
       if (fs.existsSync(screenshotPath)) {

@@ -89,8 +89,8 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    width: 1200,
+    height: 800,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
@@ -98,6 +98,7 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
       nodeIntegration: false,
       contextIsolation: true, // Keep this true for security with contextBridge
+      webSecurity: false, // Disable same-origin restrictions
     },
   });
 
@@ -137,9 +138,24 @@ const createWindow = async () => {
  */
 
 // screeen shot taker
-ipcMain.on('take-screenshot', async (event, testId, token) => {
+
+ipcMain.on('take-screenshot', async (event, { testId, token, dimensions }) => {
   if (mainWindow) {
-    await takeScreenshotAndUpload(mainWindow, testId, event, token);
+    try {
+      await takeScreenshotAndUpload(
+        mainWindow,
+        testId,
+        dimensions,
+        event,
+        token,
+      );
+    } catch (error) {
+      console.error('Error capturing screenshot:', error);
+      event.reply('screenshot-taken', {
+        status: 'error',
+        message: (error as Error).message,
+      });
+    }
   } else {
     console.error('Error: mainWindow is not available');
     event.reply('screenshot-taken', 'Error: mainWindow is not available');
