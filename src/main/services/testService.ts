@@ -49,8 +49,8 @@ const takeScreenshotAndUpload = async (
           }
         }
       },
-      10 * 60 * 1000,
-    ); // 10 minutes
+      10 * 60 * 1000, // 10 minutes
+    );
   };
 
   const uploadFile = async (filePath: string): Promise<void> => {
@@ -78,6 +78,21 @@ const takeScreenshotAndUpload = async (
           });
         }
       }
+
+      if (fs.existsSync(screenshotPath)) {
+        const alreadyTaken = await mainWindow.webContents.executeJavaScript(
+          `window.confirm('Test already exists. Do you want to send it again?')`,
+        );
+
+        if (alreadyTaken) {
+          await uploadFile(screenshotPath);
+        } else {
+          event.reply('screenshot-taken', {
+            status: 'cancelled',
+            message: 'User chose not to resend the existing screenshot',
+          });
+        }
+      }
     } catch (error) {
       console.error('Error uploading screenshot:', error);
       const retry = await mainWindow.webContents.executeJavaScript(
@@ -95,9 +110,28 @@ const takeScreenshotAndUpload = async (
   };
 
   try {
-    const iframeRect = { x: 10, y: 10, width: 1200, height: 800 };
+    // Dynamically determine the dimensions of the main window
+    const { x, y, width, height } = mainWindow.getBounds();
+    const iframeRect = { x, y, width, height };
+
+    console.log('Taking screenshot with rect:', iframeRect);
 
     if (mainWindow) {
+      if (fs.existsSync(screenshotPath)) {
+        const alreadyTaken = await mainWindow.webContents.executeJavaScript(
+          `window.confirm('Test already exists. Do you want to send it again?')`,
+        );
+
+        if (alreadyTaken) {
+          await uploadFile(screenshotPath);
+        } else {
+          event.reply('screenshot-taken', {
+            status: 'cancelled',
+            message: 'User chose not to resend the existing screenshot',
+          });
+          return;
+        }
+      }
       const image = await mainWindow.webContents.capturePage(iframeRect);
       fs.writeFileSync(screenshotPath, image.toPNG());
       console.log(`Screenshot saved at: ${screenshotPath}`);

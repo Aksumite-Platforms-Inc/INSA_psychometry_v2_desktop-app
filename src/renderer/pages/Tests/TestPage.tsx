@@ -39,29 +39,32 @@ function TestPage() {
     setFullscreen(true); // Enable fullscreen mode
   };
 
-  const handleQuitTest = () => {
-    setFullscreen(false); // Exit fullscreen mode
-  };
-
   const handleEndTest = () => {
     if (window.electron && window.electron.ipcRenderer) {
       const confirmed = window.confirm(
         'Are you sure you want to submit the test?',
       );
       if (confirmed) {
-        if (test) {
-          window.electron.ipcRenderer.sendMessage(
-            'take-screenshot',
-            test.id,
-            token,
-          );
-        }
+        // Send the current app window dimensions to the main process
+        const dimensions = {
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+        window.electron.ipcRenderer.sendMessage('take-screenshot', {
+          testId: test?.id,
+          token,
+          dimensions,
+        });
         setFullscreen(false); // Exit fullscreen mode
         navigate('/tests');
       }
     } else {
       console.log('Electron IPC is not available');
     }
+  };
+
+  const handleQuitTest = () => {
+    setFullscreen(false); // Exit fullscreen mode
   };
 
   if (!test) {
@@ -79,7 +82,6 @@ function TestPage() {
   return (
     <DefaultLayout>
       {fullscreen ? (
-        // Fullscreen Mode
         <div className="fixed inset-0 z-50 flex flex-col bg-white">
           <iframe
             src={test.url}
@@ -103,7 +105,6 @@ function TestPage() {
           </div>
         </div>
       ) : (
-        // Normal View
         <div className="flex flex-col items-center space-y-5 mt-10">
           <iframe
             src={test.url}

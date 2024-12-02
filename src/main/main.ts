@@ -138,9 +138,18 @@ const createWindow = async () => {
  */
 
 // screeen shot taker
-ipcMain.on('take-screenshot', async (event, testId, token) => {
+
+ipcMain.on('take-screenshot', async (event, { testId, token }) => {
   if (mainWindow) {
-    await takeScreenshotAndUpload(mainWindow, testId, event, token);
+    try {
+      await takeScreenshotAndUpload(mainWindow, testId, event, token);
+    } catch (error) {
+      console.error('Error capturing screenshot:', error);
+      event.reply('screenshot-taken', {
+        status: 'error',
+        message: (error as Error).message,
+      });
+    }
   } else {
     console.error('Error: mainWindow is not available');
     event.reply('screenshot-taken', 'Error: mainWindow is not available');
