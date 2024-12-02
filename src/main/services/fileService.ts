@@ -5,7 +5,9 @@ import * as path from 'path';
 import ExcelJS from 'exceljs';
 import { addBulkUsers } from './api'; // Import the API function
 
-const { dialog } = require('electron');
+const { dialog, BrowserWindow } = require('electron');
+
+const mainWindow = BrowserWindow.getFocusedWindow();
 
 const getTemplatePath = () => {
   const basePath = app.isPackaged
@@ -22,8 +24,7 @@ const performDownloadTemplate = async (event: IpcMainEvent) => {
     if (!fs.existsSync(TempPath)) {
       throw new Error('Template file not found.');
     }
-
-    const { filePath } = await dialog.showSaveDialog(null, {
+    const { filePath } = await dialog.showSaveDialog(mainWindow, {
       title: 'Save Template File',
       defaultPath: 'user-template.xlsx',
       filters: [{ name: 'Excel Files', extensions: ['xlsx'] }],
