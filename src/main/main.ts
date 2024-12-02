@@ -139,10 +139,16 @@ const createWindow = async () => {
 
 // screeen shot taker
 
-ipcMain.on('take-screenshot', async (event, { testId, token }) => {
+ipcMain.on('take-screenshot', async (event, { testId, token, dimensions }) => {
   if (mainWindow) {
     try {
-      await takeScreenshotAndUpload(mainWindow, testId, event, token);
+      await takeScreenshotAndUpload(
+        mainWindow,
+        testId,
+        dimensions,
+        event,
+        token,
+      );
     } catch (error) {
       console.error('Error capturing screenshot:', error);
       event.reply('screenshot-taken', {

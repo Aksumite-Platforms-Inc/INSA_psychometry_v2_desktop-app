@@ -45,7 +45,6 @@ function TestPage() {
         'Are you sure you want to submit the test?',
       );
       if (confirmed) {
-        // Send the current app window dimensions to the main process
         const dimensions = {
           width: window.innerWidth,
           height: window.innerHeight,

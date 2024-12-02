@@ -23,6 +23,7 @@ function setupUploadsDir(): string {
 const takeScreenshotAndUpload = async (
   mainWindow: BrowserWindow,
   testId: string,
+  dimensions: { width: number; height: number },
   event: IpcMainEvent,
   token: string,
 ): Promise<void> => {
@@ -110,9 +111,13 @@ const takeScreenshotAndUpload = async (
   };
 
   try {
-    // Dynamically determine the dimensions of the main window
-    const { x, y, width, height } = mainWindow.getBounds();
-    const iframeRect = { x, y, width, height };
+    // Use dimensions sent from the renderer process
+    const iframeRect = {
+      x: 0,
+      y: 0,
+      width: dimensions.width,
+      height: dimensions.height,
+    };
 
     console.log('Taking screenshot with rect:', iframeRect);
 
