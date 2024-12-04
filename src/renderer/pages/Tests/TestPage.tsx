@@ -23,7 +23,7 @@ const tests = [
   {
     id: 4,
     name: 'RIASEC',
-    url: 'https://personalitytests.com/riasec/',
+    url: 'https://openpsychometrics.org/tests/RIASEC/',
   },
 ];
 
