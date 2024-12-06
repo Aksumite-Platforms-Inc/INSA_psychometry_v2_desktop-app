@@ -77,7 +77,24 @@ function Users() {
 
     if (electron?.ipcRenderer) {
       electron.ipcRenderer.sendMessage('download-template');
-      alert('Downloading template...');
+
+      electron.ipcRenderer.once(
+        'download-template-success',
+        (_event, filePath: string) => {
+          alert(`Template saved at: ${filePath}`);
+        },
+      );
+
+      electron.ipcRenderer.once(
+        'download-template-error',
+        (_event, error: string) => {
+          alert(`Failed to download template: ${error}`);
+        },
+      );
+
+      electron.ipcRenderer.once('download-template-cancelled', () => {
+        alert('Download cancelled.');
+      });
     }
   };
 

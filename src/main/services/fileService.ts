@@ -17,40 +17,45 @@ const getTemplatePath = () => {
   return path.join(basePath, 'resources/templates/user-template.xlsx');
 };
 
-// Generate Excel Template
 const performDownloadTemplate = async (event: IpcMainEvent) => {
   try {
-    const TempPath = getTemplatePath();
-    if (!fs.existsSync(TempPath)) {
+    // Get the template path
+    const tempPath = getTemplatePath();
+    if (!fs.existsSync(tempPath)) {
       throw new Error('Template file not found.');
     }
-    const { filePath } = await dialog.showSaveDialog(mainWindow, {
+
+    // Show save dialog
+    const { filePath, canceled } = await dialog.showSaveDialog({
       title: 'Save Template File',
       defaultPath: 'user-template.xlsx',
       filters: [{ name: 'Excel Files', extensions: ['xlsx'] }],
     });
 
-    if (!filePath) {
+    if (canceled || !filePath) {
       throw new Error('No file path selected.');
     }
 
-    fs.copyFileSync(TempPath, filePath);
-
+    // Read and write the file using ExcelJS
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.readFile(TempPath);
-    await workbook.xlsx.writeFile(filePath);
+    await workbook.xlsx.readFile(tempPath); // Read the template
+    await workbook.xlsx.writeFile(filePath); // Write to the selected location
 
+    // Notify the renderer of success
     event.reply('template-downloaded', { success: true, filePath });
   } catch (error) {
-    event.reply('template-error', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-    });
+    console.error('Error in performDownloadTemplate:', error);
+
+    // Notify the renderer of the error
     event.reply('template-downloaded', {
       success: false,
-      message: error instanceof Error ? error.message : 'Unknown error',
+      message:
+        error instanceof Error ? error.message : 'Unknown error occurred.',
     });
   }
 };
+
+export default performDownloadTemplate;
 
 // Process Uploaded Excel File
 const processExcelFile = async (
