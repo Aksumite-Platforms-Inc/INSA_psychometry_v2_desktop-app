@@ -264,7 +264,7 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "Information Network Security Administration (INSA) of Ethiopia",
+      "owner": "Aksumite-Platforms-Inc",
       "repo": "https://github.com/Aksumite-Platforms-Inc/INSA-Personality-Test_Desktop-app"
     }
   },
