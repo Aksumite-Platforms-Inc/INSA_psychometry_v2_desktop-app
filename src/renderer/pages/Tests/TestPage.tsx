@@ -1,5 +1,6 @@
 /* eslint-disable react/button-has-type */
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DefaultLayout from '../../components/layout/defaultlayout';
 import { getToken } from '../../utils/validationUtils';
@@ -13,7 +14,7 @@ const tests = [
   {
     id: 2,
     name: 'Enneagram',
-    url: 'https://www.eclecticenergies.com/enneagram/test',
+    url: 'https://similarminds.com/enneagram-test.html',
   },
   {
     id: 3,
@@ -34,36 +35,112 @@ function TestPage() {
   const token = getToken();
 
   const [fullscreen, setFullscreen] = useState(false);
+  const [interactionBlocked, setInteractionBlocked] = useState(true);
+  const [existingResult, setExistingResult] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
+
+  useEffect(() => {
+    if (test && window.electron) {
+      window.electron.ipcRenderer.sendMessage('check-test-result', test.id);
+
+      const handleTestResultCheck = (_event: any, exists: boolean) => {
+        setExistingResult(exists);
+      };
+
+      window.electron.ipcRenderer.on(
+        'test-result-exists',
+        handleTestResultCheck,
+      );
+
+      return () => {
+        window.electron.ipcRenderer.removeListener(
+          'test-result-exists',
+          handleTestResultCheck,
+        );
+      };
+    }
+  }, [test]);
 
   const handleStartTest = () => {
-    setFullscreen(true); // Enable fullscreen mode
+    setFullscreen(true);
+    setInteractionBlocked(false);
   };
 
   const handleEndTest = () => {
-    if (window.electron && window.electron.ipcRenderer) {
+    if (window.electron) {
       const confirmed = window.confirm(
         'Are you sure you want to submit the test?',
       );
       if (confirmed) {
-        const dimensions = {
-          width: window.innerWidth,
-          height: window.innerHeight,
-        };
+        setShowLoader(true);
         window.electron.ipcRenderer.sendMessage('take-screenshot', {
           testId: test?.id,
+          dimensions: { width: window.innerWidth, height: window.innerHeight },
           token,
-          dimensions,
         });
-        setFullscreen(false); // Exit fullscreen mode
-        navigate('/tests');
+
+        window.electron.ipcRenderer.once('screenshot-complete', () => {
+          setShowLoader(false);
+          setFullscreen(false);
+          setInteractionBlocked(true);
+          navigate('/tests');
+        });
+
+        window.electron.ipcRenderer.once(
+          'screenshot-failed',
+          (_event, error: string) => {
+            setShowLoader(false);
+            if (error === 'Test is already taken') {
+              alert(
+                'The test has already been taken. You cannot submit it again.',
+              );
+            } else {
+              setError(error);
+            }
+          },
+        );
       }
-    } else {
-      console.log('Electron IPC is not available');
+    }
+  };
+
+  const handleResendResult = () => {
+    if (window.electron) {
+      setShowLoader(true);
+      window.electron.ipcRenderer.sendMessage(
+        'resend-test-result',
+        test?.id,
+        token,
+      );
+
+      window.electron.ipcRenderer.once('resend-test-result-success', () => {
+        setShowLoader(false);
+        setFullscreen(false);
+        setInteractionBlocked(true);
+        navigate('/tests');
+        alert('Result resent successfully.');
+      });
+
+      window.electron.ipcRenderer.once(
+        'resend-test-result-failure',
+        (_event, error: string) => {
+          setShowLoader(false);
+          alert(`Failed to resend result: ${error}`);
+        },
+      );
+    }
+  };
+
+  const handleRetakeTest = () => {
+    if (window.electron) {
+      window.electron.ipcRenderer.sendMessage('delete-test-result', test?.id);
+      setExistingResult(false);
+      setInteractionBlocked(true);
     }
   };
 
   const handleQuitTest = () => {
-    setFullscreen(false); // Exit fullscreen mode
+    setFullscreen(false);
+    setInteractionBlocked(true);
   };
 
   if (!test) {
@@ -98,28 +175,58 @@ function TestPage() {
             <button
               onClick={handleEndTest}
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              disabled={showLoader}
             >
-              End Test
+              {showLoader ? 'Processing...' : 'End Test'}
             </button>
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center space-y-5 mt-10">
-          <iframe
-            src={test.url}
-            title={test.name}
-            width="1000"
-            height="500"
-            className="border rounded shadow-lg"
-            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-          />
-          <button
-            type="button"
-            onClick={handleStartTest}
-            className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-          >
-            Start Test
-          </button>
+        <div className="flex flex-col items-center space-y-5 mt-10 relative">
+          <div className="relative">
+            <iframe
+              src={test.url}
+              title={test.name}
+              width="1000"
+              height="500"
+              className="border rounded shadow-lg"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+            />
+            {interactionBlocked && (
+              <div className="absolute inset-0 w-[1000px] h-[500px] bg-black bg-opacity-80 flex flex-col items-center justify-center">
+                <p className="text-white text-lg font-medium">
+                  {existingResult
+                    ? 'Test already exists.'
+                    : 'Click Start Test to begin.'}
+                </p>
+                <div className="mt-4">
+                  {existingResult ? (
+                    <>
+                      <button
+                        onClick={handleResendResult}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
+                      >
+                        Resend Result
+                      </button>
+                      <button
+                        onClick={handleRetakeTest}
+                        className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                      >
+                        Retake Test
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={handleStartTest}
+                      className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                      Start Test
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </DefaultLayout>

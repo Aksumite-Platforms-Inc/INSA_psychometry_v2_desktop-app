@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import DefaultLayout from '../../components/layout/defaultlayout';
+import { getToken, getUserId } from '../../utils/validationUtils';
 
 // List of tests with descriptions
 const tests = [
@@ -28,10 +29,42 @@ const tests = [
 
 function Tests() {
   const navigate = useNavigate();
+  const token = getToken();
+  const userId = getUserId();
 
   // Function to handle test click
   const handleTestClick = (testId: number) => {
-    navigate(`/test/${testId}`);
+    // navigate(`/test/${testId}`);
+    const memberId = userId;
+
+    if (window.electron) {
+      window.electron.ipcRenderer.sendMessage('check-if-test-taken', {
+        memberId,
+        testId,
+        token,
+      });
+
+      const handleTestTakenCheck = (_event: any, isTaken: boolean) => {
+        if (isTaken) {
+          navigate('/tests');
+          window.alert('Test Already Taken.');
+        } else {
+          navigate(`/test/${testId}`);
+        }
+      };
+      window.electron.ipcRenderer.on(
+        'check-test-taken-response',
+        handleTestTakenCheck,
+      );
+
+      window.electron.ipcRenderer.on(
+        'check-test-taken-failure',
+        (_event, error: string) => {
+          console.error('Error checking test status:', error);
+          alert('An error occurred while checking the test status.');
+        },
+      );
+    }
   };
 
   // Function to return background color based on test ID

@@ -105,7 +105,32 @@ export const uploadScreenshot = async (
     }
   }
 };
+export const checkTestTaken = async (
+  memberId: number,
+  testId: number,
+  token: string,
+): Promise<boolean> => {
+  try {
+    const response = await axios.get(
+      `${API_BASE_URL}/organization/checktest/members/${memberId}/tests/${testId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
 
+    return response.data.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(
+        error.response?.data?.message || 'Failed to check test status.',
+      );
+    }
+    throw new Error('An unexpected error occurred.');
+  }
+};
 // Auth Section
 const logout = async (event?: IpcMainEvent) => {
   console.log('Logging out the user...');

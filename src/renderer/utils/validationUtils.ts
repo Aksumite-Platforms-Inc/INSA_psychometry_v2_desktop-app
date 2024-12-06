@@ -23,7 +23,7 @@ export const decodeToken = (): DecodedToken | null => {
 
   try {
     const decoded: DecodedToken = jwtDecode(token);
-    console.log('decoding token:', decoded);
+    // console.log('decoding token:', decoded);
     return decoded;
   } catch (error) {
     console.error('Error decoding token:', error);
