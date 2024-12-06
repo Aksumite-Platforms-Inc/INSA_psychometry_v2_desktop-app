@@ -12,9 +12,15 @@ import { app, BrowserWindow, shell, ipcMain, IpcMainEvent } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import path from 'path';
+// import fs from 'fs';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import takeScreenshotAndUpload from './services/testService';
+import {
+  resendResult,
+  endTest,
+  deleteResult,
+  checkResult,
+} from './services/testService';
 import login from './services/authService';
 import {
   performDownloadTemplate,
@@ -100,6 +106,7 @@ const createWindow = async () => {
       contextIsolation: true, // Keep this true for security with contextBridge
       webSecurity: false, // Disable same-origin restrictions
     },
+    // fullscreen: true, // Add this line to make the window fullscreen
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
@@ -138,27 +145,30 @@ const createWindow = async () => {
  */
 
 // screeen shot taker
+ipcMain.on('check-test-result', (event, testId: string) => {
+  checkResult(testId, event);
+});
 
-ipcMain.on('take-screenshot', async (event, { testId, token, dimensions }) => {
+ipcMain.on('delete-test-result', (event, testId: string) => {
+  deleteResult(testId, event);
+});
+
+ipcMain.on(
+  'resend-test-result',
+  async (event, testId: string, token: string) => {
+    await resendResult(testId, token, event);
+  },
+);
+
+ipcMain.on('take-screenshot', async (event, { testId, dimensions, token }) => {
   if (mainWindow) {
-    try {
-      await takeScreenshotAndUpload(
-        mainWindow,
-        testId,
-        dimensions,
-        event,
-        token,
-      );
-    } catch (error) {
-      console.error('Error capturing screenshot:', error);
-      event.reply('screenshot-taken', {
-        status: 'error',
-        message: (error as Error).message,
-      });
-    }
+    await endTest(mainWindow, testId, dimensions, token, event);
   } else {
-    console.error('Error: mainWindow is not available');
-    event.reply('screenshot-taken', 'Error: mainWindow is not available');
+    console.error('mainWindow is not defined');
+    event.reply('take-screenshot-error', {
+      success: false,
+      message: 'Main window is not available.',
+    });
   }
 });
 

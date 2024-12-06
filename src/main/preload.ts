@@ -26,7 +26,17 @@ export type Channels =
   | 'get-branch-members'
   | 'branch-members-listed'
   | 'iframe-loaded'
-  | 'get-iframe-bounds';
+  | 'get-iframe-bounds'
+  | 'delete-test-result'
+  | 'resend-test-result'
+  | 'test-result-exists'
+  | 'test-result-deleted'
+  | 'resend-test-result-success'
+  | 'resend-test-result-failure'
+  | 'check-test-result'
+  | 'screenshot-complete'
+  | 'screenshot-failed'
+  | 'check-test-result-response';
 
 export interface ElectronHandler {
   ipcRenderer: {
