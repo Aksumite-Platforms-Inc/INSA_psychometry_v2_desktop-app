@@ -20,6 +20,7 @@ import {
   endTest,
   deleteResult,
   checkResult,
+  checkIfTestTaken,
 } from './services/testService';
 import login from './services/authService';
 import {
@@ -171,6 +172,12 @@ ipcMain.on('take-screenshot', async (event, { testId, dimensions, token }) => {
     });
   }
 });
+ipcMain.on(
+  'check-if-test-taken',
+  async (event: IpcMainEvent, { memberId, testId, token }) => {
+    await checkIfTestTaken(memberId, testId, token, event);
+  },
+);
 
 // Login Section
 

@@ -114,6 +114,9 @@ function TestPage() {
 
       window.electron.ipcRenderer.once('resend-test-result-success', () => {
         setShowLoader(false);
+        setFullscreen(false);
+        setInteractionBlocked(true);
+        navigate('/tests');
         alert('Result resent successfully.');
       });
 
@@ -190,8 +193,8 @@ function TestPage() {
               sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
             />
             {interactionBlocked && (
-              <div className="absolute inset-0 w-[1000px] h-[500px] bg-gray-200 bg-opacity-50 flex flex-col items-center justify-center">
-                <p className="text-gray-700 text-lg font-medium">
+              <div className="absolute inset-0 w-[1000px] h-[500px] bg-black bg-opacity-80 flex flex-col items-center justify-center">
+                <p className="text-white text-lg font-medium">
                   {existingResult
                     ? 'Test already exists.'
                     : 'Click Start Test to begin.'}

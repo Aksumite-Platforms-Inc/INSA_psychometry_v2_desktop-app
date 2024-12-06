@@ -1,7 +1,7 @@
 import { BrowserWindow, IpcMainEvent, app } from 'electron';
 import * as fs from 'fs';
 import * as path from 'path';
-import { uploadScreenshot } from './api';
+import { uploadScreenshot, checkTestTaken } from './api';
 
 function setupUploadsDir(): string {
   try {
@@ -30,6 +30,25 @@ const checkResult = (testId: string, event: IpcMainEvent): void => {
   } else {
     console.log(`No test result found for testId: ${testId}`);
     event.reply('test-result-exists', false);
+  }
+};
+const checkIfTestTaken = async (
+  memberId: number,
+  testId: number,
+  token: string,
+  event: IpcMainEvent,
+): Promise<void> => {
+  try {
+    const isTaken = await checkTestTaken(memberId, testId, token);
+    console.log('Test taken:', isTaken);
+    event.reply('check-test-taken-response', isTaken);
+  } catch (error) {
+    console.error('Error checking if test is taken:', error);
+    if (error instanceof Error) {
+      event.reply('check-test-taken-failure', error.message);
+    } else {
+      event.reply('check-test-taken-failure', 'An unknown error occurred.');
+    }
   }
 };
 
@@ -68,6 +87,7 @@ const resendResult = async (
 
       if (response.status === 200) {
         console.log(`Successfully resent result for test ${testId}`);
+        fs.unlinkSync(screenshotPath); // Delete the local image
         event.reply('resend-test-result-success');
       } else {
         console.error('Upload failed:', response.statusText || 'Unknown error');
@@ -81,8 +101,8 @@ const resendResult = async (
       event.reply('resend-test-result-failure', error.message);
     }
   } else {
-    console.error('No existing result found to resend.');
-    event.reply('resend-test-result-failure', 'No result exists to resend.');
+    console.log(`No screenshot found to resend for testId: ${testId}`);
+    event.reply('resend-test-result-failure', 'Screenshot not found.');
   }
 };
 
@@ -151,4 +171,4 @@ const endTest = async (
   }
 };
 
-export { checkResult, deleteResult, resendResult, endTest };
+export { checkResult, deleteResult, resendResult, endTest, checkIfTestTaken };

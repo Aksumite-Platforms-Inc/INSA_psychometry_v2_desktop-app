@@ -36,7 +36,10 @@ export type Channels =
   | 'check-test-result'
   | 'screenshot-complete'
   | 'screenshot-failed'
-  | 'check-test-result-response';
+  | 'check-test-result-response'
+  | 'check-if-test-taken'
+  | 'check-test-taken-response'
+  | 'check-test-taken-failure';
 
 export interface ElectronHandler {
   ipcRenderer: {
