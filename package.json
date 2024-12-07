@@ -260,7 +260,9 @@
       "output": "release/build"
     },
     "extraResources": [
-      "./assets/**"
+      "./assets/**",
+      "resources/**/*",
+      "upload/**/*"
     ],
     "publish": {
       "provider": "github",

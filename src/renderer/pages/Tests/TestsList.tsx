@@ -44,10 +44,14 @@ function Tests() {
         token,
       });
 
-      const handleTestTakenCheck = (_event: any, isTaken: boolean) => {
+      const handleTestTakenCheck = (_event: any, isTaken: unknown) => {
+        if (typeof isTaken !== 'boolean') {
+          console.error('Invalid response type:', isTaken);
+          return;
+        }
         if (isTaken) {
-          navigate('/tests');
           window.alert('Test Already Taken.');
+          navigate(0);
         } else {
           navigate(`/test/${testId}`);
         }
@@ -59,9 +63,8 @@ function Tests() {
 
       window.electron.ipcRenderer.on(
         'check-test-taken-failure',
-        (_event, error: string) => {
-          console.error('Error checking test status:', error);
-          alert('An error occurred while checking the test status.');
+        (_event: any, error: unknown) => {
+          console.error('Error checking test status:', error as string);
         },
       );
     }
