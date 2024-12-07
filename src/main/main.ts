@@ -175,7 +175,11 @@ ipcMain.on('take-screenshot', async (event, { testId, dimensions, token }) => {
 ipcMain.on(
   'check-if-test-taken',
   async (event: IpcMainEvent, { memberId, testId, token }) => {
-    await checkIfTestTaken(memberId, testId, token, event);
+    try {
+      await checkIfTestTaken(memberId, testId, token, event);
+    } catch (error) {
+      console.error('Error in check-if-test-taken handler:', error);
+    }
   },
 );
 

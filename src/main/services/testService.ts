@@ -63,7 +63,11 @@ const deleteResult = (testId: string, event: IpcMainEvent): void => {
       event.reply('delete-test-result-success', true);
     } catch (error) {
       console.error('Error deleting test result:', error);
-      event.reply('delete-test-result-failure', error.message);
+      if (error instanceof Error) {
+        event.reply('delete-test-result-failure', error.message);
+      } else {
+        event.reply('delete-test-result-failure', 'An unknown error occurred.');
+      }
     }
   } else {
     console.log(`No test result found to delete for testId: ${testId}`);
@@ -98,7 +102,11 @@ const resendResult = async (
       }
     } catch (error) {
       console.error('Error resending result:', error);
-      event.reply('resend-test-result-failure', error.message);
+      if (error instanceof Error) {
+        event.reply('resend-test-result-failure', error.message);
+      } else {
+        event.reply('resend-test-result-failure', 'An unknown error occurred.');
+      }
     }
   } else {
     console.log(`No screenshot found to resend for testId: ${testId}`);

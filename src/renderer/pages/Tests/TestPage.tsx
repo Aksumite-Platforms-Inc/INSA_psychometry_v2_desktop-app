@@ -43,7 +43,8 @@ function TestPage() {
     if (test && window.electron) {
       window.electron.ipcRenderer.sendMessage('check-test-result', test.id);
 
-      const handleTestResultCheck = (_event: any, exists: boolean) => {
+      const handleTestResultCheck = (_event: any, ...args: unknown[]) => {
+        const exists = args[0] as boolean;
         setExistingResult(exists);
       };
 
@@ -59,6 +60,7 @@ function TestPage() {
         );
       };
     }
+    return undefined;
   }, [test]);
 
   const handleStartTest = () => {
@@ -86,18 +88,21 @@ function TestPage() {
           navigate('/tests');
         });
 
+        const handleScreenshotFailed = (_event: any, ...args: unknown[]) => {
+          const screenshotError = args[0] as string;
+          setShowLoader(false);
+          if (screenshotError === 'Test is already taken') {
+            alert(
+              'The test has already been taken. You cannot submit it again.',
+            );
+          } else {
+            alert(`Failed to submit test: ${screenshotError}`);
+          }
+        };
+
         window.electron.ipcRenderer.once(
           'screenshot-failed',
-          (_event, error: string) => {
-            setShowLoader(false);
-            if (error === 'Test is already taken') {
-              alert(
-                'The test has already been taken. You cannot submit it again.',
-              );
-            } else {
-              setError(error);
-            }
-          },
+          handleScreenshotFailed,
         );
       }
     }
@@ -112,6 +117,16 @@ function TestPage() {
         token,
       );
 
+      const handleScreenshotFailed = (_event: any, ...args: unknown[]) => {
+        const error = args[0] as string;
+        setShowLoader(false);
+        if (error === 'Test is already taken') {
+          alert('The test has already been taken. You cannot submit it again.');
+        } else {
+          alert(`Failed to resend test result: ${error}`);
+        }
+      };
+
       window.electron.ipcRenderer.once('resend-test-result-success', () => {
         setShowLoader(false);
         setFullscreen(false);
@@ -122,10 +137,7 @@ function TestPage() {
 
       window.electron.ipcRenderer.once(
         'resend-test-result-failure',
-        (_event, error: string) => {
-          setShowLoader(false);
-          alert(`Failed to resend result: ${error}`);
-        },
+        handleScreenshotFailed,
       );
     }
   };
