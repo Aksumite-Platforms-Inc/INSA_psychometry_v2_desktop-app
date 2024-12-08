@@ -39,7 +39,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
     },
     {
       path: '/orgUsers',
-      path: '/orgUsers',
       label: 'Users',
       icon: faUsers,
       roles: ['Organization Admin'],
@@ -49,13 +48,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
       label: 'Members',
       icon: faUsers,
       roles: ['Branch Admin'],
-      roles: ['Organization Admin'],
     },
     {
-      path: '/BranchUsers',
-      label: 'Members',
+      path: '/orgUsers',
+      label: 'users',
       icon: faUsers,
-      roles: ['Branch Admin'],
+      roles: ['Organization Admin'],
     },
     {
       path: '/branches',
@@ -73,7 +71,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
       path: '/reports',
       label: 'Reports',
       icon: faChartBar,
-      roles: ['Organization Admin'],
       roles: ['Organization Admin'],
     },
   ];
