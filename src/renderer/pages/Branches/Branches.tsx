@@ -1,18 +1,21 @@
 /* eslint-disable consistent-return */
-// create a page that will be used to list branchs create branches, assign admin to branch and delete branches
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faTrash,
+  faSortUp,
+  faSortDown,
+} from '@fortawesome/free-solid-svg-icons';
 import { getToken, getOrgId } from '../../utils/validationUtils';
 import DefaultLayout from '../../components/layout/defaultlayout';
+import useSortableTable from '../../components/common/useSortableTable';
+import Pagination from '../../components/common/Pagination';
 
 interface Branch {
   id: number;
   name: string;
-  org_id: string; // Assuming this field indicates active status
+  org_id: string;
 }
 
 interface GetResponse {
@@ -26,74 +29,79 @@ function Branches() {
   const [newBranch, setNewBranch] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  // const [admin, setAdmin] = useState('');
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 5; // Items per page
+
   const navigate = useNavigate();
   const orgId = getOrgId();
   const token = getToken();
-  // const branchId = getBranchId();
 
-  useEffect(() => {
-    if (!orgId || !token) {
+  const { sortedData, requestSort, sortConfig } = useSortableTable(branches);
+
+  const fetchBranches = () => {
+    if (!token || !orgId) {
       setError('Organization ID or token is missing.');
       setLoading(false);
       return;
     }
-    const fetchBranches = () => {
-      if (window.electron && window.electron.ipcRenderer) {
-        // Send request to fetch Branchs
-        window.electron.ipcRenderer.sendMessage('get-branches', {
-          token,
-        });
 
-        const handleBranchesListed = (_event: any, response: any) => {
-          const typedResponse = response as GetResponse;
-          setLoading(false);
+    setLoading(true);
 
-          if (typedResponse.success && typedResponse.data) {
-            setBranches(typedResponse.data);
-          } else {
-            setError(typedResponse.message || 'Failed to fetch Branches.');
-          }
-        };
+    if (window.electron && window.electron.ipcRenderer) {
+      window.electron.ipcRenderer.sendMessage('get-branches', { token });
 
-        window.electron.ipcRenderer.on('branches-listed', handleBranchesListed);
+      const handleBranchesListed = (_event: any, response: any) => {
+        const typedResponse = response as GetResponse;
+        setLoading(false);
 
-        // Cleanup listener
-        return () => {
-          window.electron.ipcRenderer.removeListener(
-            'branches-listed',
-            handleBranchesListed,
-          );
-        };
-      }
-      setError('Electron IPC is not available.');
-      setLoading(false);
-    };
+        if (typedResponse.success && typedResponse.data) {
+          setBranches(typedResponse.data);
+        } else {
+          setError(typedResponse.message || 'Failed to fetch branches.');
+        }
+      };
 
+      window.electron.ipcRenderer.on('branches-listed', handleBranchesListed);
+
+      return () => {
+        window.electron.ipcRenderer.removeListener(
+          'branches-listed',
+          handleBranchesListed,
+        );
+      };
+    }
+    setError('Electron IPC is not available.');
+    setLoading(false);
+  };
+
+  useEffect(() => {
     fetchBranches();
-  }, [orgId, token]);
+  }, []);
 
   const handleDeleteBranch = (branchId: number) => {
     setError(null);
+
+    if (!token) return;
+
     if (window.electron && window.electron.ipcRenderer) {
-      // Send request to delete Branch
       window.electron.ipcRenderer.sendMessage('delete-branch', {
         branchId,
         token,
       });
+
       const handleBranchDeleted = (_event: any, response: any) => {
         const typedResponse = response as GetResponse;
 
         if (typedResponse.success) {
-          setBranches(branches.filter((branch) => branch.id !== branchId));
+          fetchBranches(); // Refresh branches after deletion
         } else {
-          setError(typedResponse.message || 'Failed to delete Branch.');
+          setError(typedResponse.message || 'Failed to delete branch.');
         }
       };
 
       window.electron.ipcRenderer.on('branch-deleted', handleBranchDeleted);
 
-      // Cleanup listener
       return () => {
         window.electron.ipcRenderer.removeListener(
           'branch-deleted',
@@ -102,30 +110,29 @@ function Branches() {
       };
     }
     setError('Electron IPC is not available.');
-    setLoading(false);
   };
 
-  const handleAddBranch = () => {
+  const handleAddBranch = (e: React.FormEvent) => {
+    e.preventDefault();
     setError(null);
-    if (window.electron && window.electron.ipcRenderer) {
-      console.log('Sending create-branch request:', { name: newBranch, token });
 
+    if (!token || !newBranch.trim()) return;
+
+    if (window.electron && window.electron.ipcRenderer) {
       window.electron.ipcRenderer.sendMessage('create-branch', {
-        name: newBranch,
+        name: newBranch.trim(),
         token,
         orgId,
       });
 
       const handleBranchCreated = (_event: any, response: any) => {
-        console.log('Received branch-created response:', response);
-
         const typedResponse = response as GetResponse;
-        // setLoading(false);
 
-        if (typedResponse.success && typedResponse.data) {
-          setBranches(typedResponse.data);
+        if (typedResponse.success) {
+          setNewBranch('');
+          fetchBranches(); // Refresh branches after creation
         } else {
-          setError(typedResponse.message || 'Failed to create Branch.');
+          setError(typedResponse.message || 'Failed to create branch.');
         }
       };
 
@@ -139,12 +146,22 @@ function Branches() {
       };
     }
     setError('Electron IPC is not available.');
-    setLoading(false);
   };
 
   const handleRowClick = (clickedBranchId: number) => {
-    // Handle row click logic here
     navigate(`/branches/${clickedBranchId}`, { state: { orgId } });
+  };
+
+  const totalRecords = sortedData.length;
+  const totalPages = Math.ceil(totalRecords / pageSize);
+
+  const paginatedBranches = sortedData.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -152,22 +169,48 @@ function Branches() {
       <div className="flex-1 p-5 h-screen overflow-y-auto">
         {loading ? (
           <div className="text-center py-5 text-gray-500">
-            Loading Branchs...
+            Loading branches...
           </div>
         ) : (
           <>
-            <h3 className="text-lg font-bold mb-3">Branchs:</h3>
+            <h3 className="text-lg font-bold mb-3">Branches:</h3>
             <table className="w-full text-left border-collapse bg-white shadow-lg">
               <thead className="bg-gray-200 text-gray-700 uppercase text-sm">
                 <tr>
-                  <th className="py-3 px-6">ID</th>
-                  <th className="py-3 px-6">Branch Name</th>
+                  <th
+                    className="py-3 px-6 cursor-pointer"
+                    onClick={() => requestSort('id')}
+                  >
+                    <div className="flex items-center">
+                      ID
+                      {sortConfig.key === 'id' &&
+                        (sortConfig.direction === 'ascending' ? (
+                          <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+                        ) : (
+                          <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+                        ))}
+                    </div>
+                  </th>
+                  <th
+                    className="py-3 px-6 cursor-pointer"
+                    onClick={() => requestSort('name')}
+                  >
+                    <div className="flex items-center">
+                      Branch Name
+                      {sortConfig.key === 'name' &&
+                        (sortConfig.direction === 'ascending' ? (
+                          <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+                        ) : (
+                          <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+                        ))}
+                    </div>
+                  </th>
                   <th className="py-3 px-6 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="text-gray-600">
-                {branches.length > 0 ? (
-                  branches.map((branch) => (
+                {paginatedBranches.length > 0 ? (
+                  paginatedBranches.map((branch) => (
                     <tr
                       key={branch.id}
                       className="border-t hover:bg-gray-100 transition duration-150 cursor-pointer"
@@ -176,16 +219,12 @@ function Branches() {
                       <td className="py-3 px-6">{branch.id}</td>
                       <td className="py-3 px-6">{branch.name}</td>
                       <td
-                        className="py-3 px-6 text-center flex justify-center space-x-4"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
+                        className="py-3 px-6 text-center"
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        {/* add branch admin asign button */}
                         <button
                           type="button"
                           className="text-red-500 hover:text-red-700"
-                          title="Delete User"
                           onClick={() => handleDeleteBranch(branch.id)}
                         >
                           <FontAwesomeIcon icon={faTrash} />
@@ -196,15 +235,22 @@ function Branches() {
                 ) : (
                   <tr>
                     <td
-                      colSpan={4}
+                      colSpan={3}
                       className="text-center py-3 px-6 text-gray-500"
                     >
-                      {error || 'No Branchs found.'}
+                      {error || 'No branches found.'}
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+
             <div className="mt-5">
               <form className="space-y-4" onSubmit={handleAddBranch}>
                 <input
@@ -214,11 +260,12 @@ function Branches() {
                   placeholder="New Branch Name"
                   className="border p-2 rounded w-full"
                 />
-                <input
+                <button
                   type="submit"
-                  value="Add Branch"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                />
+                >
+                  Add Branch
+                </button>
               </form>
             </div>
           </>

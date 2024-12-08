@@ -7,8 +7,9 @@ import {
   faUsers,
   faCodeBranch,
   faFileAlt,
-  faChartBar,
+  faTachometerAlt,
   faUserCircle,
+  faFolderOpen,
   faQuestionCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { useLocation, Link } from 'react-router-dom';
@@ -34,14 +35,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
     {
       path: '/dashboard',
       label: 'Dashboard',
-      icon: faChartBar,
+      icon: faTachometerAlt,
       roles: ['Organization Admin', 'Branch Admin'],
-    },
-    {
-      path: '/orgUsers',
-      label: 'Users',
-      icon: faUsers,
-      roles: ['Organization Admin'],
     },
     {
       path: '/BranchUsers',
@@ -70,7 +65,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
     {
       path: '/reports',
       label: 'Reports',
-      icon: faChartBar,
+      icon: faFolderOpen,
       roles: ['Organization Admin'],
     },
   ];
@@ -164,7 +159,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
       <div className="px-4 mb-4">
         <button
           type="button"
-          className="w-full flex items-center space-x-3 p-2 bg-gray-700 text-white rounded-md py-2 transition duration-150 ease-in-out flex items-center"
+          className="w-full flex items-center space-x-3 p-4 bg-gray-700 text-white rounded-md py-2 transition duration-150 ease-in-out flex items-center"
           onClick={() => setIsModalOpen(true)}
         >
           <FontAwesomeIcon icon={faQuestionCircle} />

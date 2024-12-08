@@ -4,7 +4,7 @@ import Login from '../pages/Auth/Login';
 import ForgotPassword from '../pages/Auth/ForgotPassword';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import OrgUsers from '../pages/Users/OrgUsersList';
-import BranchUsers from '../pages/Users/BranchUsersList';
+import BranchUsers from '../pages/Branches/BranchUsersList';
 import Branches from '../pages/Branches/Branches';
 import Tests from '../pages/Tests/TestsList';
 import Reports from '../pages/Reports/Reports';
