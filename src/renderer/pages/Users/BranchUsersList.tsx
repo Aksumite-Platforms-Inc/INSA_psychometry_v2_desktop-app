@@ -1,20 +1,22 @@
 /* eslint-disable consistent-return */
 import React, { useState, useEffect } from 'react';
-import UserTable from '../../components/Tables/UserTable';
+import BranchUserTable from '../../components/Tables/BranchUserTable';
 import DefaultLayout from '../../components/layout/defaultlayout';
-import { getToken } from '../../utils/validationUtils';
+import { getToken, getOrgId, getBranchId } from '../../utils/validationUtils';
 
-function Users() {
+function BranchUsers() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadedData, setUploadedData] = useState<
     { name: string; email: string }[]
   >([]);
   const [error, setError] = useState<string | null>(null);
   const token = getToken();
+  const orgId = getOrgId();
+  const branchId = getBranchId();
 
   useEffect(() => {
     const { electron } = window;
-
+    console.log('hello zed', orgId, branchId, token);
     if (electron?.ipcRenderer) {
       const handleUploadResponse = (_event: any, response: unknown) => {
         const typedResponse = response as {
@@ -39,7 +41,7 @@ function Users() {
         );
       };
     }
-  }, []);
+  }, [branchId, orgId, token]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -140,7 +142,12 @@ function Users() {
 
           {/* User Table */}
           <div className="mt-8">
-            <UserTable />
+            {/* {console.log(orgId, branchId)} */}
+            {branchId && orgId ? (
+              <BranchUserTable branchId={branchId} orgId={orgId} />
+            ) : (
+              <p className="text-red-500">Branch ID or Org ID is missing.</p>
+            )}
           </div>
         </div>
       </div>
@@ -148,4 +155,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default BranchUsers;

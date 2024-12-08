@@ -1,11 +1,14 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DefaultLayout from '../../components/layout/defaultlayout';
+import { getUserRole } from '../../utils/validationUtils';
 
 function Dashboard() {
   const navigate = useNavigate();
+  const role = getUserRole();
 
   useEffect(() => {
+    console.log('role', role);
     if (!localStorage.getItem('authToken')) {
       navigate('/Login');
     }
@@ -21,26 +24,50 @@ function Dashboard() {
             <h2 className="text-gray-600 ml-0.5">INSA personality test</h2>
           </div>
           <div className="flex flex-wrap items-start justify-end -mb-3">
-            <button
-              type="button"
-              className="inline-flex px-5 py-3 text-blue-600 hover:text-blue-700 focus:text-blue-700 hover:bg-blue-100 focus:bg-blue-100 border border-blue-600 rounded-md mb-3"
-              onClick={() => navigate('/users')}
-            >
-              <svg
-                aria-hidden="true"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="flex-shrink-0 h-5 w-5 -ml-1 mt-0.5 mr-2"
+            {role === 'Organization Admin' && (
+              <button
+                type="button"
+                className="inline-flex px-5 py-3 text-blue-600 hover:text-blue-700 focus:text-blue-700 hover:bg-blue-100 focus:bg-blue-100 border border-blue-600 rounded-md mb-3"
+                onClick={() => navigate('/orgusers')}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                />
-              </svg>
-              Manage users
-            </button>
+                <svg
+                  aria-hidden="true"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="flex-shrink-0 h-5 w-5 -ml-1 mt-0.5 mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
+                Manage users
+              </button>
+            )}
+            {role === 'Branch Admin' && (
+              <button
+                type="button"
+                className="inline-flex px-5 py-3 text-blue-600 hover:text-blue-700 focus:text-blue-700 hover:bg-blue-100 focus:bg-blue-100 border border-blue-600 rounded-md mb-3"
+                onClick={() => navigate('/branchUsers')}
+              >
+                <svg
+                  aria-hidden="true"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="flex-shrink-0 h-5 w-5 -ml-1 mt-0.5 mr-2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
+                Manage users
+              </button>
+            )}
             {/* <button
               type="button"
               className="inline-flex px-5 py-3 text-white bg-blue-600 hover:bg-purple-700 focus:bg-blue-700 rounded-md ml-6 mb-3"
