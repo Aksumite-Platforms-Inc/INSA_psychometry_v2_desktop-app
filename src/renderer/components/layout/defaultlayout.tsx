@@ -1,31 +1,36 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
-// import Footer from './Footer';
 
 interface DefaultLayoutProps {
   children: React.ReactNode;
 }
 
 function DefaultLayout({ children }: DefaultLayoutProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() =>
+    JSON.parse(localStorage.getItem('sidebarCollapsed') || 'false'),
+  );
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+    setIsSidebarCollapsed((prev: boolean): boolean => {
+      const newState: boolean = !prev;
+      localStorage.setItem('sidebarCollapsed', JSON.stringify(newState));
+      return newState;
+    });
   };
 
   return (
     <div className="flex h-screen">
       <aside
-        className={`flex flex-col bg-gray-800 text-white h-screen justify-between transition-transform duration-500 ${isSidebarOpen ? 'w-64 p-5' : 'w-0'}`}
+        className={`flex flex-col bg-gray-800 text-white transition-transform duration-300 ${
+          isSidebarCollapsed ? 'w-20' : 'w-64'
+        }`}
       >
-        <Sidebar />
+        <Sidebar isCollapsed={isSidebarCollapsed} />
       </aside>
 
       <div className="flex flex-1 flex-col bg-gray-100 overflow-y-auto">
-        <header className="">
-          <Header toggleSidebar={toggleSidebar} />
-        </header>
+        <Header toggleSidebar={toggleSidebar} />
         <main className="">{children}</main>
       </div>
     </div>

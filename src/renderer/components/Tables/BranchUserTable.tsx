@@ -38,8 +38,6 @@ function BranchUserTable({ branchId, orgId }: BranchUserTableProps) {
       return;
     }
 
-    console.log('hello zed', orgId, branchId, token);
-
     const fetchUsers = () => {
       if (window.electron && window.electron.ipcRenderer) {
         // Send request to fetch users
@@ -49,13 +47,12 @@ function BranchUserTable({ branchId, orgId }: BranchUserTableProps) {
           token,
         });
 
-        const handleMembersListed = (_event: any, response: any) => {
+        const handleBranchMembersListed = (_event: any, response: any) => {
           const typedResponse = response as GetResponse;
           setLoading(false);
 
           if (typedResponse.success && typedResponse.data) {
             setUsers(typedResponse.data);
-            console.log('zed hello', typedResponse.data);
           } else {
             setError(typedResponse.message || 'Failed to fetch users.');
           }
@@ -63,14 +60,14 @@ function BranchUserTable({ branchId, orgId }: BranchUserTableProps) {
 
         window.electron.ipcRenderer.on(
           'branch-members-listed',
-          handleMembersListed,
+          handleBranchMembersListed,
         );
 
         // Cleanup listener
         return () => {
           window.electron.ipcRenderer.removeListener(
             'branch-members-listed',
-            handleMembersListed,
+            handleBranchMembersListed,
           );
         };
       }
@@ -80,7 +77,46 @@ function BranchUserTable({ branchId, orgId }: BranchUserTableProps) {
 
     fetchUsers();
   }, [branchId, orgId, token]);
+  const handleDeleteUser = (userId: number) => {
+    setError(null);
 
+    if (!orgId || !token) {
+      setError('Organization ID or token is missing.');
+      return;
+    }
+
+    if (window.electron && window.electron.ipcRenderer) {
+      window.electron.ipcRenderer.sendMessage('delete-member', {
+        orgId,
+        userId,
+        token,
+      });
+
+      const handleMemberDeleted = (_event: any, response: any) => {
+        const typedResponse = response as GetResponse;
+
+        if (typedResponse.success) {
+          setUsers((prevUsers) =>
+            prevUsers.filter((user) => user.id !== userId),
+          );
+        } else {
+          setError(typedResponse.message || 'Failed to delete user.');
+        }
+      };
+
+      window.electron.ipcRenderer.on('member-deleted', handleMemberDeleted);
+
+      // Cleanup listener
+      // eslint-disable-next-line consistent-return
+      return () => {
+        window.electron.ipcRenderer.removeListener(
+          'member-deleted',
+          handleMemberDeleted,
+        );
+      };
+    }
+    setError('Electron IPC is not available.');
+  };
   return (
     <div className="mt-5 overflow-x-auto">
       {loading ? (
@@ -94,7 +130,7 @@ function BranchUserTable({ branchId, orgId }: BranchUserTableProps) {
                 <th className="py-3 px-6">ID</th>
                 <th className="py-3 px-6">Name</th>
                 <th className="py-3 px-6">Email</th>
-                {/* <th className="py-3 px-6">Status</th> */}
+                {/* <th className="py-3 px-6">Branch</th> */}
                 <th className="py-3 px-6 text-center">Actions</th>
               </tr>
             </thead>
@@ -114,6 +150,7 @@ function BranchUserTable({ branchId, orgId }: BranchUserTableProps) {
                     <button
                       type="button"
                       className="text-red-500 hover:text-red-700"
+                      onClick={() => handleDeleteUser(user.id)}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>
