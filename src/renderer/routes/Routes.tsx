@@ -3,7 +3,8 @@ import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from '../pages/Auth/Login';
 import ForgotPassword from '../pages/Auth/ForgotPassword';
 import Dashboard from '../pages/Dashboard/Dashboard';
-import Users from '../pages/Users/UserList';
+import OrgUsers from '../pages/Users/OrgUsersList';
+import BranchUsers from '../pages/Branches/BranchUsersList';
 import Branches from '../pages/Branches/Branches';
 import Tests from '../pages/Tests/TestsList';
 import Reports from '../pages/Reports/Reports';
@@ -29,10 +30,18 @@ function AppRoutes(): React.ReactElement {
           }
         />
         <Route
-          path="/users"
+          path="/orgUsers"
           element={
-            <ProtectedRoute allowedRoles={['org_admin', 'branch_admin']}>
-              <Users />
+            <ProtectedRoute allowedRoles={['org_admin']}>
+              <OrgUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/branchUsers"
+          element={
+            <ProtectedRoute allowedRoles={['branch_admin']}>
+              <BranchUsers />
             </ProtectedRoute>
           }
         />
@@ -65,7 +74,7 @@ function AppRoutes(): React.ReactElement {
         <Route
           path="/reports"
           element={
-            <ProtectedRoute allowedRoles={['org_admin', 'branch_admin']}>
+            <ProtectedRoute allowedRoles={['org_admin']}>
               <Reports />
             </ProtectedRoute>
           }

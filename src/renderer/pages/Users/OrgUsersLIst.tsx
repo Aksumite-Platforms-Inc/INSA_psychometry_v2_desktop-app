@@ -1,15 +1,16 @@
 /* eslint-disable consistent-return */
 import React, { useState, useEffect } from 'react';
-import UserTable from '../../components/Tables/UserTable';
+import OrgUserTable from '../../components/Tables/OrgUserTable';
 import DefaultLayout from '../../components/layout/defaultlayout';
 import { getToken } from '../../utils/validationUtils';
 
-function Users() {
+function UsersList() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadedData, setUploadedData] = useState<
     { name: string; email: string }[]
   >([]);
   const [error, setError] = useState<string | null>(null);
+  const [refreshTable, setRefreshTable] = useState(false); // State to trigger table refresh
   const token = getToken();
 
   useEffect(() => {
@@ -24,6 +25,7 @@ function Users() {
         };
         if (typedResponse.success) {
           setUploadedData(typedResponse.data || []);
+          setRefreshTable((prev) => !prev); // Toggle refreshTable to refresh OrgUserTable
           alert('File processed successfully!');
         } else {
           setError(typedResponse.message || 'Error processing file.');
@@ -140,7 +142,8 @@ function Users() {
 
           {/* User Table */}
           <div className="mt-8">
-            <UserTable />
+            {/* Pass refreshTable to OrgUserTable as a key to trigger re-render */}
+            <OrgUserTable key={refreshTable.toString()} />
           </div>
         </div>
       </div>
@@ -148,4 +151,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default UsersList;

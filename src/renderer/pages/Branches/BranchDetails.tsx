@@ -1,5 +1,8 @@
+/* eslint-disable consistent-return */
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import Modal from 'react-modal';
 import { getToken, getOrgId } from '../../utils/validationUtils';
 import DefaultLayout from '../../components/layout/defaultlayout';
 import BranchUserTable from '../../components/Tables/BranchUserTable';
@@ -8,7 +11,13 @@ interface BranchDetails {
   id: number;
   name: string;
   location: string;
-  createdAt: string;
+  created_at: Date;
+}
+
+interface BranchMember {
+  id: number;
+  name: string;
+  email: string;
 }
 
 interface GetBranchResponse {
@@ -17,31 +26,42 @@ interface GetBranchResponse {
   data?: BranchDetails;
 }
 
+interface GetMembersResponse {
+  success: boolean;
+  message?: string;
+  data?: BranchMember[];
+}
+
 function BranchDetailsPage() {
-  const { branchId } = useParams(); // Get branchId from the URL
+  const { branchId } = useParams();
   const orgId = getOrgId();
+  const token = getToken();
+
   const [branchDetails, setBranchDetails] = useState<BranchDetails | null>(
+    null,
+  );
+  const [members, setMembers] = useState<BranchMember[]>([]);
+  const [selectedAdminEmail, setSelectedAdminEmail] = useState<string | null>(
     null,
   );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const token = getToken();
-
+  // Fetch Branch Details
   useEffect(() => {
     if (!token) {
       setError('Token is missing.');
       setLoading(false);
-      return undefined;
+      return;
     }
 
-    if (!window.electron || !window.electron.ipcRenderer) {
+    if (!window.electron?.ipcRenderer) {
       setError('Electron IPC is not available.');
       setLoading(false);
-      return undefined;
+      return;
     }
 
-    // Send IPC request to fetch branch details
     window.electron.ipcRenderer.sendMessage('get-branch-details', {
       orgId,
       branchId,
@@ -59,13 +79,11 @@ function BranchDetailsPage() {
       }
     };
 
-    // Listen for the response from the main process
     window.electron.ipcRenderer.on(
       'branch-details-fetched',
       handleBranchDetailsFetched,
     );
 
-    // Cleanup listener
     return () => {
       window.electron.ipcRenderer.removeListener(
         'branch-details-fetched',
@@ -74,7 +92,72 @@ function BranchDetailsPage() {
     };
   }, [branchId, token, orgId]);
 
-  // Render skeleton while loading
+  // Fetch Branch Members
+  useEffect(() => {
+    if (!branchId || !token) return;
+
+    window.electron.ipcRenderer.sendMessage('get-branch-members', {
+      orgId,
+      branchId,
+      token,
+    });
+
+    const handleMembersListed = (_event: any, response: any) => {
+      const typedResponse = response as GetMembersResponse;
+      if (typedResponse.success && typedResponse.data) {
+        setMembers(typedResponse.data);
+      } else {
+        toast.error(typedResponse.message || 'Failed to fetch branch members.');
+      }
+    };
+
+    window.electron.ipcRenderer.on(
+      'branch-members-listed',
+      handleMembersListed,
+    );
+
+    return () => {
+      window.electron.ipcRenderer.removeListener(
+        'branch-members-listed',
+        handleMembersListed,
+      );
+    };
+  }, [branchId, token, orgId]);
+
+  // Assign Admin
+  const handleAssignAdmin = () => {
+    if (!selectedAdminEmail || !token) return;
+
+    window.electron.ipcRenderer.sendMessage('assign-branch-admin', {
+      orgId,
+      branchId,
+      email: selectedAdminEmail,
+      token,
+    });
+
+    const handleAdminAssigned = (_event: any, response: any) => {
+      if (response.success) {
+        toast.success('Admin assigned successfully!');
+        setIsModalOpen(false);
+      } else {
+        toast.error(response.message || 'Failed to assign admin.');
+      }
+    };
+
+    window.electron.ipcRenderer.on(
+      'branch-admin-assigned',
+      handleAdminAssigned,
+    );
+
+    return () => {
+      window.electron.ipcRenderer.removeListener(
+        'branch-admin-assigned',
+        handleAdminAssigned,
+      );
+    };
+  };
+
+  // Render Skeleton While Loading
   const renderSkeleton = () => (
     <div className="bg-white p-6 rounded-lg shadow-md animate-pulse">
       <div className="h-6 bg-gray-200 rounded w-1/3 mb-4" />
@@ -127,16 +210,61 @@ function BranchDetailsPage() {
               </p>
               <p className="text-gray-700 mb-1">
                 <span className="font-semibold">Created At:</span>{' '}
-                {branchDetails.createdAt || 'Unknown'}
+                {new Date(branchDetails.created_at).toLocaleDateString()}
               </p>
             </div>
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(true)}
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
+            >
+              Assign Admin
+            </button>
           </div>
         )}
 
-        {/* Pass branchId to BranchUserTable */}
+        {/* Branch Members Table */}
         {branchId && (
           <BranchUserTable branchId={Number(branchId)} orgId={Number(orgId)} />
         )}
+
+        {/* Assign Admin Modal */}
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={() => setIsModalOpen(false)}
+          className="w-96 bg-white rounded-lg p-6 mx-auto mt-20 shadow-lg"
+          overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        >
+          <h2 className="text-lg font-semibold mb-4">Assign Branch Admin</h2>
+          <select
+            className="border rounded w-full p-2 mb-4"
+            onChange={(e) => setSelectedAdminEmail(e.target.value)}
+          >
+            <option value="">Select a Member</option>
+            {members.map((member) => (
+              <option key={member.id} value={member.email}>
+                {member.name} ({member.email})
+              </option>
+            ))}
+          </select>
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="bg-gray-500 text-white px-4 py-2 rounded-md"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleAssignAdmin}
+              className="bg-blue-500 text-white px-4 py-2 rounded-md"
+              disabled={!selectedAdminEmail}
+            >
+              Assign
+            </button>
+          </div>
+        </Modal>
       </div>
     </DefaultLayout>
   );

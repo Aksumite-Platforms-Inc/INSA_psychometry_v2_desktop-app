@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import profielPicture from '../../assets/Images/habesha.jpg';
 import { getUserName, getUserRole } from '../../utils/validationUtils';
 
 interface HeaderProps {
@@ -9,12 +8,32 @@ interface HeaderProps {
 
 function Header({ toggleSidebar }: HeaderProps) {
   const [panel, setPanel] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const userName = getUserName();
   const userRole = getUserRole();
-  const navigate = useNavigate();
+
+  // Close the dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setPanel(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <header className="flex items-center h-20 px-6 sm:px-10 bg-white">
+    <header className="flex items-center h-20 px-6 sm:px-10 bg-white relative">
+      {/* Sidebar Toggle */}
       <div
         className="mr-8 cursor-pointer"
         role="button"
@@ -43,30 +62,32 @@ function Header({ toggleSidebar }: HeaderProps) {
         </svg>
       </div>
 
-      <div className="flex flex-shrink-0 items-center ml-auto">
+      {/* User Profile Section */}
+      <div className="flex flex-shrink-0 items-center ml-auto relative">
         <button
           type="button"
           className="relative inline-flex items-center p-2 hover:bg-gray-100 focus:bg-gray-100 rounded-lg"
-          onClick={() => setPanel(!panel)}
-          onBlur={() => setPanel(false)} // Close when clicking outside
+          onClick={() => setPanel((prev) => !prev)}
+          aria-expanded={panel}
+          aria-controls="user-menu"
         >
           <span className="sr-only">User Menu</span>
           <div className="hidden md:flex md:flex-col md:items-end md:leading-tight">
             <span className="font-semibold">{userName}</span>
             <span className="text-sm text-gray-600">{userRole}</span>
           </div>
-          <span className="h-12 w-12 ml-2 sm:ml-3 mr-2 bg-gray-100 rounded-full overflow-hidden">
+          {/* <span className="h-12 w-12 ml-2 sm:ml-3 mr-2 bg-gray-100 rounded-full overflow-hidden">
             <img
-              src={profielPicture}
+              src={profilePicture}
               alt="profile_picture"
               className="h-full w-full object-cover"
             />
-          </span>
+          </span> */}
           <svg
             aria-hidden="true"
             viewBox="0 0 20 20"
             fill="currentColor"
-            className="hidden sm:block h-6 w-6 text-gray-300"
+            className="hidden sm:block h-6 w-6 text-gray-400"
           >
             <path
               fillRule="evenodd"
@@ -78,70 +99,36 @@ function Header({ toggleSidebar }: HeaderProps) {
 
         {/* Dropdown Panel */}
         {panel && (
-          <div className="absolute top-20 bg-white border rounded-md p-2 w-56">
+          <div
+            id="user-menu"
+            className="absolute top-full mt-2 right-0 bg-white border rounded-md shadow-lg w-48 z-50"
+            ref={dropdownRef}
+          >
             <div
-              className="p-2 hover:bg-blue-100 cursor-pointer"
+              className="p-2 hover:bg-gray-100 cursor-pointer"
               role="button"
               tabIndex={0}
-              onClick={() => navigate('/profile')}
+              onClick={() => {
+                setPanel(false);
+                navigate('/profile');
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
+                  setPanel(false);
                   navigate('/profile');
                 }
               }}
             >
               Profile
             </div>
-
-            <div
-              className="p-2 hover:bg-blue-100 cursor-pointer"
-              role="button"
-              tabIndex={0}
-              onClick={() => {
-                localStorage.removeItem('authToken');
-
-                navigate('/login');
-              }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  navigate('/login');
-                }
-              }}
-            >
-              Logout
-            </div>
           </div>
         )}
 
-        {/* Notifications & Logout */}
+        {/* Logout Button */}
         <div className="border-l pl-3 ml-3 space-x-1">
-          {/* <button
-            type="button"
-            className="relative p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:bg-gray-100 focus:text-gray-600 rounded-full"
-          >
-            <span className="sr-only">Notifications</span>
-            <span className="absolute top-0 right-0 h-2 w-2 mt-1 mr-2 bg-red-500 rounded-full" />
-            <span className="absolute top-0 right-0 h-2 w-2 mt-1 mr-2 bg-red-500 rounded-full animate-ping" />
-            <svg
-              aria-hidden="true"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="h-6 w-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-              />
-            </svg>
-          </button> */}
-
           <button
             type="button"
             className="relative p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:bg-gray-100 focus:text-gray-600 rounded-full"
-            // onclick delete locally stored token
             onClick={() => {
               localStorage.removeItem('authToken');
               navigate('/login');

@@ -1,7 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 // unauthorized page with login again button
 function Unauthorized() {
+  const Navigate = useNavigate();
+  useEffect(() => {
+    localStorage.removeItem('authToken');
+    Navigate('/login');
+  }, [Navigate]);
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <h1 className="text-4xl font-bold mb-4">Unauthorized</h1>

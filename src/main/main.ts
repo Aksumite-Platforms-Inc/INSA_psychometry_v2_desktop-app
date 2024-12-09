@@ -32,11 +32,13 @@ import {
   performDeleteBranch,
   performGetAllBranches,
   performGetBranchDetails,
+  performAssignBranchAdmin,
+  performGetBranchMembers,
 } from './services/branchService';
 import {
   PerformUpdateProfile,
   performGetAllMembers,
-  performGetBranchMembers,
+  // performGetBranchMembers,
   performDeleteMember,
 } from './services/userService';
 
@@ -256,12 +258,9 @@ ipcMain.on(
 ipcMain.on('get-members', async (event: IpcMainEvent, { orgId, token }) => {
   await performGetAllMembers(orgId, token, event);
 });
-ipcMain.on(
-  'get-branch-members',
-  async (event: IpcMainEvent, { orgId, branchId, token }) => {
-    await performGetBranchMembers(orgId, branchId, token, event);
-  },
-);
+ipcMain.on('get-branch-members', (event, { orgId, branchId, token }) => {
+  performGetBranchMembers(event, orgId, branchId, token);
+});
 
 ipcMain.on(
   'delete-member',
@@ -289,6 +288,32 @@ ipcMain.on(
   'delete-branch',
   async (event: IpcMainEvent, { branchId, token }) => {
     await performDeleteBranch(branchId, token, event);
+  },
+);
+// Handle the 'get-branch-members' request
+// ipcMain.on('get-branch-members', async (event, { orgId, branchId, token }) => {
+//   try {
+//     const members = await performGetBranchMembers(
+//       orgId,
+//       branchId,
+//       token,
+//       event,
+//     );
+//     event.reply('branch-members-listed', { success: true, data: members });
+//   } catch (error) {
+//     console.error('Error fetching branch members:', error);
+//     event.reply('branch-members-listed', {
+//       success: false,
+//       message: error.message || 'Failed to fetch branch members.',
+//     });
+//   }
+// });
+
+// Handle the 'assign-branch-admin' request
+ipcMain.on(
+  'assign-branch-admin',
+  (event, { orgId, branchId, email, token }) => {
+    performAssignBranchAdmin(event, orgId, branchId, email, token);
   },
 );
 

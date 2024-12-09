@@ -1,8 +1,14 @@
 /* eslint-disable consistent-return */
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+  faTrash,
+  faSortUp,
+  faSortDown,
+} from '@fortawesome/free-solid-svg-icons';
 import { getToken, getOrgId, getUserId } from '../../utils/validationUtils';
+import useSortableTable from '../common/useSortableTable';
+import Pagination from '../common/Pagination';
 
 interface User {
   id: number;
@@ -23,6 +29,9 @@ function UserTable() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const pageSize = 5; // Items per page
+
   const orgId = getOrgId();
   const token = getToken();
   const currentUserId = getUserId();
@@ -36,7 +45,6 @@ function UserTable() {
 
     const fetchUsers = () => {
       if (window.electron && window.electron.ipcRenderer) {
-        // Send request to fetch users
         window.electron.ipcRenderer.sendMessage('get-members', {
           orgId,
           token,
@@ -55,7 +63,6 @@ function UserTable() {
 
         window.electron.ipcRenderer.on('members-listed', handleMembersListed);
 
-        // Cleanup listener
         return () => {
           window.electron.ipcRenderer.removeListener(
             'members-listed',
@@ -99,8 +106,6 @@ function UserTable() {
 
       window.electron.ipcRenderer.on('member-deleted', handleMemberDeleted);
 
-      // Cleanup listener
-      // eslint-disable-next-line consistent-return
       return () => {
         window.electron.ipcRenderer.removeListener(
           'member-deleted',
@@ -111,21 +116,26 @@ function UserTable() {
     setError('Electron IPC is not available.');
   };
 
-  // const handleToggleUser = (userId: number) => {
-  //   // Add logic to update the user's active state (API call or state update)
-  //   setUsers((prevUsers) =>
-  //     prevUsers.map((user) =>
-  //       user.id === userId ? { ...user, isActive: !user.isActive } : user,
-  //     ),
-  //   );
-  // };
+  const { sortedData, requestSort, sortConfig } = useSortableTable(users);
 
-  const activeUsers = users.filter(
+  const activeUsers = sortedData.filter(
     (user) => user.activation_code !== '' && user.id !== currentUserId,
   );
-  const invitedUsers = users.filter(
+  const invitedUsers = sortedData.filter(
     (user) => user.activation_code === '' && user.id !== currentUserId,
   );
+
+  const totalRecords = activeUsers.length;
+  const totalPages = Math.ceil(totalRecords / pageSize);
+
+  const paginatedActiveUsers = activeUsers.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="mt-5 overflow-x-auto">
@@ -133,19 +143,60 @@ function UserTable() {
         <div className="text-center py-5 text-gray-500">Loading users...</div>
       ) : (
         <>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <h3 className="text-lg font-bold mb-3">Active Users:</h3>
           <table className="w-full text-left border-collapse bg-white shadow-lg">
             <thead className="bg-gray-200 text-gray-700 uppercase text-sm">
               <tr>
-                <th className="py-3 px-6">ID</th>
-                <th className="py-3 px-6">Full Name</th>
-                <th className="py-3 px-6">Email Address</th>
+                <th
+                  className="py-3 px-6 cursor-pointer"
+                  onClick={() => requestSort('id')}
+                >
+                  <div className="flex items-center">
+                    ID
+                    {sortConfig.key === 'id' &&
+                      (sortConfig.direction === 'ascending' ? (
+                        <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+                      ) : (
+                        <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+                      ))}
+                  </div>
+                </th>
+                <th
+                  className="py-3 px-6 cursor-pointer"
+                  onClick={() => requestSort('name')}
+                >
+                  <div className="flex items-center">
+                    Full Name
+                    {sortConfig.key === 'name' &&
+                      (sortConfig.direction === 'ascending' ? (
+                        <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+                      ) : (
+                        <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+                      ))}
+                  </div>
+                </th>
+                <th
+                  className="py-3 px-6 cursor-pointer"
+                  onClick={() => requestSort('email')}
+                >
+                  <div className="flex items-center">
+                    Email Address
+                    {sortConfig.key === 'email' &&
+                      (sortConfig.direction === 'ascending' ? (
+                        <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+                      ) : (
+                        <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+                      ))}
+                  </div>
+                </th>
                 <th className="py-3 px-6 text-center">Actions</th>
               </tr>
             </thead>
             <tbody className="text-gray-600">
-              {activeUsers.length > 0 ? (
-                activeUsers.map((user) => (
+              {paginatedActiveUsers.length > 0 ? (
+                paginatedActiveUsers.map((user) => (
                   <tr
                     key={user.id}
                     className="border-t hover:bg-gray-100 transition duration-150"
@@ -153,25 +204,10 @@ function UserTable() {
                     <td className="py-3 px-6">{user.id}</td>
                     <td className="py-3 px-6">{user.name || 'N/A'}</td>
                     <td className="py-3 px-6">{user.email}</td>
-                    <td className="py-3 px-6 text-center flex justify-center space-x-4">
-                      {/* <label
-                        className="relative inline-flex items-center cursor-pointer"
-                        aria-label={`Toggle user ${user.name}`}
-                        htmlFor={`toggle-user-${user.id}`}
-                      >
-                        <input
-                          type="checkbox"
-                          className="sr-only peer"
-                          id={`toggle-user-${user.id}`}
-                          checked={user.isActive} // Replace `user.isActive` with the correct field for active status
-                          onChange={() => handleToggleUser(user.id)}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-300 rounded-full peer dark:bg-gray-700 peer-checked:bg-green-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600" />
-                      </label> */}
+                    <td className="py-3 px-6 text-center">
                       <button
                         type="button"
                         className="text-red-500 hover:text-red-700"
-                        title="Delete User"
                         onClick={() => handleDeleteUser(user.id)}
                       >
                         <FontAwesomeIcon icon={faTrash} />
@@ -191,6 +227,12 @@ function UserTable() {
               )}
             </tbody>
           </table>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
 
           {invitedUsers.length > 0 && (
             <div className="mt-5">

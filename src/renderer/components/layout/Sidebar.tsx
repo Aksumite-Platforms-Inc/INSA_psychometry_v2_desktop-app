@@ -1,3 +1,5 @@
+/* eslint-disable react/function-component-definition */
+/* eslint-disable react/button-has-type */
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -5,17 +7,21 @@ import {
   faUsers,
   faCodeBranch,
   faFileAlt,
-  faChartBar,
+  faTachometerAlt,
   faUserCircle,
+  faFolderOpen,
   faQuestionCircle,
-  // faC,
 } from '@fortawesome/free-solid-svg-icons';
 import { useLocation, Link } from 'react-router-dom';
 import { getUserName, getUserRole } from '../../utils/validationUtils';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
 
-function Sidebar() {
+interface SidebarProps {
+  isCollapsed: boolean;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -25,19 +31,24 @@ function Sidebar() {
 
   const isActive = (path: string) => location.pathname === path;
 
-  // Define the navigation links with role-based access
   const links = [
     {
       path: '/dashboard',
       label: 'Dashboard',
-      icon: faChartBar,
+      icon: faTachometerAlt,
       roles: ['Organization Admin', 'Branch Admin'],
     },
     {
-      path: '/users',
-      label: 'Users',
+      path: '/BranchUsers',
+      label: 'Members',
       icon: faUsers,
-      roles: ['Branch Admin', 'Organization Admin'],
+      roles: ['Branch Admin'],
+    },
+    {
+      path: '/orgUsers',
+      label: 'users',
+      icon: faUsers,
+      roles: ['Organization Admin'],
     },
     {
       path: '/branches',
@@ -54,8 +65,8 @@ function Sidebar() {
     {
       path: '/reports',
       label: 'Reports',
-      icon: faChartBar,
-      roles: ['Organization Admin', 'Branch Admin'],
+      icon: faFolderOpen,
+      roles: ['Organization Admin'],
     },
     {
       path: '/profile',
@@ -87,63 +98,78 @@ function Sidebar() {
   };
 
   return (
-    <div className="flex flex-col justify-between h-full">
-      <div>
-        {/* Profile Section */}
-        <div className="text-center mb-5">
-          <div className="rounded-full bg-gray-700 w-20 h-20 mx-auto flex justify-center items-center">
-            <FontAwesomeIcon
-              icon={faUserCircle}
-              className="text-white text-3xl"
-            />
-          </div>
-          <h1 className="mt-4 font-semibold text-lg">Welcome </h1>
-          <p className="font-semibold text-lg">
-            {userRole} | {userName}
-          </p>
+    <div
+      className={`flex flex-col bg-gray-800 text-white h-full transition-all duration-300 ${
+        isCollapsed ? 'w-20' : 'w-64'
+      }`}
+    >
+      {/* Profile Section */}
+      <div
+        className={`px-4 pt-6 flex ${
+          isCollapsed ? 'justify-center' : 'items-center space-x-4'
+        }`}
+      >
+        <div className="rounded-full bg-gray-700 flex justify-center items-center h-12 w-12">
+          <FontAwesomeIcon
+            icon={faUserCircle}
+            className="text-white text-3xl"
+          />
         </div>
-
-        {/* Navigation Menu */}
-        <nav>
-          <ul className="flex flex-col justify-center items">
-            <hr />
-            <br />
-            {links
-              .filter((link) => userRole && link.roles.includes(userRole)) // Filter links based on role
-              .map((link) => (
-                <li
-                  key={link.path}
-                  className={`rounded-md transition duration-150 ease-in-out ${
-                    isActive(link.path)
-                      ? 'bg-white text-gray-800'
-                      : 'hover:bg-gray-700'
-                  }`}
-                >
-                  <Link
-                    to={link.path}
-                    className="py-3 flex items-center space-x-3 px-3"
-                  >
-                    <FontAwesomeIcon
-                      icon={link.icon}
-                      className={`h-5 w-5 ${
-                        isActive(link.path) ? 'text-gray-800' : 'text-gray-400'
-                      }`}
-                    />
-                    <span className="text-base">{link.label}</span>
-                  </Link>
-                </li>
-              ))}
-          </ul>
-        </nav>
+        {!isCollapsed && (
+          <div>
+            <p className="text-white font-semibold">{userName}</p>
+            <p className="text-sm text-gray-400">{userRole}</p>
+          </div>
+        )}
       </div>
 
-      <div className="mt-10">
+      <br />
+      <hr className="border-gray-600" />
+
+      {/* Navigation Menu */}
+      <nav className="flex-grow mt-6 px-4">
+        <ul className="flex flex-col justify-center h-full space-y-2">
+          {links
+            .filter((link) => userRole && link.roles.includes(userRole))
+            .map((link) => (
+              <li
+                key={link.path}
+                className={`rounded-md transition duration-150 ease-in-out ${
+                  isActive(link.path)
+                    ? 'bg-white text-gray-800'
+                    : 'hover:bg-gray-700'
+                }`}
+              >
+                <Link
+                  to={link.path}
+                  className={`flex items-center px-3 py-3 ${
+                    isCollapsed ? 'justify-center' : 'space-x-3'
+                  }`}
+                >
+                  <FontAwesomeIcon
+                    icon={link.icon}
+                    className={`h-5 w-5 ${
+                      isActive(link.path) ? 'text-gray-800' : 'text-gray-400'
+                    }`}
+                  />
+                  {!isCollapsed && (
+                    <span className="text-base">{link.label}</span>
+                  )}
+                </Link>
+              </li>
+            ))}
+        </ul>
+      </nav>
+
+      {/* Help Button */}
+      <div className="px-4 mb-4">
         <button
           type="button"
-          className="hover:bg-gray-800 bg-gray-700 text-white py-2 rounded-md transition duration-150 ease-in-out flex items-center space-x-3 px-3"
+          className="w-full flex items-center space-x-3 p-4 bg-gray-700 text-white rounded-md py-2 transition duration-150 ease-in-out flex items-center"
           onClick={() => setIsModalOpen(true)}
         >
           <FontAwesomeIcon icon={faQuestionCircle} />
+          {!isCollapsed && <span>Help</span>}
         </button>
       </div>
 
@@ -187,6 +213,6 @@ function Sidebar() {
       </Modal>
     </div>
   );
-}
+};
 
 export default Sidebar;

@@ -431,6 +431,41 @@ const DeleteBranch = async (branchId: number, token: string) => {
   }
 };
 
+const AssignBranchAdmin = async (
+  orgId: number,
+  branchId: number,
+  email: string,
+  token: string,
+): Promise<void> => {
+  if (!token) {
+    throw new Error('Authorization token is missing.');
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/organization/${orgId}/branches/${branchId}/admin`,
+      { email },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!response.data?.success) {
+      throw new Error(response.data?.message || 'Failed to assign admin.');
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error('API Error:', error.response?.data || error.message);
+      throw new Error(
+        error.response?.data?.message || 'Failed to assign admin.',
+      );
+    }
+    throw new Error('An unexpected error occurred while assigning admin.');
+  }
+};
 const createExcelTemplate = async (): Promise<string> => {
   const outputPath = path.join(app.getPath('downloads'), 'UserTemplate.xlsx');
   console.log('Template file will be saved at:', outputPath); // Debugging log
@@ -453,4 +488,5 @@ export {
   GetBranchById,
   logout,
   createExcelTemplate,
+  AssignBranchAdmin,
 };

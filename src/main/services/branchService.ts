@@ -4,6 +4,8 @@ import {
   GetAllBranches,
   DeleteBranch,
   GetBranchById,
+  AssignBranchAdmin,
+  GetAllBranchMembers, // Import the AssignBranchAdmin API function
 } from './api';
 
 const performCreateBranch = async (
@@ -41,7 +43,6 @@ const performGetAllBranches = async (token: string, event: IpcMainEvent) => {
       id: branch.id,
       name: branch.name || 'N/A', // Handle missing names
       orgId: branch.org_id,
-      // location: branch.location,
       createdAt: branch.created_at,
     }));
 
@@ -108,10 +109,65 @@ const performGetBranchDetails = async (
     });
   }
 };
+const performGetBranchMembers = async (
+  event: IpcMainEvent,
+  orgId: number,
+  branchId: number,
+  token: string,
+) => {
+  console.log('Fetching branch members:', { orgId, branchId, token }); // Debugging log
+
+  try {
+    // Call the API to get branch members
+    const members = await GetAllBranchMembers(orgId, branchId, token);
+    console.log('Fetched branch members:', members);
+
+    // Reply with the success response
+    event.reply('branch-members-listed', {
+      success: true,
+      data: members,
+    });
+  } catch (error: any) {
+    console.error('Error fetching branch members:', error.message);
+
+    // Reply with the failure response
+    event.reply('branch-members-listed', {
+      success: false,
+      message: error.message || 'Failed to fetch branch members.',
+    });
+  }
+};
+
+const performAssignBranchAdmin = async (
+  event: IpcMainEvent,
+  orgId: number,
+  branchId: number,
+  email: string,
+  token: string,
+) => {
+  try {
+    console.log('Assigning admin:', { orgId, branchId, email }); // Debugging log
+    await AssignBranchAdmin(orgId, branchId, email, token);
+
+    event.reply('branch-admin-assigned', {
+      success: true,
+      message: 'Admin assigned successfully.',
+    });
+  } catch (error: any) {
+    console.error('Failed to assign branch admin:', error.message);
+
+    event.reply('branch-admin-assigned', {
+      success: false,
+      message: error.message || 'Failed to assign branch admin.',
+    });
+  }
+};
 
 export {
   performCreateBranch,
   performGetAllBranches,
   performDeleteBranch,
   performGetBranchDetails,
+  performGetBranchMembers, // Export the new function
+  performAssignBranchAdmin, // Export the new function
 };
