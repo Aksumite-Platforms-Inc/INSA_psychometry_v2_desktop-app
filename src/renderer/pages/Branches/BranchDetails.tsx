@@ -11,7 +11,7 @@ interface BranchDetails {
   id: number;
   name: string;
   location: string;
-  createdAt: string;
+  created_at: Date;
 }
 
 interface BranchMember {
@@ -210,7 +210,7 @@ function BranchDetailsPage() {
               </p>
               <p className="text-gray-700 mb-1">
                 <span className="font-semibold">Created At:</span>{' '}
-                {branchDetails.createdAt || 'Unknown'}
+                {new Date(branchDetails.created_at).toLocaleDateString()}
               </p>
             </div>
             <button
