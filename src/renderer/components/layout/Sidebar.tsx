@@ -68,6 +68,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
       icon: faFolderOpen,
       roles: ['Organization Admin'],
     },
+    {
+      path: '/profile',
+      label: 'Profile',
+      icon: faUserCircle,
+      roles: ['Organization Admin', 'Branch Admin', 'Employee'],
+    },
   ];
 
   const steps = [

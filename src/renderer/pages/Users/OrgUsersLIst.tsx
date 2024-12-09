@@ -1,22 +1,21 @@
 /* eslint-disable consistent-return */
 import React, { useState, useEffect } from 'react';
-import BranchUserTable from '../../components/Tables/BranchUserTable';
+import OrgUserTable from '../../components/Tables/OrgUserTable';
 import DefaultLayout from '../../components/layout/defaultlayout';
-import { getToken, getOrgId, getBranchId } from '../../utils/validationUtils';
+import { getToken } from '../../utils/validationUtils';
 
-function BranchUsers() {
+function UsersList() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadedData, setUploadedData] = useState<
     { name: string; email: string }[]
   >([]);
   const [error, setError] = useState<string | null>(null);
+  const [refreshTable, setRefreshTable] = useState(false); // State to trigger table refresh
   const token = getToken();
-  const orgId = getOrgId();
-  const branchId = getBranchId();
 
   useEffect(() => {
     const { electron } = window;
-    console.log('hello zed', orgId, branchId, token);
+
     if (electron?.ipcRenderer) {
       const handleUploadResponse = (_event: any, response: unknown) => {
         const typedResponse = response as {
@@ -26,6 +25,7 @@ function BranchUsers() {
         };
         if (typedResponse.success) {
           setUploadedData(typedResponse.data || []);
+          setRefreshTable((prev) => !prev); // Toggle refreshTable to refresh OrgUserTable
           alert('File processed successfully!');
         } else {
           setError(typedResponse.message || 'Error processing file.');
@@ -41,7 +41,7 @@ function BranchUsers() {
         );
       };
     }
-  }, [branchId, orgId, token]);
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -142,12 +142,8 @@ function BranchUsers() {
 
           {/* User Table */}
           <div className="mt-8">
-            {/* {console.log(orgId, branchId)} */}
-            {branchId && orgId ? (
-              <BranchUserTable branchId={branchId} orgId={orgId} />
-            ) : (
-              <p className="text-red-500">Branch ID or Org ID is missing.</p>
-            )}
+            {/* Pass refreshTable to OrgUserTable as a key to trigger re-render */}
+            <OrgUserTable key={refreshTable.toString()} />
           </div>
         </div>
       </div>
@@ -155,4 +151,4 @@ function BranchUsers() {
   );
 }
 
-export default BranchUsers;
+export default UsersList;

@@ -10,13 +10,14 @@ function BranchUsers() {
     { name: string; email: string }[]
   >([]);
   const [error, setError] = useState<string | null>(null);
+  const [refreshTable, setRefreshTable] = useState(false); // State to trigger table refresh
   const token = getToken();
   const orgId = getOrgId();
   const branchId = getBranchId();
 
   useEffect(() => {
     const { electron } = window;
-    console.log('hello zed', orgId, branchId, token);
+
     if (electron?.ipcRenderer) {
       const handleUploadResponse = (_event: any, response: unknown) => {
         const typedResponse = response as {
@@ -26,6 +27,7 @@ function BranchUsers() {
         };
         if (typedResponse.success) {
           setUploadedData(typedResponse.data || []);
+          setRefreshTable((prev) => !prev); // Toggle refreshTable to refresh BranchUserTable
           alert('File processed successfully!');
         } else {
           setError(typedResponse.message || 'Error processing file.');
@@ -41,7 +43,7 @@ function BranchUsers() {
         );
       };
     }
-  }, [branchId, orgId, token]);
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -89,7 +91,7 @@ function BranchUsers() {
         <div className="flex-1 p-5 h-screen overflow-y-auto">
           {/* Header */}
           <div className="flex justify-between items-center mt-5">
-            <h1 className="text-xl font-semibold">Manage Users</h1>
+            <h1 className="text-xl font-semibold">Manage Branch Members</h1>
             <button
               type="button"
               className="bg-green-500 text-white px-4 py-2 rounded-md"
@@ -142,9 +144,12 @@ function BranchUsers() {
 
           {/* User Table */}
           <div className="mt-8">
-            {/* {console.log(orgId, branchId)} */}
             {branchId && orgId ? (
-              <BranchUserTable branchId={branchId} orgId={orgId} />
+              <BranchUserTable
+                key={refreshTable.toString()}
+                branchId={branchId}
+                orgId={orgId}
+              />
             ) : (
               <p className="text-red-500">Branch ID or Org ID is missing.</p>
             )}

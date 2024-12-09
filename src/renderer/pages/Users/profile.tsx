@@ -1,11 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faUserCircle,
-  faEnvelope,
-  faLock,
-} from '@fortawesome/free-solid-svg-icons';
+import { faUserCircle, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { getUserName, getEmail, getToken } from '../../utils/validationUtils';
 import DefaultLayout from '../../components/layout/defaultlayout';
@@ -20,7 +16,6 @@ function Profile() {
   const token = getToken();
   const navigate = useNavigate();
   const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
   const [fullName, setFullName] = React.useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -58,7 +53,6 @@ function Profile() {
         'update-profile',
         fullName,
         email,
-        password,
         token,
       );
     } else {
@@ -124,27 +118,6 @@ function Profile() {
                 </div>
               </div>
 
-              <div className="flex flex-col">
-                <label
-                  htmlFor="password"
-                  className="text-gray-600 font-semibold"
-                >
-                  Password
-                </label>
-                <div className="flex items-center border border-gray-300 rounded-md p-2 mt-2 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100">
-                  <FontAwesomeIcon
-                    icon={faLock}
-                    className="text-gray-600 h-5 w-5 mr-3"
-                  />
-                  <input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full outline-none text-gray-800"
-                  />
-                </div>
-              </div>
               {error && <p className="text-red-500 text-sm">{error}</p>}
 
               <div className="flex justify-end">

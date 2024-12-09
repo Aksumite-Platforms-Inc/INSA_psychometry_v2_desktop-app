@@ -39,7 +39,10 @@ export type Channels =
   | 'check-test-result-response'
   | 'check-if-test-taken'
   | 'check-test-taken-response'
-  | 'check-test-taken-failure';
+  | 'check-test-taken-failure'
+  | 'assign-branch-admin'
+  | 'branch-admin-assigned'
+  | 'branch-details-fetched';
 
 export interface ElectronHandler {
   ipcRenderer: {
