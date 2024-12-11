@@ -182,6 +182,10 @@ function BranchDetailsPage() {
             branchMembers={branchMembers}
             orgId={orgId}
             branchId={Number(branchId)}
+            hasAdmin={!!branchAdmin}
+            onAdminAssigned={(newAdmin: BranchMember) =>
+              setBranchAdmin(newAdmin)
+            }
           />
         )}
       </div>

@@ -8,6 +8,7 @@ import {
   faSortUp,
   faSortDown,
 } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 import { getToken, getOrgId } from '../../utils/validationUtils';
 import DefaultLayout from '../../components/layout/defaultlayout';
 import useSortableTable from '../../components/common/useSortableTable';
@@ -117,11 +118,15 @@ function Branches() {
     e.preventDefault();
     setError(null);
 
-    if (!token || !newBranch.trim()) return;
+    if (!token || !newBranch.trim()) {
+      toast.error('Please provide both branch name and admin email.');
+      return;
+    }
 
     if (window.electron && window.electron.ipcRenderer) {
       window.electron.ipcRenderer.sendMessage('create-branch', {
         name: newBranch.trim(),
+        // adminEmail: newBranchAdminEmail.trim(),
         token,
         orgId,
       });
@@ -131,9 +136,11 @@ function Branches() {
 
         if (typedResponse.success) {
           setNewBranch('');
+          toast.success('Branch created successfully!');
           fetchBranches(); // Refresh branches after creation
         } else {
           setError(typedResponse.message || 'Failed to create branch.');
+          toast.error(typedResponse.message || 'Failed to create branch.');
         }
       };
 
@@ -174,7 +181,59 @@ function Branches() {
           </div>
         ) : (
           <>
-            <h3 className="text-lg font-bold mb-3">Branches:</h3>
+            <nav className="w-full bg-gray-50 py-3 px-6 shadow-sm">
+              <div className="flex items-center space-x-4 text-sm text-gray-800">
+                <div className="flex items-center space-x-2">
+                  <div className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
+                    Home
+                  </div>
+                  <div className="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-4 h-4 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {/* <span className="bg-blue-100 text-blue-700 font-semibold px-4 py-2 rounded-full shadow-md" /> */}
+                  <div className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
+                    Branches
+                  </div>
+                </div>
+              </div>
+            </nav>
+            <div className="mt-5 bg-white p-5">
+              <form className="space-y-4" onSubmit={handleAddBranch}>
+                <h2 className="font-bold">Create New Branch</h2>
+                <input
+                  type="text"
+                  value={newBranch}
+                  onChange={(e) => setNewBranch(e.target.value)}
+                  placeholder="New Branch Name"
+                  className="border p-2 rounded-md mx-2"
+                />
+
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                >
+                  Add New Branch
+                </button>
+              </form>
+            </div>
+            <br />
+            <hr />
+            <br />
             <table className="w-full text-left border-collapse bg-white shadow-lg">
               <thead className="bg-gray-200 text-gray-700 uppercase text-sm">
                 <tr>
@@ -251,24 +310,6 @@ function Branches() {
               totalPages={totalPages}
               onPageChange={handlePageChange}
             />
-
-            <div className="mt-5">
-              <form className="space-y-4" onSubmit={handleAddBranch}>
-                <input
-                  type="text"
-                  value={newBranch}
-                  onChange={(e) => setNewBranch(e.target.value)}
-                  placeholder="New Branch Name"
-                  className="border p-2 rounded w-full"
-                />
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                >
-                  Add Branch
-                </button>
-              </form>
-            </div>
           </>
         )}
       </div>
