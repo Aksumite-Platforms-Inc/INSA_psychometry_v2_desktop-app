@@ -20,7 +20,7 @@ interface AssignAdminModalProps {
   branchId: number;
   orgId: number;
   hasAdmin: boolean; // Indicates if the branch currently has an admin
-  onAdminAssigned: () => void; // Callback to refresh the parent component
+  onAdminAssigned: (newAdmin: BranchMember) => void; // Callback to refresh the parent component
 }
 
 const AssignAdminModal: React.FC<AssignAdminModalProps> = ({
@@ -68,7 +68,12 @@ const AssignAdminModal: React.FC<AssignAdminModalProps> = ({
 
         if (response.success) {
           toast.success('Branch admin assigned successfully!');
-          onAdminAssigned(); // Trigger parent refresh
+          const newAdmin = branchMembers.find(
+            (member) => member.email === emailToAssign,
+          );
+          if (newAdmin) {
+            onAdminAssigned(newAdmin); // Trigger parent refresh
+          }
           onClose(); // Close the modal
         } else {
           toast.error(response.message || 'Failed to assign branch admin.');
@@ -81,12 +86,10 @@ const AssignAdminModal: React.FC<AssignAdminModalProps> = ({
       );
 
       // Cleanup to prevent duplicate listeners
-      return () => {
-        window.electron.ipcRenderer.removeListener(
-          'branch-admin-assigned',
-          handleBranchAdminAssigned,
-        );
-      };
+      window.electron.ipcRenderer.removeListener(
+        'branch-admin-assigned',
+        handleBranchAdminAssigned,
+      );
     } else {
       toast.error('Electron IPC Renderer is not available.');
     }
