@@ -46,7 +46,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
     },
     {
       path: '/orgUsers',
-      label: 'users',
+      label: 'Users',
       icon: faUsers,
       roles: ['Organization Admin'],
     },

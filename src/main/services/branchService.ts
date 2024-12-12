@@ -14,9 +14,13 @@ const performCreateBranch = async (
   name: string,
   token: string,
 ) => {
-  console.log('Attempting to create branch:', { orgId, name, token });
+  console.log('Attempting to create branch with admin:', {
+    orgId,
+    name,
+    token,
+  });
   try {
-    const newBranch = await CreateBranch(orgId, name, token);
+    const newBranch = await CreateBranch(orgId, name, token); // Updated API call
     console.log('Branch created successfully in API:', newBranch);
 
     event.reply('branch-created', {

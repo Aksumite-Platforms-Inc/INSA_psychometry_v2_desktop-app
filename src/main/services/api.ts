@@ -317,7 +317,11 @@ const DeleteOrgMember = async (
 // Branches Section
 
 const CreateBranch = async (orgId: number, name: string, token: string) => {
-  console.log('Sending request to create branch:', { orgId, name, token });
+  console.log('Sending request to create branch with admin:', {
+    orgId,
+    name,
+    token,
+  });
 
   try {
     const response = await axios.post(
@@ -330,8 +334,12 @@ const CreateBranch = async (orgId: number, name: string, token: string) => {
         },
       },
     );
+
     console.log('CreateBranch API Response:', response.data);
-    return response.data.data;
+    if (response.data.success) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Branch creation failed.');
   } catch (error: any) {
     console.error('CreateBranch API Error:', error.message);
     throw new Error(error.response?.data?.message || 'Branch creation failed.');

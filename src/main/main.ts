@@ -280,10 +280,14 @@ ipcMain.on('get-branch-details', async (event, { orgId, branchId, token }) => {
 
 ipcMain.on(
   'create-branch',
-  async (event: IpcMainEvent, { orgId, name, token }) => {
+  async (
+    event: IpcMainEvent,
+    { orgId, name, token }: { orgId: number; name: string; token: string },
+  ) => {
     await performCreateBranch(event, orgId, name, token);
   },
 );
+
 ipcMain.on(
   'delete-branch',
   async (event: IpcMainEvent, { branchId, token }) => {
