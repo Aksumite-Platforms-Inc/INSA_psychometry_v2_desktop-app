@@ -83,18 +83,26 @@ function ForgotPassword() {
           </div>
 
           {submitted ? (
-            <Typography
-              variant="body1"
-              sx={{
-                textAlign: 'center',
-                mt: 2,
-                color: 'gray',
-                fontStyle: 'italic',
-              }}
-            >
-              If an account with that email exists, you will receive a password
-              reset email shortly.
-            </Typography>
+            <>
+              <Typography
+                variant="body1"
+                sx={{
+                  textAlign: 'center',
+                  mt: 2,
+                  color: 'gray',
+                  fontStyle: 'italic',
+                }}
+              >
+                If an account with that email exists, you will receive a
+                password reset email shortly.
+              </Typography>
+              <Link
+                to="/login"
+                className="text-gray-800 hover:underline text-center"
+              >
+                Back to Login
+              </Link>
+            </>
           ) : (
             <Box
               component="form"
