@@ -37,7 +37,9 @@ const AssignAdminModal: React.FC<AssignAdminModalProps> = ({
   const [loading, setLoading] = useState(false);
   const token = getToken();
 
-  const assignBranchAdmin = () => {
+  const assignBranchAdmin = (e: React.FormEvent) => {
+    e.preventDefault();
+
     let emailToAssign: string | null = null;
 
     // Validation for the appropriate flow
@@ -176,37 +178,40 @@ const AssignAdminModal: React.FC<AssignAdminModalProps> = ({
           <p className="text-gray-600 mb-4">
             Enter the email address of the user to assign as the branch admin:
           </p>
-          <input
-            type="email"
-            value={manualEmail}
-            onChange={(e) => setManualEmail(e.target.value)}
-            className="w-full p-2 border rounded-md"
-            placeholder="Enter email address"
-          />
+          <form onSubmit={assignBranchAdmin}>
+            <input
+              type="email"
+              value={manualEmail}
+              onChange={(e) => setManualEmail(e.target.value)}
+              className="w-full p-2 border rounded-md mb-4 "
+              placeholder="Enter email address"
+              required
+            />
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-2">
+              <button
+                type="button"
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
+                onClick={onClose}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className={`bg-blue-500 text-white px-4 py-2 rounded ${
+                  loading
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:bg-blue-600'
+                }`}
+                disabled={loading}
+              >
+                {loading ? 'Assigning...' : 'Assign Admin'}
+              </button>
+            </div>
+          </form>
         </>
       )}
-
-      {/* Action Buttons */}
-      <div className="mt-6 flex justify-end">
-        <button
-          type="button"
-          className="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2"
-          onClick={onClose}
-          disabled={loading}
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          className={`bg-blue-500 text-white px-4 py-2 rounded ${
-            loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
-          }`}
-          onClick={assignBranchAdmin}
-          disabled={loading}
-        >
-          {loading ? 'Assigning...' : 'Assign Admin'}
-        </button>
-      </div>
     </Modal>
   );
 };
