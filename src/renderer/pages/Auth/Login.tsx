@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { jwtDecode } from 'jwt-decode';
-import Logo from '../../assets/Images/logo/undraw_online_test_re_kyfx (1).svg';
+import Illustration from '../../assets/Images/logo/undraw_online_test_re_kyfx (1).svg';
+import Logo from '../../assets/Images/logo/INSA_ICON_LOGO.png';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface LoginResponse {
@@ -78,18 +79,26 @@ function LoginForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-gray-800">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl flex flex-col md:flex-row w-full">
+      <div className="relative bg-white rounded-lg shadow-2xl max-w-4xl flex flex-col md:flex-row w-full">
+        {/* Watermark */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-5 z-0">
+          <img src={Logo} alt="Watermark Logo" className="max-w-sm" />
+        </div>
+
         {/* Left Section - Illustration */}
-        <div className="flex items-center justify-center w-full md:w-1/2 p-8 bg-gray-100">
-          <img src={Logo} alt="Logo" className="max-w-xs" />
+        <div className="relative z-10 flex items-center justify-center w-full md:w-1/2 p-8 bg-gray-100">
+          <img src={Illustration} alt="Illustration" className="max-w-xs" />
         </div>
 
         {/* Right Section - Form */}
-        <div className="w-full md:w-1/2 p-8">
+        <div className="relative z-10 w-full md:w-1/2 p-8">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
               INSA | Personality Test Platform
             </h1>
+            <p className="text-sm text-gray-600">
+              Welcome back! Please log in.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -106,7 +115,7 @@ function LoginForm() {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-700"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
@@ -124,7 +133,7 @@ function LoginForm() {
                 placeholder="8+ Characters, 1 Capital letter"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-700"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
