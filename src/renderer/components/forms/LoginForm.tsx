@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -8,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 interface LoginResponse {
   success: boolean;
   message?: string;
-  token?: string; // The token should include the user's role
+  token?: string;
 }
 
 interface DecodedToken {
@@ -26,15 +27,12 @@ function LoginForm() {
       const handleLoginSuccess = (_event: any, ...args: unknown[]) => {
         const response = args[0] as LoginResponse;
         if (response.success && response.token) {
-          // Save token in localStorage
           localStorage.setItem('authToken', response.token);
 
-          // Decode token to get user role
           try {
             const decoded: DecodedToken = jwtDecode(response.token);
             const userRole = decoded.role;
 
-            // Navigate based on user role
             if (userRole === 'org_admin' || userRole === 'branch_admin') {
               navigate('/dashboard');
             } else if (userRole === 'org_member') {
@@ -69,7 +67,7 @@ function LoginForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); // Clear any previous errors
+    setError(null);
     if (window.electron && window.electron.ipcRenderer) {
       window.electron.ipcRenderer.sendMessage('user-login', email, password);
     } else {
@@ -79,71 +77,72 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full rounded-sm border border-stroke bg-white shadow-lg dark:border-strokedark dark:bg-boxdark">
-      <div className="w-full flex flex-wrap items-center p-5">
-        <div className="w-full xl:block xl:w-1/2">
-          <div className="py-17.5 px-26 text-center">
-            <Link className="mb-5.5 inline-block" to="/">
-              <img className="hidden dark:block" src={Logo} alt="Logo" />
-            </Link>
-            <h2 className="mb-9 font-bold">INSA | Personality Test Platform</h2>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
+        <div className="text-center mb-6">
+          <h1 className="text-xl font-bold text-gray-800">
+            INSA | Personality Test Platform
+          </h1>
+          <img src={Logo} alt="Logo" className=" mx-auto mb-4" />
         </div>
 
-        <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
-          <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label htmlFor="email" className="mb-2.5 block font-medium">
-                  Email
-                  <input
-                    id="email"
-                    type="text"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black"
-                  />
-                </label>
-              </div>
-
-              <div className="mb-6">
-                <label htmlFor="password" className="mb-2.5 block font-medium">
-                  Password
-                  <input
-                    id="password"
-                    type="password"
-                    placeholder="8+ Characters, 1 Capital letter"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black"
-                  />
-                </label>
-              </div>
-
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-
-              <div className="mb-5">
-                <input
-                  type="submit"
-                  value="Sign In"
-                  className="w-full cursor-pointer rounded-lg border bg-blue-700 p-4 text-white"
-                />
-              </div>
-
-              <div className="mb-2.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigate('/forgotpassword');
-                  }}
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  Forgot Password?
-                </button>
-              </div>
-            </form>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Email Address
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
           </div>
+
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="8+ Characters, 1 Capital letter"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          {error && <p className="text-sm text-red-500 mb-4">{error}</p>}
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
+          >
+            Sign In
+          </button>
+        </form>
+
+        <div className="mt-4 flex justify-between items-center">
+          <Link
+            to="/forgotpassword"
+            className="text-sm text-blue-600 hover:underline"
+          >
+            Forgot Password?
+          </Link>
+          <Link to="/help" className="text-sm text-blue-600 hover:underline">
+            Need Help?
+          </Link>
         </div>
       </div>
     </div>

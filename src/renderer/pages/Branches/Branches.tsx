@@ -3,11 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faTrash,
-  faSortUp,
-  faSortDown,
-} from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { getToken, getOrgId } from '../../utils/validationUtils';
 import DefaultLayout from '../../components/layout/defaultlayout';
@@ -245,9 +241,9 @@ function Branches() {
                       ID
                       {sortConfig.key === 'id' &&
                         (sortConfig.direction === 'ascending' ? (
-                          <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+                          <span>&uarr;</span>
                         ) : (
-                          <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+                          <span>&darr;</span>
                         ))}
                     </div>
                   </th>
@@ -259,9 +255,9 @@ function Branches() {
                       Branch Name
                       {sortConfig.key === 'name' &&
                         (sortConfig.direction === 'ascending' ? (
-                          <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+                          <span>&uarr;</span>
                         ) : (
-                          <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+                          <span>&darr;</span>
                         ))}
                     </div>
                   </th>

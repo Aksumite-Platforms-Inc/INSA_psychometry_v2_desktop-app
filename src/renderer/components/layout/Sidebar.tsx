@@ -99,8 +99,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
 
   return (
     <div
-      className={`flex flex-col bg-gray-800 text-white h-full transition-all duration-300 ${
-        isCollapsed ? 'w-20' : 'w-64'
+      className={`flex flex-col bg-gradient-to-br from-blue-500 to-gray-800 text-white h-full transition-all duration-300 ${
+        isCollapsed ? 'w-20' : 'w-55'
       }`}
     >
       {/* Profile Section */}
@@ -109,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
           isCollapsed ? 'justify-center' : 'items-center space-x-4'
         }`}
       >
-        <div className="rounded-full bg-gray-700 flex justify-center items-center h-12 w-12">
+        <div className="rounded-full bg-white-700 flex justify-center items-center h-12 w-12">
           <FontAwesomeIcon
             icon={faUserCircle}
             className="text-white text-3xl"
@@ -149,7 +149,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
                   <FontAwesomeIcon
                     icon={link.icon}
                     className={`h-5 w-5 ${
-                      isActive(link.path) ? 'text-gray-800' : 'text-gray-400'
+                      isActive(link.path) ? 'text-white-800' : 'text-white-400'
                     }`}
                   />
                   {!isCollapsed && (
