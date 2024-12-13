@@ -1,9 +1,7 @@
 import { IpcMainEvent } from 'electron';
-import { performLogin } from './api';
+import { performLogin, performResetPassword } from './api';
 
 const login = async (email: string, password: string, event: IpcMainEvent) => {
-  console.log('Login called with:', { email, password });
-
   try {
     const token = await performLogin(email, password);
     console.log('Token retrieved from API:', token);
@@ -19,4 +17,16 @@ const login = async (email: string, password: string, event: IpcMainEvent) => {
   }
 };
 
-export default login;
+const resetPassword = async (email: string, event: IpcMainEvent) => {
+  try {
+    await performResetPassword(email);
+  } catch (error: any) {
+    const response = {
+      success: false,
+      message: error,
+    };
+    event.reply('reset-password-success', response);
+  }
+};
+
+export { login, resetPassword };
