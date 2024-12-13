@@ -72,16 +72,16 @@ function ForgotPassword() {
               reset email shortly.
             </Typography>
             <div className="mb-2.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigate('/login');
-                  }}
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  Back to login
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  navigate('/login');
+                }}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Back to login
+              </button>
+            </div>
           </>
         ) : (
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
