@@ -1,11 +1,7 @@
 /* eslint-disable consistent-return */
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faTrash,
-  faSortUp,
-  faSortDown,
-} from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { getToken, getOrgId, getUserId } from '../../utils/validationUtils';
 import useSortableTable from '../common/useSortableTable';
 import Pagination from '../common/Pagination';
@@ -157,9 +153,9 @@ function UserTable() {
                     ID
                     {sortConfig.key === 'id' &&
                       (sortConfig.direction === 'ascending' ? (
-                        <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+                        <span>&uarr;</span>
                       ) : (
-                        <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+                        <span>&darr;</span>
                       ))}
                   </div>
                 </th>
@@ -171,9 +167,9 @@ function UserTable() {
                     Full Name
                     {sortConfig.key === 'name' &&
                       (sortConfig.direction === 'ascending' ? (
-                        <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+                        <span>&uarr;</span>
                       ) : (
-                        <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+                        <span>&darr;</span>
                       ))}
                   </div>
                 </th>
@@ -185,9 +181,9 @@ function UserTable() {
                     Email Address
                     {sortConfig.key === 'email' &&
                       (sortConfig.direction === 'ascending' ? (
-                        <FontAwesomeIcon icon={faSortUp} className="ml-2" />
+                        <span>&uarr;</span>
                       ) : (
-                        <FontAwesomeIcon icon={faSortDown} className="ml-2" />
+                        <span>&darr;</span>
                       ))}
                   </div>
                 </th>
