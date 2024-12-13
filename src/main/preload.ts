@@ -42,7 +42,9 @@ export type Channels =
   | 'check-test-taken-failure'
   | 'assign-branch-admin'
   | 'branch-admin-assigned'
-  | 'branch-details-fetched';
+  | 'branch-details-fetched'
+  | 'reset-password'
+  | 'reset-password-success';
 
 export interface ElectronHandler {
   ipcRenderer: {

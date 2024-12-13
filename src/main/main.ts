@@ -22,7 +22,10 @@ import {
   checkResult,
   checkIfTestTaken,
 } from './services/testService';
-import login from './services/authService';
+import {
+  login,
+  resetPassword,
+} from './services/authService';
 import {
   performDownloadTemplate,
   processExcelFile,
@@ -188,19 +191,26 @@ ipcMain.on(
 // Login Section
 
 ipcMain.on('user-login', async (event, email, password) => {
-  console.log('Received login attempt:', { email, password });
-
   try {
     await login(email, password, event);
   } catch (error) {
-    console.error('Error in login handler:', error);
-
     event.reply('user-login-success', {
       success: false,
-      message: 'An internal error occurred.',
+      message: error,
     });
   }
 });
+
+ipcMain.on('reset-password', async (event, email) => {
+  try {
+    await resetPassword(email, event);
+  } catch (error) {
+    event.reply('reset-password-success', {
+      success: false,
+      message: error,
+    })
+  }
+})
 
 // File Section
 ipcMain.on(
