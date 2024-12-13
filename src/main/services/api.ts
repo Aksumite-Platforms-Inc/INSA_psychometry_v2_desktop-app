@@ -182,6 +182,29 @@ const performLogin = async (
   }
 };
 
+const performResetPassword = async (email: string) => {
+  try {
+    const response = await axios.post(
+      'organization/members/resetpassword',
+      {
+        email,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return response;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data?.message || 'reset Passowrd.');
+    } else {
+      throw new Error('An unexpected error occurred during reset password.');
+    }
+  }
+};
+
 const updateProfile = async (
   fullName: string,
   email: string,
@@ -485,6 +508,7 @@ const createExcelTemplate = async (): Promise<string> => {
 
 export {
   performLogin,
+  performResetPassword,
   updateProfile,
   addBulkUsers,
   GetAllOrgMembers,
