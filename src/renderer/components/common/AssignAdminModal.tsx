@@ -176,21 +176,23 @@ const AssignAdminModal: React.FC<AssignAdminModalProps> = ({
           <p className="text-gray-600 mb-4">
             Enter the email address of the user to assign as the branch admin:
           </p>
-          <input
-            type="email"
-            value={manualEmail}
-            onChange={(e) => setManualEmail(e.target.value)}
-            className="w-full p-2 border rounded-md"
-            placeholder="Enter email address"
-          />
+          <form onSubmit={(e) => e.preventDefault()}>
+            <input
+              type="email"
+              value={manualEmail}
+              onChange={(e) => setManualEmail(e.target.value)}
+              className="w-full p-2 border rounded-md mb-4"
+              placeholder="Enter email address"
+            />
+          </form>
         </>
       )}
 
       {/* Action Buttons */}
-      <div className="mt-6 flex justify-end">
+      <div className="mt-6 flex justify-end space-x-2">
         <button
           type="button"
-          className="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2"
+          className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
           onClick={onClose}
           disabled={loading}
         >
