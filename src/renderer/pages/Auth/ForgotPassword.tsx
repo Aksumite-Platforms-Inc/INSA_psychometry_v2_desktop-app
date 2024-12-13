@@ -1,17 +1,56 @@
-import React, { useState } from 'react';
-import { Button, TextField, Typography, Box, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import ArrowBackIos from '@mui/icons-material/ArrowBackIos';
+import React, { useState, useEffect } from 'react';
+import { Button, TextField, Typography, Box } from '@mui/material';
+import { useNavigate, Link } from 'react-router-dom';
 import Illustration from '../../assets/Images/logo/undraw_forgot_password_re_hxwm.svg'; // Use a relevant illustration
 import Logo from '../../assets/Images/logo/INSA_ICON_LOGO.png'; // Your watermark logo
 
+interface ResetResponse {
+  success: boolean;
+  message?: string;
+}
+
 function ForgotPassword() {
   const [email, setEmail] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (window.electron && window.electron.ipcRenderer) {
+      const handleResetSuccess = (_event: any, ...args: unknown[]) => {
+        const response = args[0] as ResetResponse;
+        if (response.success) {
+          setSubmitted(true);
+        } else {
+          setError(response.message || 'reset password failed');
+        }
+      };
+
+      window.electron.ipcRenderer.on(
+        'reset-password-success',
+        handleResetSuccess,
+      );
+
+      return () => {
+        window.electron.ipcRenderer.removeListener(
+          'reset-password-success',
+          handleResetSuccess,
+        );
+      };
+    }
+    return undefined;
+  }, [navigate]);
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    event.preventDefault();
+    setError(null);
+    if (window.electron && window.electron.ipcRenderer) {
+      window.electron.ipcRenderer.sendMessage('reset-password', email);
+    } else {
+      setError('Electron IPC is not available');
+      // toast.error('Electron IPC is not available.');
+    }
     setSubmitted(true);
   };
 
@@ -22,23 +61,6 @@ function ForgotPassword() {
         <div className="absolute inset-0 flex items-center justify-center opacity-5 z-0">
           <img src={Logo} alt="Watermark Logo" className="max-w-sm" />
         </div>
-
-        {/* Back Button */}
-        <IconButton
-          onClick={() => navigate(-1)}
-          className="z-50"
-          sx={{
-            position: 'absolute',
-            top: 16,
-            left: 16,
-            color: '#667596',
-            '&:hover': {
-              color: '#1E40AF',
-            },
-          }}
-        >
-          <ArrowBackIos />
-        </IconButton>
 
         {/* Left Section - Illustration */}
         <div className="relative z-10 flex items-center justify-center w-full md:w-1/2 p-8 bg-gray-100">
@@ -95,16 +117,20 @@ function ForgotPassword() {
                 autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="text-white"
+                InputLabelProps={{
+                  style: { color: '#1F2937' }, // Change this color to your desired color
+                }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     '& fieldset': {
-                      borderColor: '#3B82F6',
+                      borderColor: '#999999',
                     },
                     '&:hover fieldset': {
-                      borderColor: '#2563EB',
+                      borderColor: '#555555',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#1E40AF',
+                      borderColor: '#1F2937',
                     },
                   },
                 }}
@@ -113,16 +139,26 @@ function ForgotPassword() {
                 type="submit"
                 fullWidth
                 variant="contained"
+                className="bg-gray-800 hover:bg-gray-900 text-white font-semibold"
                 sx={{
                   py: 1.5,
-                  backgroundColor: '#2563EB',
+                  backgroundColor: '#1F2937',
                   '&:hover': {
-                    backgroundColor: '#1E40AF',
+                    backgroundColor: '#111111',
                   },
                 }}
               >
                 Send Reset Link
               </Button>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+              <div className="mt-6 flex justify-between items-center text-sm">
+                <Link to="/login" className="text-gray-800 hover:underline">
+                  Back to Login
+                </Link>
+                <Link to="/help" className="text-gray-800 hover:underline">
+                  Need Help?
+                </Link>
+              </div>
             </Box>
           )}
         </div>
