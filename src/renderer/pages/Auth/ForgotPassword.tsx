@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { Button, TextField, Typography, Box } from '@mui/material';
+import { Button, TextField, Typography, Box, IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import ArrowBackIos from '@mui/icons-material/ArrowBackIos';
 import Illustration from '../../assets/Images/logo/undraw_forgot_password_re_hxwm.svg'; // Use a relevant illustration
 import Logo from '../../assets/Images/logo/INSA_ICON_LOGO.png'; // Your watermark logo
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -19,6 +22,23 @@ function ForgotPassword() {
         <div className="absolute inset-0 flex items-center justify-center opacity-5 z-0">
           <img src={Logo} alt="Watermark Logo" className="max-w-sm" />
         </div>
+
+        {/* Back Button */}
+        <IconButton
+          onClick={() => navigate(-1)}
+          className="z-50"
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            color: '#667596',
+            '&:hover': {
+              color: '#1E40AF',
+            },
+          }}
+        >
+          <ArrowBackIos />
+        </IconButton>
 
         {/* Left Section - Illustration */}
         <div className="relative z-10 flex items-center justify-center w-full md:w-1/2 p-8 bg-gray-100">
