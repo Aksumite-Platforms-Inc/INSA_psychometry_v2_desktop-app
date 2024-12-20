@@ -99,7 +99,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed }) => {
 
   return (
     <div
-      className={`flex flex-col bg-gradient-to-br from-blue-500 to-gray-800 text-white h-full transition-all duration-300 ${
+      className={`flex flex-col bg-gray-800 text-white h-full transition-all duration-300 ${
         isCollapsed ? 'w-20' : 'w-55'
       }`}
     >
