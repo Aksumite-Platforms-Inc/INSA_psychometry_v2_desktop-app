@@ -42,6 +42,7 @@ import {
   performDeleteMember,
 } from './services/userService';
 
+autoUpdater.disableWebInstaller = false;
 // Disable GPU acceleration
 app.commandLine.appendSwitch('disable-gpu');
 class AppUpdater {
