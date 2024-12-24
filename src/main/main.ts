@@ -42,11 +42,15 @@ import {
   performDeleteMember,
 } from './services/userService';
 
+// Disable GPU acceleration
+app.commandLine.appendSwitch('disable-gpu');
 class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.checkForUpdatesAndNotify().catch((error) => {
+      console.error('Error checking for updates:', error);
+    });
   }
 }
 
