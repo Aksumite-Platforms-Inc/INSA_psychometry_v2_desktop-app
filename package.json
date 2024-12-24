@@ -267,7 +267,7 @@
     "publish": {
       "provider": "github",
       "owner": "Aksumite-Platforms-Inc",
-      "repo": "https://github.com/Aksumite-Platforms-Inc/INSA-Personality-Test_Desktop-app"
+      "repo": "INSA-Personality-Test_Desktop-app"
     }
   },
   "devEngines": {
