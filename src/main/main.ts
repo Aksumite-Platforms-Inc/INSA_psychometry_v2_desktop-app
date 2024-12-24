@@ -22,10 +22,7 @@ import {
   checkResult,
   checkIfTestTaken,
 } from './services/testService';
-import {
-  login,
-  resetPassword,
-} from './services/authService';
+import { login, resetPassword } from './services/authService';
 import {
   performDownloadTemplate,
   processExcelFile,
