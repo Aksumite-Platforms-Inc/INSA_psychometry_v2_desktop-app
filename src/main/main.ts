@@ -205,9 +205,9 @@ ipcMain.on('reset-password', async (event, email) => {
     event.reply('reset-password-success', {
       success: false,
       message: error,
-    })
+    });
   }
-})
+});
 
 // File Section
 ipcMain.on(
