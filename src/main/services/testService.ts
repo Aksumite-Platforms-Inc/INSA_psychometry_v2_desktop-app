@@ -136,8 +136,8 @@ const endTest = async (
           }
         }
       },
-      10 * 60 * 1000,
-    ); // 10 minutes
+      120 * 60 * 1000,
+    ); // 2 hours or 120 minutes
   };
 
   try {

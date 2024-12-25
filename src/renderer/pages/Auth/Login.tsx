@@ -78,7 +78,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-gray-800">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-500 to-gray-800">
       <div className="relative bg-white rounded-lg shadow-2xl max-w-4xl flex flex-col md:flex-row w-full">
         {/* Watermark */}
         <div className="absolute inset-0 flex items-center justify-center opacity-5 z-0">

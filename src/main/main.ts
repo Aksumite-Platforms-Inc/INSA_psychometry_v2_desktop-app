@@ -112,7 +112,7 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
       nodeIntegration: false,
       contextIsolation: true, // Keep this true for security with contextBridge
-      webSecurity: false, // Disable same-origin restrictions
+      webSecurity: true, // Disable same-origin restrictions
     },
     // fullscreen: true, // Add this line to make the window fullscreen
   });
