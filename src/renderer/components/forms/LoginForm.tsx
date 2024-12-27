@@ -39,12 +39,10 @@ function LoginForm() {
               navigate('/tests');
             } else {
               toast.error('Unknown role. Contact support.');
-              console.error('Unknown role:', userRole);
             }
 
             toast.success('Login successful!');
           } catch (err) {
-            console.error('Error decoding token:', err);
             toast.error('Failed to process user role. Contact support.');
           }
         } else {
