@@ -5,8 +5,8 @@ import fs from 'fs';
 import { IpcMainEvent, app } from 'electron';
 
 // Define the base URL as a variable for flexibility
-const API_BASE_URL = 'http://api.personality.insa.gov.et/api/v1';
-// const API_BASE_URL = 'http://localhost:8080/api/v1';
+// const API_BASE_URL = 'http://api.personality.insa.gov.et/api/v1';
+const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 // Set the default base URL for Axios
 axios.defaults.baseURL = API_BASE_URL;
@@ -46,7 +46,6 @@ const addBulkUsers = async (
       throw new Error(response.data.message || 'Failed to add users.');
     }
 
-    console.log('Successfully added users:', response.data);
     return response.data;
   } catch (error) {
     if (error instanceof Error) {
@@ -71,9 +70,6 @@ export const uploadScreenshot = async (
   formData.append('test_id', testId);
 
   try {
-    console.log('Uploading with token:', token); // Debugging token
-    console.log('Uploading screenshot from path:', screenshotPath); // Debugging path
-
     const response = await axios.post(
       `${API_BASE_URL}/organization/submit`,
       formData,
@@ -86,9 +82,6 @@ export const uploadScreenshot = async (
         maxContentLength: Infinity, // Handle large file uploads
       },
     );
-
-    console.log('Upload response:', response.data); // Debugging response
-
     if (!response.data.success) {
       throw new Error(response.data.message || 'Failed.');
     }
@@ -123,7 +116,6 @@ export const checkTestTaken = async (
     return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error('API Error:', error.response?.data || error.message);
       throw new Error(
         error.response?.data?.message || 'Failed to check test status.',
       );
@@ -144,10 +136,18 @@ const logout = async (event?: IpcMainEvent) => {
   }
 };
 
+interface LoginResponse {
+  success: boolean;
+  data?: {
+    token: string;
+  };
+  message: string;
+}
+
 const performLogin = async (
   email: string,
   password: string,
-): Promise<string> => {
+): Promise<LoginResponse> => {
   try {
     const response = await axios.post(
       `${API_BASE_URL}/sso/login`, // Use the base URL variable
@@ -160,17 +160,7 @@ const performLogin = async (
       },
     );
 
-    console.log('API response:', response.data);
-
-    // Extract the token from the response
-    const token = response.data?.data?.token;
-
-    if (!token) {
-      console.error('Token not returned in API response:', response.data);
-      throw new Error('Token not returned from API.');
-    }
-
-    return token; // Return the token to the caller
+    return response;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       console.error('Login failed:', error.response.data);

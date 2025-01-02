@@ -53,6 +53,9 @@ const performDownloadTemplate = async (event: IpcMainEvent) => {
 };
 
 // Process Uploaded Excel File
+const MAX_FILE_SIZE_MB = 100;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
 const processExcelFile = async (
   event: IpcMainEvent,
   token: number,
@@ -62,6 +65,17 @@ const processExcelFile = async (
 
   if (!fs.existsSync(filePath)) {
     throw new Error(`File not found at path: ${filePath}`);
+  }
+
+  const fileSize = fs.statSync(filePath).size;
+  if (fileSize > MAX_FILE_SIZE_BYTES) {
+    const errorMessage = `File size exceeds the allowed limit of ${MAX_FILE_SIZE_MB}MB.`;
+    console.error(errorMessage);
+    event.reply('excel-file-processed', {
+      success: false,
+      message: errorMessage,
+    });
+    return;
   }
 
   try {

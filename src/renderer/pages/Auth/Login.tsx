@@ -6,12 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import Illustration from '../../assets/Images/logo/undraw_online_test_re_kyfx (1).svg';
 import Logo from '../../assets/Images/logo/INSA_ICON_LOGO.png';
 import 'react-toastify/dist/ReactToastify.css';
-
-interface LoginResponse {
-  success: boolean;
-  message?: string;
-  token?: string;
-}
+import LoginResponse from '../../types/auth.type';
 
 interface DecodedToken {
   role: string;
@@ -22,11 +17,9 @@ function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     if (window.electron && window.electron.ipcRenderer) {
-      const handleLoginSuccess = (_event: any, ...args: unknown[]) => {
-        const response = args[0] as LoginResponse;
+      const handleLoginSuccess = (_event: any, response: LoginResponse) => {
         if (response.success && response.token) {
           localStorage.setItem('authToken', response.token);
 

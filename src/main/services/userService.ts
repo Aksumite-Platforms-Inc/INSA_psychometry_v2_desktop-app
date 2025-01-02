@@ -1,50 +1,48 @@
 import { IpcMainEvent } from 'electron';
 import {
-  updateProfile,
+  // updateProfile,
   GetAllOrgMembers,
   DeleteOrgMember,
   GetAllBranchMembers,
 } from './api';
 
-const PerformUpdateProfile = async (
-  fullName: string,
-  email: string,
-  password: string,
-  event: IpcMainEvent,
-  token: string,
-) => {
-  if (!email || !fullName || password) {
-    const response = {
-      success: false,
-      message: 'Email, full name, and password are required',
-    };
-    console.log('Validation failed:', response);
-    event.reply('user-login-success', response);
-    return;
-  }
+// const PerformUpdateProfile = async (
+//   fullName: string,
+//   email: string,
+//   password: string,
+//   event: IpcMainEvent,
+//   token: string,
+// ) => {
+//   if (!email || !fullName || password) {
+//     const response = {
+//       success: false,
+//       message: 'Email, full name, and password are required',
+//     };
+//     event.reply('user-login', response);
+//     return;
+//   }
 
-  try {
-    const response = await updateProfile(fullName, email, password, token);
-    console.log('Profile updated successfully:', response);
+//   try {
+//     const response = await updateProfile(fullName, email, password, token);
 
-    event.reply('user-login-success', {
-      success: true,
-      message: 'Profile updated successfully',
-    });
-  } catch (error: any) {
-    if (error && error.response) {
-      console.error('Profile update failed:', error.response.data);
-    } else {
-      console.error('Profile update failed:', error.message);
-    }
+//     event.reply('user-login-success', {
+//       success: true,
+//       message: response.Message,
+//     });
+//   } catch (error: any) {
+//     if (error && error.response) {
+//       console.error('Profile update failed:', error.response.data);
+//     } else {
+//       console.error('Profile update failed:', error.message);
+//     }
 
-    const response = {
-      success: false,
-      message: 'Profile update failed. Please check your credentials.',
-    };
-    event.reply('user-login-success', response);
-  }
-};
+//     const response = {
+//       success: false,
+//       message: 'Profile update failed. Please check your credentials.',
+//     };
+//     event.reply('user-login-success', response);
+//   }
+// };
 
 const performGetAllMembers = async (
   orgId: number,
@@ -90,12 +88,8 @@ const performGetBranchMembers = async (
   event: IpcMainEvent,
 ) => {
   try {
-    console.log('Fetching branch members:', { orgId, branchId, token }); // Debugging log
-
     // Call the API to get branch members
     const members = await GetAllBranchMembers(orgId, branchId, token);
-    console.log('Fetched branch members:', members);
-
     // Reply with the success response
     event.reply('branch-members-listed', {
       success: true,
@@ -129,7 +123,7 @@ const performDeleteMember = async (
   }
 };
 export {
-  PerformUpdateProfile,
+  // PerformUpdateProfile,
   performGetAllMembers,
   performDeleteMember,
   performGetBranchMembers,

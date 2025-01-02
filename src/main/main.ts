@@ -36,7 +36,7 @@ import {
   performGetBranchMembers,
 } from './services/branchService';
 import {
-  PerformUpdateProfile,
+  // PerformUpdateProfile,
   performGetAllMembers,
   // performGetBranchMembers,
   performDeleteMember,
@@ -192,13 +192,14 @@ ipcMain.on(
 
 // Login Section
 
-ipcMain.on('user-login', async (event, email, password) => {
+ipcMain.on('user-login', async (event, email: string, password: string) => {
   try {
-    await login(email, password, event);
+    const response = await login(email, password, event);
+    event.reply('user-login-success', response);
   } catch (error) {
     event.reply('user-login-success', {
       success: false,
-      message: error,
+      message: error.message,
     });
   }
 });
@@ -239,34 +240,34 @@ ipcMain.on(
 
 // Members Section
 
-ipcMain.on(
-  'update-profile',
-  async (
-    event,
-    fullName: string,
-    email: string,
-    password: string,
-    token: string,
-  ) => {
-    console.log('Received profile update:', { fullName, email, password });
-    try {
-      // Perform profile update here
-      await PerformUpdateProfile(fullName, email, password, event, token);
+// ipcMain.on(
+//   'update-profile',
+//   async (
+//     event,
+//     fullName: string,
+//     email: string,
+//     password: string,
+//     token: string,
+//   ) => {
+//     console.log('Received profile update:', { fullName, email, password });
+//     try {
+//       // Perform profile update here
+//       await PerformUpdateProfile(fullName, email, password, event, token);
 
-      event.reply('profile-updated', {
-        success: true,
-        user: { email },
-      });
-    } catch (error) {
-      console.error('Error in profile update:', error);
+//       event.reply('profile-updated', {
+//         success: true,
+//         user: { email },
+//       });
+//     } catch (error) {
+//       console.error('Error in profile update:', error);
 
-      event.reply('profile-updated', {
-        success: false,
-        message: 'An internal error occurred.',
-      });
-    }
-  },
-);
+//       event.reply('profile-updated', {
+//         success: false,
+//         message: 'An internal error occurred.',
+//       });
+//     }
+//   },
+// );
 ipcMain.on('get-members', async (event: IpcMainEvent, { orgId, token }) => {
   await performGetAllMembers(orgId, token, event);
 });

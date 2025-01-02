@@ -115,10 +115,10 @@ function UserTable() {
   const { sortedData, requestSort, sortConfig } = useSortableTable(users);
 
   const activeUsers = sortedData.filter(
-    (user) => user.activation_code !== '' && user.id !== currentUserId,
+    (user) => user.activation_code === '' && user.id !== currentUserId,
   );
   const invitedUsers = sortedData.filter(
-    (user) => user.activation_code === '' && user.id !== currentUserId,
+    (user) => user.activation_code !== '' && user.id !== currentUserId,
   );
 
   const totalRecords = activeUsers.length;
@@ -237,12 +237,14 @@ function UserTable() {
                 <thead className="bg-gray-200 text-gray-700 uppercase text-sm">
                   <tr>
                     <th className="py-3 px-4">Email</th>
+                    <th className="py-3 px-4">Full Name</th>
                   </tr>
                 </thead>
                 <tbody>
                   {invitedUsers.map((user) => (
                     <tr key={user.email} className="border-t">
                       <td className="py-2 px-4">{user.email}</td>
+                      <td className="py-2 px-4">{user.name}</td>
                     </tr>
                   ))}
                 </tbody>
