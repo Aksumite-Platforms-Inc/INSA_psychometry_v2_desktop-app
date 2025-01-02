@@ -136,18 +136,7 @@ const logout = async (event?: IpcMainEvent) => {
   }
 };
 
-interface LoginResponse {
-  success: boolean;
-  data?: {
-    token: string;
-  };
-  message: string;
-}
-
-const performLogin = async (
-  email: string,
-  password: string,
-): Promise<LoginResponse> => {
+const performLogin = async (email: string, password: string): Promise<any> => {
   try {
     const response = await axios.post(
       `${API_BASE_URL}/sso/login`, // Use the base URL variable
