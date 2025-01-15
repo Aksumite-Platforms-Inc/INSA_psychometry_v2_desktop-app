@@ -5,7 +5,7 @@ import fs from 'fs';
 import { IpcMainEvent, app } from 'electron';
 
 // Define the base URL as a variable for flexibility
-const API_BASE_URL = 'http://api.personality.insa.gov.et/api/v1';
+const API_BASE_URL = 'https://api.personality.insa.gov.et/api/v1';
 // const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 // Set the default base URL for Axios
