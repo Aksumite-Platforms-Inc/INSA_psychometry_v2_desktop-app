@@ -8,7 +8,14 @@
  * When running `npm run build` or `npm run build:main`, this file is compiled to
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
-import { app, BrowserWindow, shell, ipcMain, IpcMainEvent } from 'electron';
+import {
+  app,
+  session,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  IpcMainEvent,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import path from 'path';
@@ -199,7 +206,7 @@ ipcMain.on('user-login', async (event, email: string, password: string) => {
   } catch (error) {
     event.reply('user-login-success', {
       success: false,
-      message: error.message,
+      message: error,
     });
   }
 });
@@ -350,7 +357,13 @@ app.on('window-all-closed', () => {
 
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
+    try {
+      await session.defaultSession.setProxy({ mode: 'system' });
+      console.log('Electron is now using the system proxy settings.');
+    } catch (error) {
+      console.error('Failed to set system proxy:', error);
+    }
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
